@@ -48,7 +48,15 @@ the files instead. Create exactly these files:
 1. `bom.csv` - Bill of materials. Columns: RefDes,Qty,Description,
    Manufacturer,MPN,Package,Notes. Group passives by value. Every part
    must have a real or realistic manufacturer part number and package
-   (e.g. 0402, SOT-23-5, QFN-32).
+   (e.g. 0402, SOT-23-5, QFN-32). Use the exact package family names
+   (0402/0603/0805/1206, SOT-23-3/5/6, SOIC-8/14/16, TSSOP-8/14/16/20,
+   QFN-16/20/24/32, DIP-8/14/16, TO-220, TO-92, HDR-1xN, JST-PH-N) where
+   the part fits one - a downstream tool matches on these literal strings
+   and cannot fuzzy-match a description. This is real RFC 4180 CSV, not
+   just comma-separated text: double-quote any field containing a comma
+   (e.g. `"IC, 4.2V, up to 1A"`) and escape a literal quote inside a
+   quoted field by doubling it (`""`). An unquoted comma inside a field
+   shifts every later column on that row and corrupts it.
 
 2. `netlist.md` - A human-and-EDA-readable logical netlist. For each net,
    list the net name and every RefDes.pin connected to it. Group nets by
@@ -158,6 +166,12 @@ def run_exports(project_dir: Path) -> None:
         f"{summary['unrecognized']} unrecognized package(s) "
         f"-> kicad/{project_dir.name}.kicad_pcb, pinouts.md"
     )
+    if summary["bom_warnings"]:
+        print(
+            f"warning: {len(summary['bom_warnings'])} bom.csv row(s) skipped "
+            f"(malformed CSV) - see pinouts.md",
+            file=sys.stderr,
+        )
     try:
         glb_path = export_glb(
             project_dir,

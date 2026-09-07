@@ -97,7 +97,7 @@ def export_kicad(project_dir: Path, project_name: str) -> dict:
     from .bom import load_bom
 
     bom_path = project_dir / "bom.csv"
-    instances = load_bom(bom_path)
+    instances, bom_warnings = load_bom(bom_path)
 
     resolved: list[tuple[PartInstance, Package]] = []
     unrecognized: list[str] = []
@@ -178,11 +178,16 @@ def export_kicad(project_dir: Path, project_name: str) -> dict:
             f"Known package names: {', '.join(sorted(seen_packages.keys()) or ['(none matched)'])}"
             " - see `pcba_builder/packages.py` for the full recognized list."
         )
+    if bom_warnings:
+        pinout_md.append("")
+        pinout_md.append("## bom.csv rows skipped (malformed CSV)")
+        pinout_md.extend(f"- {w}" for w in bom_warnings)
     (project_dir / "pinouts.md").write_text("\n".join(pinout_md) + "\n")
 
     return {
         "recognized": len(resolved),
         "unrecognized": len(unrecognized),
+        "bom_warnings": bom_warnings,
         "board_w_mm": board_w,
         "board_h_mm": board_h,
         "positions": positions,

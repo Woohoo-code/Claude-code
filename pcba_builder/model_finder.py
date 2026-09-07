@@ -61,7 +61,7 @@ def build_find_prompt(project_dir: Path) -> str | None:
     bom_path = project_dir / "bom.csv"
     if not bom_path.exists():
         return None
-    instances = load_bom(bom_path)
+    instances, _warnings = load_bom(bom_path)
     seen = {}
     for inst in instances:
         key = inst.line.mpn or inst.line.description

@@ -52,11 +52,32 @@ def _get(row: dict, *names: str) -> str:
     return ""
 
 
-def load_bom(bom_path: Path) -> list[PartInstance]:
+def load_bom(bom_path: Path) -> tuple[list[PartInstance], list[str]]:
+    """Parse bom.csv. Returns (instances, warnings).
+
+    A row with more or fewer fields than the header - typically an
+    unquoted comma inside a Description/Notes cell shifting every later
+    column - is skipped rather than silently mis-assigned (e.g. a
+    shifted row would read the MPN into the Package field). Skipped rows
+    are reported in `warnings` instead.
+    """
     instances: list[PartInstance] = []
+    warnings: list[str] = []
     with bom_path.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for row in reader:
+        for line_no, row in enumerate(reader, start=2):  # header is line 1
+            if row.get(None):
+                warnings.append(
+                    f"line {line_no}: more columns than the header, likely an unquoted "
+                    f"comma in a field - skipped ({row})"
+                )
+                continue
+            if any(v is None for v in row.values()):
+                warnings.append(
+                    f"line {line_no}: fewer columns than the header, likely a missing "
+                    f"closing quote - skipped ({row})"
+                )
+                continue
             refdes_field = _get(row, "refdes", "ref des", "reference", "designator")
             if not refdes_field:
                 continue
@@ -71,4 +92,4 @@ def load_bom(bom_path: Path) -> list[PartInstance]:
             )
             for refdes in expand_refdes(refdes_field):
                 instances.append(PartInstance(refdes=refdes, line=line))
-    return instances
+    return instances, warnings
