@@ -11,6 +11,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from . import model_finder
+from .kicad_export import export_kicad
+from .glb_export import export_glb
+
 SPEC_TEMPLATE = """\
 # Board spec
 
@@ -138,6 +142,36 @@ def run_claude(project_dir: Path, prompt: str, model: str | None) -> int:
     return result.returncode
 
 
+def run_exports(project_dir: Path) -> None:
+    """Run the local (offline, deterministic) KiCad + GLB exports."""
+    bom_path = project_dir / "bom.csv"
+    if not bom_path.exists():
+        print("skipping KiCad/GLB export: no bom.csv was generated", file=sys.stderr)
+        return
+    try:
+        summary = export_kicad(project_dir, project_dir.name)
+    except Exception as exc:  # noqa: BLE001 - report and continue, don't kill the build
+        print(f"warning: KiCad export failed: {exc}", file=sys.stderr)
+        return
+    print(
+        f"KiCad export: {summary['recognized']} part(s) placed, "
+        f"{summary['unrecognized']} unrecognized package(s) "
+        f"-> kicad/{project_dir.name}.kicad_pcb, pinouts.md"
+    )
+    try:
+        glb_path = export_glb(
+            project_dir,
+            project_dir.name,
+            summary["resolved"],
+            summary["positions"],
+            summary["board_w_mm"],
+            summary["board_h_mm"],
+        )
+        print(f"GLB export: {glb_path.name}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"warning: GLB export failed: {exc}", file=sys.stderr)
+
+
 def build(project_dir: Path, model: str | None) -> None:
     spec_path = project_dir / "spec.md"
     if not spec_path.exists():
@@ -147,7 +181,35 @@ def build(project_dir: Path, model: str | None) -> None:
         )
         raise SystemExit(1)
     rc = run_claude(project_dir, BUILD_PROMPT, model)
+    if rc == 0:
+        run_exports(project_dir)
     raise SystemExit(rc)
+
+
+def export_kicad_cmd(project_dir: Path) -> None:
+    if not (project_dir / "bom.csv").exists():
+        print(
+            f"error: {project_dir}/bom.csv not found. Run `pcba-builder build {project_dir}` first.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+    run_exports(project_dir)
+
+
+def export_glb_cmd(project_dir: Path) -> None:
+    export_kicad_cmd(project_dir)
+
+
+def models_cmd(project_dir: Path, model: str | None) -> None:
+    rc = model_finder.run_online_search(project_dir, model)
+    if rc != 0:
+        raise SystemExit(rc)
+    log = model_finder.download_found_models(project_dir)
+    (project_dir / "models" / "download_log.md").write_text(
+        "# Model download log\n\n" + "\n".join(f"- {line}" for line in log) + "\n"
+    )
+    for line in log:
+        print(line)
 
 
 def review(project_dir: Path, model: str | None) -> None:
@@ -185,6 +247,22 @@ def main(argv: list[str] | None = None) -> None:
     )
     p_review.add_argument("project_dir", type=Path)
 
+    p_models = sub.add_parser(
+        "models",
+        help="search online for datasheets/3D models per BOM part and fetch direct links",
+    )
+    p_models.add_argument("project_dir", type=Path)
+
+    p_export_kicad = sub.add_parser(
+        "export-kicad", help="(re)generate KiCad footprints + .kicad_pcb from bom.csv"
+    )
+    p_export_kicad.add_argument("project_dir", type=Path)
+
+    p_export_glb = sub.add_parser(
+        "export-glb", help="(re)generate the .glb 3D preview from bom.csv"
+    )
+    p_export_glb.add_argument("project_dir", type=Path)
+
     args = parser.parse_args(argv)
 
     if args.command == "new":
@@ -193,6 +271,12 @@ def main(argv: list[str] | None = None) -> None:
         build(args.project_dir, args.model)
     elif args.command == "review":
         review(args.project_dir, args.model)
+    elif args.command == "models":
+        models_cmd(args.project_dir, args.model)
+    elif args.command == "export-kicad":
+        export_kicad_cmd(args.project_dir)
+    elif args.command == "export-glb":
+        export_glb_cmd(args.project_dir)
 
 
 if __name__ == "__main__":
