@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pcba-builder"
+version = "0.1.0"
+description = "Use the Claude Code CLI to design a PCBA from a plain-language spec"
+requires-python = ">=3.9"
+
+[project.scripts]
+pcba-builder = "pcba_builder.cli:main"
+
+[tool.setuptools]
+packages = ["pcba_builder"]
