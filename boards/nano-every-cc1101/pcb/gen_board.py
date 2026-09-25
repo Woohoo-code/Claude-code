@@ -469,10 +469,19 @@ def build_antennas(b: Builder):
     node_pad = next(x.GetNumber() for x in b.fps["R403"].Pads() if x.GetNetname() == na)
     b.track(na, [node, ("R403", node_pad)], RF_SEL)
     b.fp("J1", "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", 27.0, BOARD - 2.7,
-         270, "SMA", {"1": "EXT_A", "2": "GND"})
-    b.fp("H1", "TestPoint", "TestPoint_THTPad_D2.0mm_Drill1.0mm", 27.0, 60.0, 0, "wire",
+         270, "SMA", {"1": "SMA_A", "2": "GND"})
+    # H1/H2: coil (helical spring) antenna or wire whip, 1.2 mm hole for the
+    # 0.8-1.0 mm pins of the BAT WIRELESS BWxxxSNX spring antennas
+    b.fp("H1", "TestPoint", "TestPoint_THTPad_D2.5mm_Drill1.2mm", 27.0, 60.0, 0, "coil",
          {"1": "EXT_A"})
-    b.track("EXT_A", [("R403", ext_pad), ("H1", "1"), ("J1", "1")], RF_50)
+    b.track("EXT_A", [("R403", ext_pad), ("H1", "1")], RF_50)
+    # R407 links H1 on to the SMA jack; left empty so a coil in H1 has no
+    # open stub (37 mm of line would detune it). Fit 0R to use J1.
+    b.two_pin("R407", *R0603, 27.0, 64.5, 90, "DNP", (27.0, 60.0), "EXT_A", "SMA_A")
+    ha = next(x.GetNumber() for x in b.fps["R407"].Pads() if x.GetNetname() == "EXT_A")
+    ja = next(x.GetNumber() for x in b.fps["R407"].Pads() if x.GetNetname() == "SMA_A")
+    b.track("EXT_A", [("H1", "1"), ("R407", ha)], RF_50)
+    b.track("SMA_A", [("R407", ja), ("J1", "1")], RF_50)
 
     # ---- radio B: node N_B = (80, yb) ----------------------------------
     nb = "ANT_B"
@@ -509,11 +518,16 @@ def build_antennas(b: Builder):
     node_pad = next(x.GetNumber() for x in b.fps["R406"].Pads() if x.GetNetname() == nb)
     b.track(nb, [(79.0, yb), (78.0, yb + 1.0), ("R406", node_pad)], RF_SEL)
     b.fp("J2", "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", 73.0, BOARD - 2.7,
-         270, "SMA", {"1": "EXT_B", "2": "GND"})
-    b.fp("H2", "TestPoint", "TestPoint_THTPad_D2.0mm_Drill1.0mm", 73.0, 70.0, 0, "wire",
+         270, "SMA", {"1": "SMA_B", "2": "GND"})
+    b.fp("H2", "TestPoint", "TestPoint_THTPad_D2.5mm_Drill1.2mm", 73.0, 70.0, 0, "coil",
          {"1": "EXT_B"})
     ey = b.P("R406", ext_pad)[1]
-    b.track("EXT_B", [("R406", ext_pad), (73.0, ey + 5.0), ("H2", "1"), ("J2", "1")], RF_50)
+    b.track("EXT_B", [("R406", ext_pad), (73.0, ey + 5.0), ("H2", "1")], RF_50)
+    b.two_pin("R408", *R0603, 73.0, 74.5, 90, "DNP", (73.0, 70.0), "EXT_B", "SMA_B")
+    hb = next(x.GetNumber() for x in b.fps["R408"].Pads() if x.GetNetname() == "EXT_B")
+    jb = next(x.GetNumber() for x in b.fps["R408"].Pads() if x.GetNetname() == "SMA_B")
+    b.track("EXT_B", [("H2", "1"), ("R408", hb)], RF_50)
+    b.track("SMA_B", [("R408", jb), ("J2", "1")], RF_50)
 
 
 # ======================= host side =========================================
@@ -800,8 +814,8 @@ def silkscreen(b: Builder):
             line(px - uy * 1.2, py + ux * 1.2, px - uy * 2.2, py + ux * 2.2)
     text("SMA A", 27.0, 88.0, rot=90)
     text("SMA B", 73.0, 88.0, rot=90)
-    text("WIRE A", 27.0, 65.0, rot=90)
-    text("WIRE B", 73.0, 75.0, rot=90)
+    text("COIL A", 24.6, 60.0, rot=90)
+    text("COIL B", 70.6, 70.0, rot=90)
     text("GDO2_B", 58.5, 42.2)
     text("3V3", 44.0, 54.0)
 
@@ -810,12 +824,12 @@ def silkscreen(b: Builder):
         "2-layer  100 x 100 mm  v1.0",
         "",
         "ANTENNA SELECT - fit ONE selector per radio",
-        "radio A: 433 R301 | 315 R311 | SMA/wire R403",
-        "radio B: 868 R321 | 915 R331 | SMA/wire R406",
+        "radio A: 433 R301 | 315 R311 | coil R403 | SMA +R407",
+        "radio B: 868 R321 | 915 R331 | coil R406 | SMA +R408",
         "IFA shorts R401 R402 R404 R405: always 0R",
         "ANY FREQUENCY 300-348/387-464/779-928 MHz:",
         "fit tune L40x + R3x1/C3x1/L3x1 per tuning.md",
-        "whip for SMA/wire: L(mm) = 71250 / f(MHz)",
+        "coil in H1/H2: BAT WIRELESS BWxxxSNX spring",
         "",
         "SPI: D13 SCK  D11 MOSI  D12 MISO",
         "radio A: CSn D10  GDO0 D2  GDO2 D3",

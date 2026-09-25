@@ -33,10 +33,12 @@ on the 868 MHz printed antenna at 868.3 MHz.
 |---|---|---|---|
 | A (U1) | 433 MHz PCB (387-464 MHz) | R301 | R311, R403 |
 | A (U1) | 315 MHz PCB (300-348 MHz) | R311 + L402 39 nH **and swap to the 315 MHz BOM** (below) | R301, R403 |
-| A (U1) | SMA J1 (solder it on) or wire in H1 | R403 (0 ohm) | R301, R311 |
+| A (U1) | Coil antenna in H1 (e.g. BW433SNX21-5W2) | R403 (0 ohm) | R301, R311, R407 |
+| A (U1) | SMA J1 (solder it on) | R403 + R407 (0 ohm) | R301, R311 |
 | B (U501) | 868 MHz PCB (779-880 MHz) | R321 | R331, R406 |
 | B (U501) | 915 MHz PCB (870-928 MHz) | R331 | R321, R406 |
-| B (U501) | SMA J2 (solder it on) or wire in H2 | R406 (0 ohm) | R321, R331 |
+| B (U501) | Coil antenna in H2 (e.g. BW868SNX20-5Z6) | R406 (0 ohm) | R321, R331, R408 |
+| B (U501) | SMA J2 (solder it on) | R406 + R408 (0 ohm) | R321, R331 |
 
 **Any other frequency:** look it up in `antenna/results/tuning.md` (every
 5 MHz) or `antenna/results/tuning_<band>.csv` (every MHz), and fit that

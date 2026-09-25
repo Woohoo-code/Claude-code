@@ -35,3 +35,5 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 34,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,hand solder (optional)
 35,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,hand solder (optional)
 36,2,S1 S2,1x15 F,Female header 1x15 2.54 mm (socket for the Nano Every),Generic,,,HDR-1x15-F,hand solder
+37,1,H1,coil,"Coil antenna 433 MHz, spring 5 mm x 21 mm (radio A)",BAT WIRELESS,BW433SNX21-5W2,C496554,"spring, 1 pin",hand solder (optional; fit R403/R406 0R to use)
+38,1,H2,coil,"Coil antenna 868 MHz, spring 5 mm x 20 mm (radio B)",BAT WIRELESS,BW868SNX20-5Z6,C496555,"spring, 1 pin",hand solder (optional; fit R403/R406 0R to use)

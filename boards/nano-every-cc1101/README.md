@@ -4,7 +4,7 @@ A 100 x 100 mm **2-layer** carrier board for an Arduino Nano Every with two
 TI CC1101 radios, so every frequency the CC1101 supports (300-348, 387-464
 and 779-928 MHz) is covered. Four printed antennas, each tunable across its
 range with 0603 parts (values per MHz from a full-wave openEMS model), plus
-an SMA jack and a wire-whip hole per radio.
+a coil (helical spring) antenna position and an SMA jack per radio.
 The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pads.
 
 | Top | Bottom (viewed from below) |
@@ -18,7 +18,7 @@ The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pad
 | Board | 100 x 100 x 1.6 mm, 2 layers, FR4 |
 | Radio A (U1) | CC1101, 315/433 MHz front end (433 fitted) |
 | Radio B (U501) | CC1101, 868/915 MHz front end |
-| Antennas | 4 printed, tunable across 300-348 / 387-464 / 779-928 MHz; SMA J1/J2; wire holes H1/H2 |
+| Antennas | 4 printed, tunable across 300-348 / 387-464 / 779-928 MHz; coil antennas in H1/H2; SMA J1/J2 |
 | Host | Arduino Nano Every in sockets, USB at the board edge, every pin re-broken-out on J3/J4 |
 | Glue | TXS0108E 5 V <-> 3.3 V level shifter, XC6206 3.3 V LDO, power LED |
 
@@ -34,8 +34,9 @@ every MHz (simulated with openEMS, full board, all four antennas present):
 | 779-880 MHz | 868 (radio B) | -21.3 dB | 97-99 % | 835-880 MHz |
 | 870-928 MHz | 915 (radio B) | -21.6 dB | 97-99 % | 900-1030 MHz |
 
-The SMA jacks and wire holes add an external whip at any frequency
-(L = 71 250 / f mm, table in `tuning.md`).
+The coil holes H1/H2 also take a plain wire whip, and the SMA jacks an
+external antenna, at any frequency (whip L = 71 250 / f mm, table in
+`tuning.md`).
 
 ![coverage](antenna/results/tuning.png)
 
@@ -44,14 +45,33 @@ The SMA jacks and wire holes add an external whip at any frequency
 Fit **one** selector per radio; the board ships set up for 433.92 MHz
 (radio A) and 868.3 MHz (radio B):
 
-| Radio | 433 MHz PCB | 315 MHz PCB | 868 MHz PCB | 915 MHz PCB | SMA / wire |
-|---|---|---|---|---|---|
-| A | **R301** (default) | R311 + L402 39 nH + 315 MHz BOM | | | R403 0R + J1 |
-| B | | | **R321** (default) | R331 | R406 0R + J2 |
+| Radio | 433 MHz PCB | 315 MHz PCB | 868 MHz PCB | 915 MHz PCB | Coil (H1/H2) | SMA |
+|---|---|---|---|---|---|---|
+| A | **R301** (default) | R311 + L402 39 nH + 315 MHz BOM | | | R403 0R + coil | R403 + R407 0R + J1 |
+| B | | | **R321** (default) | R331 | R406 0R + coil | R406 + R408 0R + J2 |
 
 For another frequency, fit the row for it from `antenna/results/tuning.md`
 (tuning part L40x, selector R3x1, shunt C3x1, series L3x1).
 `assembly_instructions.md` has the 315 MHz front-end BOM swap.
+
+### Coil antennas (Flipper-style)
+
+H1 (radio A) and H2 (radio B) take a helical spring antenna, the compact
+coiled type used in handheld sub-GHz gadgets: solder its pin into the
+hole so it stands up from the board, then move that radio's selector to
+R403 / R406 (0 ohm). R407 / R408 stay empty so the unused SMA line does
+not load the coil. JLCPCB/LCSC parts (5 mm wide, about 20 mm tall,
+pre-tuned by the maker):
+
+| Band | Part | LCSC |
+|---|---|---|
+| 315 MHz | BAT WIRELESS BW315SNX39-6W3 | C496553 |
+| 433 MHz | BAT WIRELESS BW433SNX21-5W2 | C496554 |
+| 868 MHz | BAT WIRELESS BW868SNX20-5Z6 | C496555 |
+| 915 MHz | BAT WIRELESS BW915SNX17-5W2 | C496556 |
+
+The printed antennas stay the default: they are larger and radiate
+better; the coil is the small, tidy option (and easy to swap per band).
 
 ## Pins (Nano Every)
 

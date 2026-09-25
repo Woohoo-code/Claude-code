@@ -34,9 +34,11 @@ R1,1,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,R_0603,LCSC C21190
 "R171, R671",2,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),UNI-ROYAL,0402WGF5602TCE,R_0402,LCSC C25796
 "R301, R321, R401, R402, R404, R405",6,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,R_0603,LCSC C21189
 "R311, R331",2,not fitted (DNP (0R to use)),,,R_0603,leave empty unless re-selecting the antenna
-"R403, R406",2,not fitted (DNP),,,R_0603,leave empty unless re-selecting the antenna
+"R403, R406, R407, R408",4,not fitted (DNP),,,R_0603,leave empty unless re-selecting the antenna
 "U1, U501",2,"Sub-1 GHz RF transceiver, 300-928 MHz",Texas Instruments,CC1101RGPR,QFN,LCSC C29953
 U2,1,LDO 3.3 V 200 mA,Torex,XC6206P332MR-G,SOT-23,LCSC C5446
 U3,1,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,TSSOP-20,LCSC C17206
 "Y1, Y501",2,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,Crystal,LCSC C70573
 "S1, S2",2,Female header 1x15 2.54 mm (Nano socket),Generic,,HDR-1x15-F,optional; or solder the Nano directly
+H1,1,"Coil antenna 433 MHz, spring 5 mm x 21 mm (radio A)",BAT WIRELESS,BW433SNX21-5W2,spring,"optional, LCSC C496554"
+H2,1,"Coil antenna 868 MHz, spring 5 mm x 20 mm (radio B)",BAT WIRELESS,BW868SNX20-5Z6,spring,"optional, LCSC C496555"

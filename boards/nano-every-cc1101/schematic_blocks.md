@@ -69,13 +69,13 @@ C122 8.2 pF, C123 5.6 pF, C124/C125 330 pF (DC block / RF bypass; TI uses 220 pF
                  │        C301
  ANT_A ──────────┼─ R311 ─┬─ L311 ── 315 IFA ─[L402]─ arm   (short R402)
                  │        C311
-                 └─ R403 ── EXT_A ── H1 (wire) ── J1 (SMA)
+                 └─ R403 ── EXT_A ── H1 (coil) ── R407 ── J1 (SMA)
 
                  ┌─ R321 ─┬─ L321 ── 868 IFA ─[L404]─ arm   (short R404)
                  │        C321
  ANT_B ──────────┼─ R331 ─┬─ L331 ── 915 IFA ─[L405]─ arm   (short R405)
                  │        C331
-                 └─ R406 ── EXT_B ── H2 (wire) ── J2 (SMA)
+                 └─ R406 ── EXT_B ── H2 (coil) ── R408 ── J2 (SMA)
 ```
 R3x1 = selector (fit one per radio), C3x1 = shunt, L3x1 = series, L40x =
 series tuning part in the antenna arm. Any of these positions can hold a

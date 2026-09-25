@@ -182,6 +182,15 @@ def _lookup(fpname, value):
     raise SystemExit(f"no catalog entry for {fpname} / {value}")
 
 
+# Coil (helical spring) antennas for H1 (radio A) / H2 (radio B), hand-soldered
+# like a Flipper-style internal coil; other bands: BW315SNX39-6W3 (C496553),
+# BW915SNX17-5W2 (C496556).
+COILS = [
+    ("H1", "Coil antenna 433 MHz, spring 5 mm x 21 mm (radio A)", "BW433SNX21-5W2", "C496554"),
+    ("H2", "Coil antenna 868 MHz, spring 5 mm x 20 mm (radio B)", "BW868SNX20-5Z6", "C496555"),
+]
+
+
 def hand_fit(name):
     """Optional parts left out of JLCPCB assembly to keep it cheap (no
     through-hole step, two fewer extended part types)."""
@@ -256,6 +265,8 @@ def main():
                             f"LCSC {lcsc}" if lcsc else ""])
         w.writerow(["S1, S2", 2, "Female header 1x15 2.54 mm (Nano socket)", "Generic", "",
                     "HDR-1x15-F", "optional; or solder the Nano directly"])
+        for ref, d, mpn, lcsc in COILS:
+            w.writerow([ref, 1, d, "BAT WIRELESS", mpn, "spring", f"optional, LCSC {lcsc}"])
 
     os.makedirs(os.path.join(HERE, "fab"), exist_ok=True)
 
@@ -277,6 +288,9 @@ def main():
         w.writerow([len(rows) + 1, 2, "S1 S2", "1x15 F", "Female header 1x15 2.54 mm "
                     "(socket for the Nano Every)", "Generic", "", "", "HDR-1x15-F",
                     "hand solder"])
+        for i, (ref, d, mpn, lcsc) in enumerate(COILS, len(rows) + 2):
+            w.writerow([i, 1, ref, "coil", d, "BAT WIRELESS", mpn, lcsc, "spring, 1 pin",
+                        "hand solder (optional; fit R403/R406 0R to use)"])
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
