@@ -70,7 +70,7 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
    an in-stock LCSC number (checked 2026-09-25; out-of-stock design parts
    were swapped for same-value/package C0G/NP0 equivalents, see `JLC` in
    `pcb/fab_outputs.py`). The BOM is cost-minimised: every part that has a
-   JLCPCB basic / preferred equivalent uses it (10 extended part types
+   JLCPCB basic / preferred equivalent of the same quality uses it (13 extended part types
    left), and there is no through-hole part, so **Economic PCBA** works.
 3. By hand: Nano sockets (2x 1x15 female). Optional, not assembled (to keep
    the order cheap): SMA jacks J1/J2 (BAT WIRELESS BWSMA-KE-P001, LCSC

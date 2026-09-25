@@ -42,11 +42,11 @@ CAT = {
                           "GRM1555C1H5R6CA01D", ""),
     ("C_0402", "330pF"): ("Capacitor 330 pF 5% C0G 0402 (DC block / RF bypass)", "Samsung",
                           "CL05C331JB5NNNC", "C13533"),
-    ("C_0402", "1.0pF"): ("Capacitor 1.0 pF +/-0.25 pF C0G 0402", "Murata",
+    ("C_0402", "1.0pF"): ("Capacitor 1.0 pF +/-0.1 pF C0G 0402", "Murata",
                           "GRM1555C1H1R0BA01D", ""),
-    ("C_0402", "1.5pF"): ("Capacitor 1.5 pF +/-0.25 pF C0G 0402", "Murata",
+    ("C_0402", "1.5pF"): ("Capacitor 1.5 pF +/-0.1 pF C0G 0402", "Murata",
                           "GRM1555C1H1R5BA01D", ""),
-    ("C_0402", "3.3pF"): ("Capacitor 3.3 pF +/-0.25 pF C0G 0402", "Murata",
+    ("C_0402", "3.3pF"): ("Capacitor 3.3 pF +/-0.1 pF C0G 0402", "Murata",
                           "GRM1555C1H3R3BA01D", ""),
     ("C_0402", "100pF"): ("Capacitor 100 pF 5% C0G 0402", "Murata", "GRM1555C1H101JA01D", ""),
     ("C_0402", "12pF"): ("Capacitor 12 pF 5% C0G 0402", "Murata", "GRM1555C1H120JA01D", ""),
@@ -94,9 +94,9 @@ JLC = {
     "GRM1555C1H3R9CA01D": ("Murata", "GRM1555C1H3R9CA01D", "C85940"),
     "GRM1555C1H8R2CA01D": ("Murata", "GRM1555C1H8R2CA01D", "C76984"),
     "GRM1555C1H5R6CA01D": ("Murata", "GRM1555C1H5R6CA01D", "C85941"),
-    "GRM1555C1H1R0BA01D": ("FH", "0402CG1R0C500NT", "C1550"),               # fee-free, +/-0.25 pF
-    "GRM1555C1H1R5BA01D": ("FH", "0402CG1R5C500NT", "C1552"),               # fee-free, +/-0.25 pF
-    "GRM1555C1H3R3BA01D": ("FH", "0402CG3R3C500NT", "C1565"),               # fee-free, +/-0.25 pF
+    "GRM1555C1H1R0BA01D": ("YAGEO", "CC0402BRNPO9BN1R0", "C309455"),        # +/-0.1 pF (balun)
+    "GRM1555C1H1R5BA01D": ("FH", "0402CG1R5B500NT", "C285112"),             # +/-0.1 pF (balun)
+    "GRM1555C1H3R3BA01D": ("YAGEO", "CC0402BRNPO9BN3R3", "C327287"),        # +/-0.1 pF (balun)
     "GRM1555C1H101JA01D": ("FH", "0402CG101J500NT", "C1546"),               # basic
     "GRM1555C1H120JA01D": ("FH", "0402CG120J500NT", "C1547"),               # basic
     "GRM1885C1H1R1CA01D": ("Murata", "GQM1875C2E1R1BB12D", "C3863168"),     # sub, high-Q

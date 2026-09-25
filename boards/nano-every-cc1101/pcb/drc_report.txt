@@ -1,5 +1,5 @@
 ** Drc report for /home/user/Claude-code/boards/nano-every-cc1101/pcb/nano_every_cc1101.kicad_pcb **
-** Created on 2026-09-25 19:17:47 **
+** Created on 2026-09-25 20:30:36 **
 
 ** Found 14 DRC violations **
 [silk_overlap]: Silkscreen overlap
