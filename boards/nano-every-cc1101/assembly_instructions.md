@@ -23,13 +23,16 @@ split paste on the QFN exposed pads.
 
 ## Antenna selection (fit exactly one selector per radio)
 
+The shunt and series match parts of every branch (C/L3x1) are fitted
+by default, so switching antenna only means moving the selector.
+
 | Radio | Antenna | Fit | Leave empty |
 |---|---|---|---|
-| A (U1) | 433 MHz PCB (default) | R301 | R311, R403 |
-| A (U1) | 315 MHz PCB | R311 **and swap to the 315 MHz BOM** (below) | R301, R403 |
+| A (U1) | 433 MHz PCB (default) | R301 = 16 pF | R311, R403 |
+| A (U1) | 315 MHz PCB | R311 = 0 ohm **and swap to the 315 MHz BOM** (below) | R301, R403 |
 | A (U1) | SMA J1 or wire in H1 | R403 (0 ohm) | R301, R311 |
-| B (U501) | 868 MHz PCB (default) | R321 | R331, R406 |
-| B (U501) | 915 MHz PCB | R331 | R321, R406 |
+| B (U501) | 868 MHz PCB (default) | R321 = 0 ohm | R331, R406 |
+| B (U501) | 915 MHz PCB | R331 = 0 ohm | R321, R406 |
 | B (U501) | SMA J2 or wire in H2 | R406 (0 ohm) | R321, R331 |
 
 Keep the inverted-F shorting jumpers R401 (433), R402 (315), R404 (868) and

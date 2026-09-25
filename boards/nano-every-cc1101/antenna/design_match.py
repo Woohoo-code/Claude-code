@@ -104,7 +104,17 @@ def design(name):
     _, s1, sh, s2 = best
     gm = np.abs(gamma(network(zl, f, s1, sh, s2)))
     i0 = int(np.argmin(np.abs(f - f0)))
-    bw = f[gm < 10 ** (-10 / 20)]
+    # contiguous -10 dB band around f0 (not every frequency below -10 dB)
+    ok = gm < 10 ** (-10 / 20)
+    lo = hi = i0 = int(np.argmin(np.abs(f - f0)))
+    if ok[i0]:
+        while lo > 0 and ok[lo - 1]:
+            lo -= 1
+        while hi < len(f) - 1 and ok[hi + 1]:
+            hi += 1
+        bw = f[lo:hi + 1]
+    else:
+        bw = f[:0]
     eff = match_eff(zl[i0:i0 + 1], f[i0:i0 + 1], s1, sh, s2)[0]
     return {
         "f": f, "zl": zl, "gm": gm, "f0": f0, "z0": zl[i0], "eff": float(eff),
@@ -126,13 +136,15 @@ def main():
         r = results[n]
         s1 = label(*r["s1"])
         sel = s1 if n in DEFAULT_FITTED else f"DNP ({s1} to use)"
+        bw10 = (round(float(r["bw10"][0]) / 1e0, 1), round(float(r["bw10"][1]), 1)) \
+            if r["bw10"] else None
         lines.append(f'    "{n}": {{"refs": {REFS[n]!r}, "s1": {sel!r}, '
                      f'"c": {label(*r["sh"])!r}, "s2": {label(*r["s2"])!r},')
         lines.append(f'            "z_ant": "{r["z0"].real:.1f}{r["z0"].imag:+.1f}j", '
-                     f'"s11_db": {r["s11_0"]:.1f}, "bw10_mhz": {r["bw10"]!r}}},')
+                     f'"s11_db": {r["s11_0"]:.1f}, "bw10_mhz": {bw10}}},')
         print(f'{n}: Zant={r["z0"]:.1f}  S1={s1} shunt={label(*r["sh"])} '
               f'S2={label(*r["s2"])}  S11={r["s11_0"]:.1f} dB  '
-              f'-10dB band={r["bw10"]}  match loss={-10*math.log10(max(r["eff"],1e-6)):.1f} dB')
+              f'-10dB band={tuple(round(float(v), 1) for v in r["bw10"]) if r["bw10"] else None}  match loss={-10*math.log10(max(r["eff"],1e-6)):.1f} dB')
     lines.append("}")
     open(os.path.join(HERE, "match.py"), "w").write("\n".join(lines) + "\n")
 
@@ -151,6 +163,14 @@ def main():
                   f'{raw:.1f} dB | {label(*r["s1"])} / {label(*r["sh"])} / '
                   f'{label(*r["s2"])} | {r["s11_0"]:.1f} dB | {bw} | '
                   f'{-10 * math.log10(max(r["eff"], 1e-6)):.1f} dB |')
+    md += ["", "Match loss = power lost in the T-match parts (0603, inductor Q 40, "
+           "capacitor Q 300).",
+           "315 MHz additionally loses power in its arm's 47 nH loading coil (L402, "
+           "Q 40): coil + match pass about 40 % (-4 dB) of the power on to the "
+           "antenna (`choose_load.py`), so expect noticeably less range at 315 MHz "
+           "than on the other bands.",
+           "ISM bands covered by the -10 dB bands: 433.05-434.79 (433), 314-316 "
+           "(315), 863-870 (868), 902-928 (915)."]
     open(os.path.join(HERE, "results", "summary.md"), "w").write("\n".join(md) + "\n")
 
     try:

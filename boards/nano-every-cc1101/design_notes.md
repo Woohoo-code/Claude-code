@@ -27,7 +27,7 @@ channels and that is the ninth signal.
 | Thickness | 1.6 mm FR4 |
 | Min track / space | 0.15 / 0.15 mm (0.15 mm only inside the two CC1101 clusters) |
 | Vias | 0.6 / 0.3 mm; 0.5 / 0.25 mm inside the CC1101 clusters |
-| Ground | solid pour on both layers over the 60 x 80 mm ground region, ~250 stitching vias |
+| Ground | solid pour on both layers over the 60 x 80 mm ground region, 223 ground vias |
 | Antenna strips | copper-free: top 100 x 20 mm, left 22 x 80 mm, right 18 x 80 mm |
 
 ## RF layout

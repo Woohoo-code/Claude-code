@@ -90,11 +90,20 @@ def lookup(fpname, value):
     m = re.match(r"([\d.]+)(pF|nH)$", value)
     if m and k in ("C_0603", "L_0603", "R_0603"):
         v, u = m.groups()
+        x = float(v)
         if u == "pF":
-            return (f"Capacitor {v} pF C0G 0603, +/-0.1 pF or 2% (antenna match)", "Murata",
-                    f"GRM1885C1H series, {v} pF", "")
-        return (f"Inductor {v} nH wire-wound 0603, 2-5% (antenna match)", "Murata",
-                f"LQW18AN series, {v} nH", "")
+            if x < 10:           # e.g. 3.6 pF -> 3R6, +/-0.25 pF (C)
+                code, tol = f"{int(x)}R{round((x - int(x)) * 10):d}", "C"
+            else:                # e.g. 16 pF -> 160, 5 % (J)
+                e = 0
+                while x >= 100:
+                    x /= 10
+                    e += 1
+                code, tol = f"{int(round(x)):02d}{e}", "J"
+            return (f"Capacitor {v} pF C0G 50 V 0603 (antenna match)", "Murata",
+                    f"GRM1885C1H{code}{tol}A01D", "")
+        return (f"Inductor {v} nH wire-wound 2 % 0603 (antenna tuning)", "Murata",
+                f"LQW18AN{int(x)}NG00D", "")
     raise SystemExit(f"no catalog entry for {fpname} / {value}")
 
 

@@ -1,55 +1,298 @@
 ** Drc report for /home/user/Claude-code/boards/nano-every-cc1101/pcb/nano_every_cc1101.kicad_pcb **
-** Created on 2026-09-25 01:18:53 **
+** Created on 2026-09-25 04:04:15 **
 
-** Found 14 DRC violations **
-[silk_overlap]: Silkscreen overlap
-    Rule: board setup constraints silk; Severity: warning
-    @(163.1150 mm, 147.1100 mm): Line on F.Silkscreen
-    @(162.6600 mm, 147.0578 mm): Line on F.Silkscreen
+** Found 95 DRC violations **
 [silk_overlap]: Silkscreen overlap
     Rule: board setup constraints silk; Severity: warning
     @(136.1100 mm, 143.3850 mm): Line on F.Silkscreen
     @(136.0578 mm, 143.8400 mm): Line on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; Severity: warning
-    @(136.1100 mm, 144.1100 mm): Line on F.Silkscreen
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; Severity: warning
-    @(136.1100 mm, 143.3850 mm): Line on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(162.6600 mm, 147.0578 mm): Line on F.Silkscreen
+    @(163.1150 mm, 147.1100 mm): Line on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; Severity: warning
     @(162.3900 mm, 147.1100 mm): Line on F.Silkscreen
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; Severity: warning
     @(163.1150 mm, 147.1100 mm): Line on F.Silkscreen
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; Severity: error
-    @(134.0000 mm, 142.0000 mm): Footprint U1
-    @(135.9500 mm, 144.2000 mm): Footprint C51
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; Severity: error
-    @(134.0000 mm, 142.0000 mm): Footprint U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(136.1100 mm, 144.1100 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(136.1100 mm, 143.3850 mm): Line on F.Silkscreen
+[lib_footprint_issues]: Footprint 'SMA_Amphenol_132289_EdgeMount' not found in library 'Connector_Coaxial'.
+    Local override; Severity: warning
+    @(173.0000 mm, 197.1600 mm): Footprint J2
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(178.0000 mm, 147.2000 mm): Footprint R406
+[lib_footprint_issues]: Footprint 'TestPoint_THTPad_D2.0mm_Drill1.0mm' not found in library 'TestPoint'.
+    Local override; Severity: warning
+    @(173.0000 mm, 170.0000 mm): Footprint H2
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(131.3000 mm, 124.3000 mm): Footprint C301
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(169.7500 mm, 145.2500 mm): Footprint C621
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(135.9500 mm, 135.7500 mm): Footprint C122
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(130.3000 mm, 139.6500 mm): Footprint C151
+[lib_footprint_issues]: Footprint 'MountingHole_3.2mm_M3' not found in library 'MountingHole'.
+    Local override; Severity: warning
+    @(168.0000 mm, 124.0000 mm): Footprint H4
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(139.2000 mm, 139.1500 mm): Footprint C101
+[lib_footprint_issues]: Footprint 'Arduino_Nano' not found in library 'Module'.
+    Local override; Severity: warning
+    @(142.4000 mm, 157.0000 mm): Footprint A1
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(162.3000 mm, 146.9500 mm): Footprint C551
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(171.4000 mm, 143.6000 mm): Footprint L632
+[lib_footprint_issues]: Footprint 'Crystal_SMD_3225-4Pin_3.2x2.5mm' not found in library 'Crystal'.
+    Local override; Severity: warning
+    @(138.6000 mm, 141.9000 mm): Footprint Y1
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(174.4000 mm, 146.6000 mm): Footprint C623
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
     @(136.9500 mm, 139.3000 mm): Footprint C111
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(123.3000 mm, 128.5000 mm): Footprint R402
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(161.9000 mm, 150.2000 mm): Footprint C581
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(152.2750 mm, 141.7000 mm): Footprint C8
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(134.2500 mm, 136.2500 mm): Footprint L122
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(138.6000 mm, 138.1500 mm): Footprint C124
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(168.3500 mm, 145.9500 mm): Footprint L621
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(169.7500 mm, 142.9000 mm): Footprint C631
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(177.6000 mm, 128.7000 mm): Footprint C321
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(125.5000 mm, 134.8000 mm): Footprint C311
+[lib_footprint_issues]: Footprint 'Crystal_SMD_3225-4Pin_3.2x2.5mm' not found in library 'Crystal'.
+    Local override; Severity: warning
+    @(164.6000 mm, 149.6000 mm): Footprint Y501
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(180.7000 mm, 196.0000 mm): Footprint R405
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(167.2000 mm, 147.9500 mm): Footprint C611
+[lib_footprint_issues]: Footprint 'PinHeader_1x15_P2.54mm_Vertical' not found in library 'Connector_PinHeader_2.54mm'.
+    Local override; Severity: warning
+    @(139.0000 mm, 157.0000 mm): Footprint J3
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(163.7500 mm, 140.3000 mm): Footprint C681
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(180.0000 mm, 187.3000 mm): Footprint R331
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(135.8000 mm, 145.1500 mm): Footprint C41
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(175.9000 mm, 144.9000 mm): Footprint L624
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(147.0000 mm, 152.0000 mm): Footprint R1
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(127.0000 mm, 135.2000 mm): Footprint R403
+[lib_footprint_issues]: Footprint 'R_0402_1005Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(165.6000 mm, 141.3000 mm): Footprint R671
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(139.2000 mm, 144.6000 mm): Footprint C81
+[lib_footprint_issues]: Footprint 'C_0805_2012Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(153.8000 mm, 147.0000 mm): Footprint C6
+[lib_footprint_issues]: Footprint 'SOT-23-5' not found in library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(150.0000 mm, 147.0000 mm): Footprint U2
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(131.8500 mm, 138.6500 mm): Footprint C131
+[lib_footprint_issues]: Footprint 'SMA_Amphenol_132289_EdgeMount' not found in library 'Connector_Coaxial'.
+    Local override; Severity: warning
+    @(127.0000 mm, 197.1600 mm): Footprint J1
+[lib_footprint_issues]: Footprint 'TestPoint_Pad_D1.5mm' not found in library 'TestPoint'.
+    Local override; Severity: warning
+    @(158.5000 mm, 140.0000 mm): Footprint TP1
+[lib_footprint_issues]: Footprint 'MountingHole_3.2mm_M3' not found in library 'MountingHole'.
+    Local override; Severity: warning
+    @(145.0000 mm, 124.0000 mm): Footprint H3
+[lib_footprint_issues]: Footprint 'L_0603_1608Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(102.0000 mm, 142.0000 mm): Footprint L402
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(177.6000 mm, 188.9000 mm): Footprint C331
+[lib_footprint_issues]: Footprint 'L_0603_1608Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(124.0000 mm, 132.5000 mm): Footprint L311
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(161.3500 mm, 146.8000 mm): Footprint C541
+[lib_footprint_issues]: Footprint 'L_0603_1608Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(180.0000 mm, 127.1000 mm): Footprint L321
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(180.7000 mm, 121.5000 mm): Footprint R404
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(136.4500 mm, 138.1500 mm): Footprint L121
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(134.2500 mm, 134.3500 mm): Footprint L123
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(134.9500 mm, 138.1500 mm): Footprint C121
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(152.2750 mm, 130.3000 mm): Footprint C7
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(135.9500 mm, 144.2000 mm): Footprint C51
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(177.8500 mm, 144.9000 mm): Footprint C625
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(180.0000 mm, 130.3000 mm): Footprint R321
+[lib_footprint_issues]: Footprint 'TSSOP-20_4.4x6.5mm_P0.65mm' not found in library 'Package_SO'.
+    Local override; Severity: warning
+    @(150.0000 mm, 136.0000 mm): Footprint U3
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(169.7500 mm, 147.6000 mm): Footprint L622
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(168.3500 mm, 144.5500 mm): Footprint L631
+[lib_footprint_issues]: Footprint 'TestPoint_THTPad_D2.0mm_Drill1.0mm' not found in library 'TestPoint'.
+    Local override; Severity: warning
+    @(127.0000 mm, 160.0000 mm): Footprint H1
+[lib_footprint_issues]: Footprint 'L_0603_1608Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(129.0000 mm, 122.6000 mm): Footprint L301
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(166.8500 mm, 141.3000 mm): Footprint C651
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(135.9500 mm, 133.8500 mm): Footprint C123
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(167.3500 mm, 150.2000 mm): Footprint C601
+[lib_footprint_issues]: Footprint 'Texas_RGP0020H_VQFN-20-1EP_4x4mm_P0.5mm_EP2.4x2.4mm' not found in library 'Package_DFN_QFN'.
+    Local override; Severity: warning
+    @(164.5000 mm, 145.0000 mm): Footprint U501
+[lib_footprint_issues]: Footprint 'R_0402_1005Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(130.3000 mm, 140.9000 mm): Footprint R171
+[lib_footprint_issues]: Footprint 'MountingHole_3.2mm_M3' not found in library 'MountingHole'.
+    Local override; Severity: warning
+    @(169.5000 mm, 188.0000 mm): Footprint H6
+[lib_footprint_issues]: Footprint 'PinHeader_1x15_P2.54mm_Vertical' not found in library 'Connector_PinHeader_2.54mm'.
+    Local override; Severity: warning
+    @(161.0400 mm, 157.0000 mm): Footprint J4
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(127.2000 mm, 132.5000 mm): Footprint R311
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(133.4500 mm, 132.5000 mm): Footprint C125
+[lib_footprint_issues]: Footprint 'C_0603_1608Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(145.2000 mm, 147.0000 mm): Footprint C5
+[lib_footprint_issues]: Footprint 'L_0603_1608Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(180.0000 mm, 190.5000 mm): Footprint L331
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(169.7500 mm, 149.6000 mm): Footprint C624
+[lib_footprint_issues]: Footprint 'LED_0603_1608Metric' not found in library 'LED_SMD'.
+    Local override; Severity: warning
+    @(144.0000 mm, 152.0000 mm): Footprint D1
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(171.4000 mm, 146.2000 mm): Footprint C622
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(129.0000 mm, 126.0000 mm): Footprint R301
+[lib_footprint_issues]: Footprint 'MountingHole_3.2mm_M3' not found in library 'MountingHole'.
+    Local override; Severity: warning
+    @(130.5000 mm, 188.0000 mm): Footprint H5
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(133.5500 mm, 138.1500 mm): Footprint L131
+[lib_footprint_issues]: Footprint 'Texas_RGP0020H_VQFN-20-1EP_4x4mm_P0.5mm_EP2.4x2.4mm' not found in library 'Package_DFN_QFN'.
+    Local override; Severity: warning
+    @(134.0000 mm, 142.0000 mm): Footprint U1
+[lib_footprint_issues]: Footprint 'C_0402_1005Metric' not found in library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(129.3000 mm, 142.7500 mm): Footprint C181
+[lib_footprint_issues]: Footprint 'R_0603_1608Metric' not found in library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(123.0000 mm, 121.3000 mm): Footprint R401
+[lib_footprint_issues]: Footprint 'L_0402_1005Metric' not found in library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(173.9000 mm, 144.9000 mm): Footprint L623
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(162.3000 mm, 146.9500 mm): Footprint C551
+    @(164.5000 mm, 145.0000 mm): Footprint U501
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(136.9500 mm, 139.3000 mm): Footprint C111
+    @(134.0000 mm, 142.0000 mm): Footprint U1
 [courtyards_overlap]: Courtyards overlap
     Rule: board setup constraints courtyard; Severity: error
     @(167.2000 mm, 147.9500 mm): Footprint C611
     @(164.5000 mm, 145.0000 mm): Footprint U501
 [courtyards_overlap]: Courtyards overlap
     Rule: board setup constraints courtyard; Severity: error
-    @(164.5000 mm, 145.0000 mm): Footprint U501
-    @(162.3000 mm, 146.9500 mm): Footprint C551
+    @(135.9500 mm, 144.2000 mm): Footprint C51
+    @(134.0000 mm, 142.0000 mm): Footprint U1
 [track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(197.0000 mm, 113.0000 mm): Track [FEED_433] on F.Cu, length 38.0000 mm
+    @(197.0000 mm, 113.0000 mm): Track [FEED_433] on F.Cu, length 52.0000 mm
 [track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(114.0000 mm, 137.5000 mm): Track [FEED_315] on F.Cu, length 50.0000 mm
+    @(114.0000 mm, 137.5000 mm): Track [ARM_315] on F.Cu, length 50.0000 mm
 [track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(191.0000 mm, 155.0000 mm): Track [FEED_868] on F.Cu, length 15.0000 mm
+    @(191.0000 mm, 150.0000 mm): Track [FEED_868] on F.Cu, length 10.0000 mm
 [track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(191.0000 mm, 162.0000 mm): Track [FEED_915] on F.Cu, length 16.0000 mm
+    @(191.0000 mm, 167.0000 mm): Track [FEED_915] on F.Cu, length 8.0000 mm
 
 ** Found 0 unconnected pads **
 

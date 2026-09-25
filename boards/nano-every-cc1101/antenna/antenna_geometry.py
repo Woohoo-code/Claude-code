@@ -28,7 +28,7 @@ PARAMS = {
     "433": {"tap": 3.0, "tail": 52.0},
     # 315 MHz is electrically small on this board (a quarter wave is 238 mm),
     # so its arm carries a series loading inductor near the feed end.
-    "315": {"tap": 4.0, "tail": 50.0, "load_nh": 56.0, "load_at": (2.0, 42.0)},
+    "315": {"tap": 4.0, "tail": 50.0, "load_nh": 47.0, "load_at": (2.0, 42.0)},
     "868": {"tap": 4.0, "tail": 10.0},
     "915": {"tap": 4.0, "tail": 8.0},
 }

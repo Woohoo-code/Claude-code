@@ -24,7 +24,10 @@ import. What was simulated is exactly what is on the Gerbers.
    feed-to-short spacing (`tap`) were iterated until the antenna resonates
    in its band with a feed impedance a mild match can handle. Each run's
    Zin(f) is kept in `results/<band>.csv`.
-3. **T-match** (`design_match.py`): from that Zin, pick an L-section
+3. **315 MHz loading coil** (`choose_load.py`): 2-port model with ports at
+   the feed and across the coil gap. Every E12 coil value (with its loss) is
+   evaluated analytically, Zin = Z11 - Z12 Z21 / (Z22 + Z_L).
+4. **T-match** (`design_match.py`): from that Zin, pick an L-section
    (selector S1 + shunt C + series S2) from standard E12/E24 0603 values
    that minimises the worst |S11| over +/-1 % of the band centre. The loss
    of realistic parts (inductor Q 40, capacitor Q 300) is included, and the
@@ -37,10 +40,12 @@ antenna alone and with its T-match).
 ## Honest limits
 
 - The 315 MHz quarter wave is 238 mm; the left strip allows about 210 mm
-  of meander, which is electrically short. It runs as a base-loaded
-  monopole (R402 short left open, loading coil = S2 of its T-match). It
-  matches, but a real loading coil's loss costs efficiency (see the match
-  loss column). For best 315 MHz range use the SMA/wire option (226 mm whip).
+  of meander, which is electrically short. Its arm carries a 47 nH loading
+  coil (L402), chosen from a 2-port model (feed + coil gap, `choose_load.py`)
+  because openEMS's lumped R-L element went unstable in this structure.
+  With coil Q ~ 40, coil + match pass about 40 % of the power to the
+  antenna (-4 dB). It works, but for best 315 MHz range use the SMA/wire
+  option (226 mm whip).
 - The model has no enclosure, hand or USB cable. Those detune printed
   antennas by a few percent. The T-match pads (and the 2 mm trim marks on
   each antenna's open end) are there to re-tune: cutting the end raises
