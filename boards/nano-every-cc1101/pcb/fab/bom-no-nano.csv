@@ -35,7 +35,6 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 34,1,U2,AP2112K-3.3,LDO 3.3 V 600 mA,Diodes Inc,AP2112K-3.3TRG1,C51118,SOT-23-5,SMT
 35,1,U3,TXS0108EPWR,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,,TSSOP-20,SMT
 36,2,Y1 Y501,26MHz,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,C70573,Crystal,SMT
-37,2,J1 J2,SMA,"SMA jack, edge mount, 50 ohm",Amphenol RF,132289,,SMA,assembler (edge-mount)
-38,1,J3,Breakout 1-15,Pin header 1x15 2.54 mm male (breakout),Generic,,,PinHeader_1x15,hand solder
-39,1,J4,Breakout 16-30,Pin header 1x15 2.54 mm male (breakout),Generic,,,PinHeader_1x15,hand solder
-40,2,S1 S2,1x15 F,Female header 1x15 2.54 mm (socket for the Nano Every),Generic,,,HDR-1x15-F,hand solder
+37,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,"assembler (SMD, board edge)"
+38,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,assembler (THT)
+39,2,S1 S2,1x15 F,Female header 1x15 2.54 mm (socket for the Nano Every),Generic,,,HDR-1x15-F,hand solder

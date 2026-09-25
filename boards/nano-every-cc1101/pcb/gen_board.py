@@ -44,6 +44,7 @@ from match import MATCH  # noqa: E402
 
 OUT = os.path.join(HERE, "nano_every_cc1101.kicad_pcb")
 FP_ROOT = os.environ.get("KICAD7_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
+LOCAL_LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
 FREEROUTING = os.environ.get("FREEROUTING_JAR", "/tmp/claude-0/freerouting.jar")
 OX, OY = 100.0, 100.0
 
@@ -183,7 +184,8 @@ class Builder:
         return self.nets[name]
 
     def fp(self, ref, lib, name, x, y, rot, value, padnets):
-        fp = pcbnew.FootprintLoad(os.path.join(FP_ROOT, lib + ".pretty"), name)
+        root = LOCAL_LIB if lib == "nano_every_cc1101" else FP_ROOT
+        fp = pcbnew.FootprintLoad(os.path.join(root, lib + ".pretty"), name)
         if fp is None:
             raise SystemExit(f"footprint {lib}:{name} not found under {FP_ROOT}")
         fp.SetFPIDAsString(f"{lib}:{name}")
@@ -466,7 +468,7 @@ def build_antennas(b: Builder):
     ext_pad = next(x.GetNumber() for x in b.fps["R403"].Pads() if x.GetNetname() == "EXT_A")
     node_pad = next(x.GetNumber() for x in b.fps["R403"].Pads() if x.GetNetname() == na)
     b.track(na, [node, ("R403", node_pad)], RF_SEL)
-    b.fp("J1", "Connector_Coaxial", "SMA_Amphenol_132289_EdgeMount", 27.0, BOARD - 2.84,
+    b.fp("J1", "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", 27.0, BOARD - 2.7,
          270, "SMA", {"1": "EXT_A", "2": "GND"})
     b.fp("H1", "TestPoint", "TestPoint_THTPad_D2.0mm_Drill1.0mm", 27.0, 60.0, 0, "wire",
          {"1": "EXT_A"})
@@ -506,7 +508,7 @@ def build_antennas(b: Builder):
     ext_pad = next(x.GetNumber() for x in b.fps["R406"].Pads() if x.GetNetname() == "EXT_B")
     node_pad = next(x.GetNumber() for x in b.fps["R406"].Pads() if x.GetNetname() == nb)
     b.track(nb, [(79.0, yb), (78.0, yb + 1.0), ("R406", node_pad)], RF_SEL)
-    b.fp("J2", "Connector_Coaxial", "SMA_Amphenol_132289_EdgeMount", 73.0, BOARD - 2.84,
+    b.fp("J2", "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", 73.0, BOARD - 2.7,
          270, "SMA", {"1": "EXT_B", "2": "GND"})
     b.fp("H2", "TestPoint", "TestPoint_THTPad_D2.0mm_Drill1.0mm", 73.0, 70.0, 0, "wire",
          {"1": "EXT_B"})

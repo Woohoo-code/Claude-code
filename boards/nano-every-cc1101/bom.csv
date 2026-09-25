@@ -19,9 +19,9 @@ C623,1,Capacitor 3.3 pF +/-0.1 pF C0G 0402,Murata,GRM1555C1H3R3BA01D,C_0402,
 C624,1,Capacitor 100 pF 5% C0G 0402,Murata,GRM1555C1H101JA01D,C_0402,
 C625,1,Capacitor 12 pF 5% C0G 0402,Murata,GRM1555C1H120JA01D,C_0402,
 D1,1,LED green 0603,Everlight,19-217/GHC-YR1S2/3T,LED_0603,LCSC C72043
-"J1, J2",2,"SMA jack, edge mount, 50 ohm",Amphenol RF,132289,SMA,
-J3,1,Pin header 1x15 2.54 mm male (breakout),Generic,,PinHeader_1x15,
-J4,1,Pin header 1x15 2.54 mm male (breakout),Generic,,PinHeader_1x15,
+"J1, J2",2,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,SMA,LCSC C496550
+J3,1,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,PinHeader_1x15,LCSC C7501269
+J4,1,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,PinHeader_1x15,LCSC C7501269
 "L121, L123, L131",3,Inductor 27 nH 5% multilayer 0402,Murata,LQG15HS27NJ02D,L_0402,
 L122,1,Inductor 22 nH 5% multilayer 0402,Murata,LQG15HS22NJ02D,L_0402,
 L301,1,Capacitor 5.1 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H5R1CA01D,L_0603,

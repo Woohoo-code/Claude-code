@@ -12,5 +12,6 @@
   (lib (name "Package_SO")(type "KiCad")(uri "${KICAD7_FOOTPRINT_DIR}/Package_SO.pretty")(options "")(descr ""))
   (lib (name "LED_SMD")(type "KiCad")(uri "${KICAD7_FOOTPRINT_DIR}/LED_SMD.pretty")(options "")(descr ""))
   (lib (name "TestPoint")(type "KiCad")(uri "${KICAD7_FOOTPRINT_DIR}/TestPoint.pretty")(options "")(descr ""))
+  (lib (name "nano_every_cc1101")(type "KiCad")(uri "${KIPRJMOD}/lib/nano_every_cc1101.pretty")(options "")(descr "local footprints"))
   (lib (name "MountingHole")(type "KiCad")(uri "${KICAD7_FOOTPRINT_DIR}/MountingHole.pretty")(options "")(descr ""))
 )

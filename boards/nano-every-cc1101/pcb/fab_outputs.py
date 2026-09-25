@@ -6,7 +6,7 @@
   ../bom.csv             grouped BOM in pcba-builder's format
   fab/bom-no-nano.csv    purchasing BOM: every fitted part except the Nano Every
   fab/bom-jlcpcb.csv     JLCPCB assembly BOM (fitted parts only)
-  fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts + SMA jacks)
+  fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts, SMA jacks, J3/J4)
 """
 
 import collections
@@ -68,10 +68,12 @@ CAT = {
     ("R_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("L_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("LED_0603", "green"): ("LED green 0603", "Everlight", "19-217/GHC-YR1S2/3T", "C72043"),
-    ("SMA", "SMA"): ("SMA jack, edge mount, 50 ohm", "Amphenol RF", "132289", ""),
+    ("SMA", "SMA"): ("SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board", "BAT WIRELESS",
+                     "BWSMA-KE-P001", "C496550"),
     ("Arduino_Nano", "Arduino Nano Every"): ("Arduino Nano Every (plugs into 2x 1x15 female "
                                              "2.54 mm headers)", "Arduino", "ABX00028", ""),
-    ("PinHeader_1x15", None): ("Pin header 1x15 2.54 mm male (breakout)", "Generic", "", ""),
+    ("PinHeader_1x15", None): ("Pin header 1x15 2.54 mm male, straight (breakout)", "Megastar",
+                               "ZX-PZ2.54-1-15PZZ", "C7501269"),
 }
 FP_KEYS = ["QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "TSSOP-20", "C_0603",
            "C_0805", "R_0603", "L_0603", "LED_0603", "SMA", "Arduino_Nano", "PinHeader_1x15"]
@@ -106,6 +108,19 @@ def lookup(fpname, value):
         return (f"Inductor {v} nH wire-wound 2 % 0603 (antenna tuning)", "Murata",
                 f"LQW18AN{int(x)}NG00D", "")
     raise SystemExit(f"no catalog entry for {fpname} / {value}")
+
+
+def bom_value(name, value):
+    """J3/J4 carry their pin range as value; buy them as one line."""
+    return "1x15 header" if "PinHeader" in name else value
+
+
+def centre(fp):
+    box = None
+    for pad in fp.Pads():
+        b = pad.GetBoundingBox()
+        box = b if box is None else box.Merge(b) or box
+    return box.GetCenter()
 
 
 def main():
@@ -171,9 +186,9 @@ def main():
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
         if "Arduino_Nano" in name:
             continue
-        how = ("hand solder" if "PinHeader" in name else
-               "assembler (edge-mount)" if "SMA" in name else "SMT")
-        buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, value,
+        how = ("assembler (THT)" if "PinHeader" in name else
+               "assembler (SMD, board edge)" if "SMA" in name else "SMT")
+        buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, bom_value(name, value),
                         how), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
         w = csv.writer(f)
@@ -188,9 +203,9 @@ def main():
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
-        if "Arduino_Nano" in name or "PinHeader" in name:
-            continue        # hand-fitted / optional through-hole parts (SMA jacks are assembled)
-        jl.setdefault((value, name, mpn, lcsc), []).append(fp.GetReference())
+        if "Arduino_Nano" in name:
+            continue        # the Nano plugs in; the SMA jacks and J3/J4 are assembled
+        jl.setdefault((bom_value(name, value), name, mpn, lcsc), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-jlcpcb.csv"), "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Comment", "Designator", "Footprint", "LCSC Part #", "MPN"])
@@ -204,7 +219,9 @@ def main():
         w.writerow(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])
         for fp in board.GetFootprints():
             if fp.GetReference() in placed:
-                p = fp.GetPosition()
+                # part centre (the pad bounding box), not the footprint origin:
+                # a pin header's origin is pin 1
+                p = centre(fp) if "PinHeader" in fp.GetFPIDAsString() else fp.GetPosition()
                 w.writerow([fp.GetReference(), f"{pcbnew.ToMM(p.x) - ox:.3f}mm",
                             f"{oy - pcbnew.ToMM(p.y):.3f}mm", "Top",
                             f"{fp.GetOrientationDegrees() % 360:.0f}"])
