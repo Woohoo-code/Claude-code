@@ -67,7 +67,9 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
    minimum drill), no special options.
 2. Assembly (optional): `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv`
    (fitted parts only; check the rotations in the preview). Every line has
-   an LCSC number, including the SMA jacks J1/J2 (BAT WIRELESS
+   an in-stock LCSC number (checked 2026-09-25; out-of-stock design parts
+   were swapped for same-value/package C0G/NP0 equivalents, see `JLC` in
+   `pcb/fab_outputs.py`), including the SMA jacks J1/J2 (BAT WIRELESS
    BWSMA-KE-P001, C496550, edge mount) and the J3/J4 1x15 headers
    (C7501269, through-hole assembly).
 3. By hand: Nano sockets (2x 1x15 female).
@@ -80,7 +82,7 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
 | `pcb/gen_board.py` | Generates the whole board (placement, RF routing, antennas, autorouting, pours) |
 | `pcb/fab_outputs.py`, `pcb/make_fab.sh` | DRC, netlist, BOMs, CPL, Gerbers, renders |
 | `pcb/fab/nano_every_cc1101-fab-package.zip` | Everything to order: Gerber zip + both BOMs + CPL |
-| `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every (40 lines, MPNs, LCSC where known) |
+| `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every (MPNs and LCSC numbers, all JLCPCB-stocked) |
 | `pcb/fab/` | Gerbers + drills (zip), JLCPCB assembly BOM + CPL |
 | `pcb/drc_report.txt` | KiCad DRC report |
 | `antenna/` | Antenna geometry, openEMS model, match designer, results |

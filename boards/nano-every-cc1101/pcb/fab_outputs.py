@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.join(HERE, "..", "antenna"))
 from match import MATCH  # noqa: E402
 
 # (footprint name, value) -> (description, manufacturer, MPN, LCSC)
-# LCSC numbers are only given where checked; JLCPCB matches the rest by MPN.
+# LCSC numbers and stock substitutes are applied from JLC below.
 CAT = {
     ("QFN", "CC1101RGPR"): ("Sub-1 GHz RF transceiver, 300-928 MHz", "Texas Instruments",
                             "CC1101RGPR", ""),
@@ -79,12 +79,56 @@ FP_KEYS = ["QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "TSSOP-20
            "C_0805", "R_0603", "L_0603", "LED_0603", "SMA", "Arduino_Nano", "PinHeader_1x15"]
 NOT_PARTS = ("MountingHole", "TestPoint")
 
+# JLCPCB/LCSC stock check (2026-09-25): LCSC number for every design MPN, or an
+# in-stock equivalent (same value, package, C0G/NP0, tolerance) where the
+# design part was out of stock. design MPN -> (manufacturer, MPN, LCSC)
+JLC = {
+    "CC1101RGPR": ("Texas Instruments", "CC1101RGPR", "C29953"),
+    "RK73H1ETTP5602F": ("KOA Speer", "RK73H1ETTP5602F", "C71703"),
+    "GRM155R71C104KA88D": ("Murata", "GRM155R71C104KA88D", "C71629"),
+    "GRM1555C1H270JA01D": ("YAGEO", "CC0402JRNPO9BN270", "C107002"),        # sub
+    "GRM1555C1H3R9CA01D": ("Murata", "GRM1555C1H3R9CA01D", "C85940"),
+    "GRM1555C1H8R2CA01D": ("Murata", "GRM1555C1H8R2CA01D", "C76984"),
+    "GRM1555C1H5R6CA01D": ("Murata", "GRM1555C1H5R6CA01D", "C85941"),
+    "GRM1555C1H221JA01D": ("Murata", "GRM1555C1H221JA01D", "C71693"),
+    "GRM1555C1H1R0BA01D": ("Murata", "GRM1555C1H1R0BA01D", "C76952"),
+    "GRM1555C1H1R5BA01D": ("Murata", "GRM1555C1H1R5BA01D", "C76957"),
+    "GRM1555C1H3R3BA01D": ("YAGEO", "CC0402BRNPO9BN3R3", "C327287"),        # sub
+    "GRM1555C1H101JA01D": ("Murata", "GRM1555C1H101JA01D", "C77177"),
+    "GRM1555C1H120JA01D": ("Murata", "GRM1555C1H120JA01D", "C76948"),
+    "GRM1885C1H1R1CA01D": ("Murata", "GQM1875C2E1R1BB12D", "C3863168"),     # sub, high-Q
+    "GRM1885C1H100JA01D": ("Murata", "GRM1885C1H100JA01D", "C84498"),
+    "GRM1885C1H3R6CA01D": ("YAGEO", "CC0603BRNPO9BN3R6", "C519106"),        # sub
+    "GRM1885C1H2R7CA01D": ("YAGEO", "CC0603CRNPO9BN2R7", "C282247"),        # sub
+    "GRM1885C1H5R1CA01D": ("Murata", "GRM1885C1H5R1CA01D", "C6955114"),
+    "GRM1885C1H6R2CA01D": ("YAGEO", "CC0603BRNPO9BN6R2", "C519113"),        # sub
+    "GRM1885C1H510JA01D": ("YAGEO", "CC0603JRNPO9BN510", "C107051"),        # sub
+    "LQG15HS27NJ02D": ("Murata", "LQG15HS27NJ02D", "C12669"),
+    "LQG15HS22NJ02D": ("Murata", "LQG15HS22NJ02D", "C12670"),
+    "LQW18AN39NG00D": ("Murata", "LQW18AN39NG00D", "C86134"),
+    "LQW15AN12NJ00D": ("Murata", "LQW15AN12NJ00D", "C82920"),
+    "LQW15AN18NJ00D": ("Murata", "LQW15AN18NJ00D", "C82917"),
+    "TXS0108EPWR": ("Texas Instruments", "TXS0108EPWR", "C17206"),
+    "19-217/GHC-YR1S2/3T": ("Everlight", "19-217/GHC-YR1S2/6T", "C2986059"),  # sub (reel)
+}
+
+
+def jlc(entry):
+    d, mfr, mpn, lcsc = entry
+    if mpn in JLC:
+        mfr, mpn, lcsc = JLC[mpn]
+    return d, mfr, mpn, lcsc
+
 
 def fp_key(fpname):
     return next((k for k in FP_KEYS if k in fpname), None)
 
 
 def lookup(fpname, value):
+    return jlc(_lookup(fpname, value))
+
+
+def _lookup(fpname, value):
     k = fp_key(fpname)
     if (k, value) in CAT:
         return CAT[(k, value)]
