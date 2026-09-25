@@ -76,7 +76,9 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
 | `pcb/nano_every_cc1101.kicad_pcb` / `.kicad_pro` | The routed KiCad 7 board |
 | `pcb/gen_board.py` | Generates the whole board (placement, RF routing, antennas, autorouting, pours) |
 | `pcb/fab_outputs.py`, `pcb/make_fab.sh` | DRC, netlist, BOMs, CPL, Gerbers, renders |
-| `pcb/fab/` | Gerbers + drills (zip), JLCPCB BOM + CPL |
+| `pcb/fab/nano_every_cc1101-fab-package.zip` | Everything to order: Gerber zip + both BOMs + CPL |
+| `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every (40 lines, MPNs, LCSC where known) |
+| `pcb/fab/` | Gerbers + drills (zip), JLCPCB assembly BOM + CPL |
 | `pcb/drc_report.txt` | KiCad DRC report |
 | `antenna/` | Antenna geometry, openEMS model, match designer, results |
 | `bom.csv`, `netlist.md` | Generated from the board |

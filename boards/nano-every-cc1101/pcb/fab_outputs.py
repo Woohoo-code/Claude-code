@@ -4,6 +4,7 @@
   drc_report.txt         KiCad DRC
   ../netlist.md          every net and the pads on it, from the routed board
   ../bom.csv             grouped BOM in pcba-builder's format
+  fab/bom-no-nano.csv    purchasing BOM: every fitted part except the Nano Every
   fab/bom-jlcpcb.csv     JLCPCB assembly BOM (fitted parts only)
   fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts only)
 """
@@ -164,6 +165,26 @@ def main():
                     "HDR-1x15-F", "optional; or solder the Nano directly"])
 
     os.makedirs(os.path.join(HERE, "fab"), exist_ok=True)
+
+    # Purchasing BOM: every fitted part except the Arduino Nano Every itself
+    buy = collections.OrderedDict()
+    for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
+        if "Arduino_Nano" in name:
+            continue
+        hand = "PinHeader" in name or "SMA" in name
+        buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, value,
+                        "hand solder" if hand else "SMT"), []).append(fp.GetReference())
+    with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Item", "Qty", "RefDes", "Value", "Description", "Manufacturer", "MPN",
+                    "LCSC", "Package", "Fitting"])
+        rows = sorted(buy.items(), key=lambda kv: (kv[0][6], key(kv[1][0] + ".0")))
+        for i, ((d, mfr, mpn, lcsc, pkg, value, how), refs) in enumerate(rows, 1):
+            w.writerow([i, len(refs), " ".join(refs), value, d, mfr, mpn, lcsc, pkg, how])
+        w.writerow([len(rows) + 1, 2, "S1 S2", "1x15 F", "Female header 1x15 2.54 mm "
+                    "(socket for the Nano Every)", "Generic", "", "", "HDR-1x15-F",
+                    "hand solder"])
+
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
         if "Arduino_Nano" in name or "PinHeader" in name or "SMA" in name:

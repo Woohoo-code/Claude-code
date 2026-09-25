@@ -19,6 +19,9 @@ kicad-cli pcb export drill -o fab/gerbers/ --format excellon --excellon-separate
   --drill-origin plot --generate-map --map-format gerberx2 "$PCB" >/dev/null
 rm -f fab/nano_every_cc1101-gerbers.zip
 (cd fab/gerbers && zip -q -r ../nano_every_cc1101-gerbers.zip .)
+rm -f fab/nano_every_cc1101-fab-package.zip
+(cd fab && zip -q -j nano_every_cc1101-fab-package.zip nano_every_cc1101-gerbers.zip \
+  bom-no-nano.csv bom-jlcpcb.csv cpl-jlcpcb.csv)
 
 mkdir -p ../img
 kicad-cli pcb export svg -o ../img/top.svg -l F.Cu,F.Silkscreen,Edge.Cuts \
