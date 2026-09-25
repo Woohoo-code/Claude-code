@@ -51,13 +51,13 @@ frequency: L = 71 250 / f mm (table at the end of `tuning.md`).
 
 **315 MHz BOM swap for radio A** (SWRS061I Table 21): C121/C131 6.8 pF,
 C122 12 pF, C123 6.8 pF, L121/L123/L131 33 nH, L122 18 nH; C124/C125
-stay 220 pF.
+stay 330 pF.
 
 ## Bring-up
 
 1. Before power, meter: 5V to GND and 3V3 to GND not shorted;
    DCOUPL_A (C51) and DCOUPL_B (C551) not shorted to 3V3.
-2. Plug in the Nano (USB toward the board edge). The green LED = 3.3 V OK.
+2. Plug in the Nano (USB toward the board edge). The red LED = 3.3 V OK.
    Radio current at idle ~1.7 mA each.
 3. DCOUPL on C51 / C551: ~1.8 V.
 4. SPI check for each radio (CSn low -> wait for MISO low -> SRES 0x30 ->

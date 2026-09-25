@@ -40,7 +40,8 @@ CAT = {
                           "GRM1555C1H8R2CA01D", ""),
     ("C_0402", "5.6pF"): ("Capacitor 5.6 pF +/-0.25 pF C0G 0402", "Murata",
                           "GRM1555C1H5R6CA01D", ""),
-    ("C_0402", "220pF"): ("Capacitor 220 pF 5% C0G 0402", "Murata", "GRM1555C1H221JA01D", ""),
+    ("C_0402", "330pF"): ("Capacitor 330 pF 5% C0G 0402 (DC block / RF bypass)", "Samsung",
+                          "CL05C331JB5NNNC", "C13533"),
     ("C_0402", "1.0pF"): ("Capacitor 1.0 pF +/-0.1 pF C0G 0402", "Murata",
                           "GRM1555C1H1R0BA01D", ""),
     ("C_0402", "1.5pF"): ("Capacitor 1.5 pF +/-0.1 pF C0G 0402", "Murata",
@@ -67,7 +68,7 @@ CAT = {
     ("R_0603", "1k"): ("Resistor 1 kohm 1% 0603", "UNI-ROYAL", "0603WAF1001T5E", "C21190"),
     ("R_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("L_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
-    ("LED_0603", "green"): ("LED green 0603", "Everlight", "19-217/GHC-YR1S2/3T", "C72043"),
+    ("LED_0603", "red"): ("LED red 0603", "Hubei KENTO Elec", "KT-0603R", "C2286"),
     ("SMA", "SMA"): ("SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board", "BAT WIRELESS",
                      "BWSMA-KE-P001", "C496550"),
     ("Arduino_Nano", "Arduino Nano Every"): ("Arduino Nano Every (plugs into 2x 1x15 female "
@@ -81,23 +82,24 @@ NOT_PARTS = ("MountingHole", "TestPoint")
 
 # JLCPCB/LCSC stock check (2026-09-25): LCSC number for every design MPN, or an
 # in-stock equivalent (same value, package, C0G/NP0, tolerance) where the
-# design part was out of stock. design MPN -> (manufacturer, MPN, LCSC)
+# design part was out of stock. "basic"/"fee-free" = JLCPCB basic or preferred
+# extended part (no per-part-type loading fee); the RF match values, RF
+# inductors and ICs have no fee-free equivalent and stay extended. design MPN -> (manufacturer, MPN, LCSC)
 JLC = {
     "CC1101RGPR": ("Texas Instruments", "CC1101RGPR", "C29953"),
-    "RK73H1ETTP5602F": ("KOA Speer", "RK73H1ETTP5602F", "C71703"),
-    "GRM155R71C104KA88D": ("Murata", "GRM155R71C104KA88D", "C71629"),
-    "GRM1555C1H270JA01D": ("YAGEO", "CC0402JRNPO9BN270", "C107002"),        # sub
+    "RK73H1ETTP5602F": ("UNI-ROYAL", "0402WGF5602TCE", "C25796"),          # fee-free
+    "GRM155R71C104KA88D": ("Samsung", "CL05B104KO5NNNC", "C1525"),           # basic
+    "GRM1555C1H270JA01D": ("FH", "0402CG270J500NT", "C1557"),               # fee-free
     "GRM1555C1H3R9CA01D": ("Murata", "GRM1555C1H3R9CA01D", "C85940"),
     "GRM1555C1H8R2CA01D": ("Murata", "GRM1555C1H8R2CA01D", "C76984"),
     "GRM1555C1H5R6CA01D": ("Murata", "GRM1555C1H5R6CA01D", "C85941"),
-    "GRM1555C1H221JA01D": ("Murata", "GRM1555C1H221JA01D", "C71693"),
     "GRM1555C1H1R0BA01D": ("Murata", "GRM1555C1H1R0BA01D", "C76952"),
     "GRM1555C1H1R5BA01D": ("Murata", "GRM1555C1H1R5BA01D", "C76957"),
     "GRM1555C1H3R3BA01D": ("YAGEO", "CC0402BRNPO9BN3R3", "C327287"),        # sub
-    "GRM1555C1H101JA01D": ("Murata", "GRM1555C1H101JA01D", "C77177"),
-    "GRM1555C1H120JA01D": ("Murata", "GRM1555C1H120JA01D", "C76948"),
+    "GRM1555C1H101JA01D": ("FH", "0402CG101J500NT", "C1546"),               # basic
+    "GRM1555C1H120JA01D": ("FH", "0402CG120J500NT", "C1547"),               # basic
     "GRM1885C1H1R1CA01D": ("Murata", "GQM1875C2E1R1BB12D", "C3863168"),     # sub, high-Q
-    "GRM1885C1H100JA01D": ("Murata", "GRM1885C1H100JA01D", "C84498"),
+    "GRM1885C1H100JA01D": ("Samsung", "CL10C100JB8NNNC", "C1634"),          # basic
     "GRM1885C1H3R6CA01D": ("YAGEO", "CC0603BRNPO9BN3R6", "C519106"),        # sub
     "GRM1885C1H2R7CA01D": ("YAGEO", "CC0603CRNPO9BN2R7", "C282247"),        # sub
     "GRM1885C1H5R1CA01D": ("Murata", "GRM1885C1H5R1CA01D", "C6955114"),
@@ -109,7 +111,6 @@ JLC = {
     "LQW15AN12NJ00D": ("Murata", "LQW15AN12NJ00D", "C82920"),
     "LQW15AN18NJ00D": ("Murata", "LQW15AN18NJ00D", "C82917"),
     "TXS0108EPWR": ("Texas Instruments", "TXS0108EPWR", "C17206"),
-    "19-217/GHC-YR1S2/3T": ("Everlight", "19-217/GHC-YR1S2/6T", "C2986059"),  # sub (reel)
 }
 
 

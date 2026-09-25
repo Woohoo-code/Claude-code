@@ -49,7 +49,7 @@ Radio B's GDO2 goes to test pad TP1 (3.3 V, not shifted).
           L121 ── C124 ── GND
 ```
 Fitted (433 MHz): C121/C131 3.9 pF, L121/L123/L131 27 nH, L122 22 nH,
-C122 8.2 pF, C123 5.6 pF, C124/C125 220 pF.
+C122 8.2 pF, C123 5.6 pF, C124/C125 330 pF (DC block / RF bypass; TI uses 220 pF, 330 pF C0G is a JLCPCB fee-free part).
 315 MHz: C121/C131 6.8 pF, C122 12 pF, C123 6.8 pF, L121/L123/L131 33 nH, L122 18 nH.
 
 ## 5. Radio B RF: 868/915 MHz balun + filter (SWRS061I Fig. 11)

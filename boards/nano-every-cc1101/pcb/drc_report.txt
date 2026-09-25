@@ -1,5 +1,5 @@
 ** Drc report for /home/user/Claude-code/boards/nano-every-cc1101/pcb/nano_every_cc1101.kicad_pcb **
-** Created on 2026-09-25 18:50:34 **
+** Created on 2026-09-25 19:01:36 **
 
 ** Found 15 DRC violations **
 [silk_overlap]: Silkscreen overlap
@@ -32,12 +32,12 @@
     @(167.2000 mm, 147.9500 mm): Footprint C611
 [courtyards_overlap]: Courtyards overlap
     Rule: board setup constraints courtyard; Severity: error
-    @(135.9500 mm, 144.2000 mm): Footprint C51
+    @(136.9500 mm, 139.3000 mm): Footprint C111
     @(134.0000 mm, 142.0000 mm): Footprint U1
 [courtyards_overlap]: Courtyards overlap
     Rule: board setup constraints courtyard; Severity: error
-    @(136.9500 mm, 139.3000 mm): Footprint C111
     @(134.0000 mm, 142.0000 mm): Footprint U1
+    @(135.9500 mm, 144.2000 mm): Footprint C51
 [track_dangling]: Track has unconnected end
     Local override; Severity: warning
     @(133.5000 mm, 143.8875 mm): Track [SO] on F.Cu, length 1.5125 mm
