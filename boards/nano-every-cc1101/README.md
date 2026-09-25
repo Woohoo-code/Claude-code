@@ -54,6 +54,14 @@ Radio B: CSn D9, GDO0 D4, GDO2 on test pad TP1 (3.3 V).
 With RadioLib, e.g. `CC1101 radioA = new Module(10, 2, RADIOLIB_NC, 3);`
 and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
 
+## Firmware
+
+`firmware/dual_cc1101/dual_cc1101.ino` runs both radios at once with
+RadioLib (receive on both by interrupt, send / retune from the serial
+monitor). Compiled for the Nano Every (arduino:megaavr 1.8.8, RadioLib
+7.7.1): **25.5 KB of 48 KB flash (51 %), 1.3 KB of 6 KB RAM (20 %)**, so
+there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
+
 ## Ordering (print ready)
 
 1. PCB: upload `pcb/fab/nano_every_cc1101-gerbers.zip`. 2 layers, 1.6 mm,
@@ -79,6 +87,7 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
 | `pcb/fab/nano_every_cc1101-fab-package.zip` | Everything to order: Gerber zip + both BOMs + CPL |
 | `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every |
 | `pcb/drc_report.txt` | KiCad DRC report |
+| `firmware/dual_cc1101/` | Example sketch: both radios with RadioLib |
 | `antenna/` | v1 printed-antenna study (openEMS), kept for reference |
 | `bom.csv`, `netlist.md` | Generated from the board |
 | `schematic_blocks.md`, `design_notes.md`, `assembly_instructions.md` | Design docs, bring-up |
