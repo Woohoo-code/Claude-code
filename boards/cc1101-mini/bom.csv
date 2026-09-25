@@ -1,0 +1,15 @@
+RefDes,Qty,Description,Manufacturer,MPN,Package,Notes
+U1,1,"Sub-1 GHz RF transceiver, 4x4 mm QFN-20 (RGP)",Texas Instruments,CC1101RGPR,QFN-20,"Exposed pad to GND with 5 tented vias"
+Y1,1,"Crystal, 26 MHz, +/-10 ppm, CL 16 pF, 3.2x2.5 mm",YXC,X322526MQB4SI,3225-4,"LCSC C70573. CL must be 16 pF for 27 pF load caps; change C81/C101 if you change CL"
+R171,1,"Resistor, 56 kohm, 1%, 1/16 W",KOA Speer,RK73H1ETTP5602F,0402,"RBIAS reference; must be 1%"
+"C81, C101",2,"Capacitor, 27 pF, 5%, C0G, 50 V",Murata,GRM1555C1H270JA01D,0402,Crystal load capacitors
+"C41, C51, C111, C151, C181",5,"Capacitor, 100 nF, 10%, X7R, 16 V",Murata,GRM155R71C104KA88D,0402,"Decoupling (C51 = DCOUPL 1.8 V core regulator)"
+C1,1,"Capacitor, 1 uF, 10%, X5R, 10 V",Murata,GRM155R61A105KE15D,0402,Bulk decoupling at header
+"C121, C131",2,"Capacitor, 3.9 pF, +/-0.25 pF, C0G",Murata,GRM1555C1H3R9CA01D,0402,Balun
+C122,1,"Capacitor, 8.2 pF, +/-0.25 pF, C0G",Murata,GRM1555C1H8R2CA01D,0402,"LC filter (datasheet allows +/-0.5 pF)"
+C123,1,"Capacitor, 5.6 pF, +/-0.25 pF, C0G",Murata,GRM1555C1H5R6CA01D,0402,"LC filter (datasheet allows +/-0.5 pF)"
+"C124, C125",2,"Capacitor, 220 pF, 5%, C0G",Murata,GRM1555C1H221JA01D,0402,"C124 balun DC block, C125 antenna DC block"
+"L121, L123, L131",3,"Inductor, 27 nH, 5%, multilayer",Murata,LQG15HS27NJ02D,0402,Balun (L121/L131) and LC filter (L123)
+L122,1,"Inductor, 22 nH, 5%, multilayer",Murata,LQG15HS22NJ02D,0402,LC filter
+J1,1,"Coaxial connector, U.FL, vertical SMT",Hirose,U.FL-R-SMT-1(10),U.FL,50 ohm antenna port
+J2,1,"Pin header, 1x8, 1.27 mm pitch, straight",Generic,,PinHeader-1x08-1.27mm,"Through-hole; optional (wires can be soldered to the pads)"
