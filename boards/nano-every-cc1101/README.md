@@ -20,7 +20,7 @@ The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pad
 | Radio B (U501) | CC1101, 868/915 MHz front end |
 | Antennas | 4 printed, tunable across 300-348 / 387-464 / 779-928 MHz; SMA J1/J2; wire holes H1/H2 |
 | Host | Arduino Nano Every in sockets, USB at the board edge, every pin re-broken-out on J3/J4 |
-| Glue | TXS0108E 5 V <-> 3.3 V level shifter, AP2112K 3.3 V LDO, power LED |
+| Glue | TXS0108E 5 V <-> 3.3 V level shifter, XC6206 3.3 V LDO, power LED |
 
 **Every CC1101 frequency is covered by a printed antenna.** Each antenna
 has a tuning part in its arm and a T-match at its feed, and
@@ -29,10 +29,10 @@ every MHz (simulated with openEMS, full board, all four antennas present):
 
 | CC1101 band | Antenna | Worst S11 when tuned | Power reaching the antenna | Default fit (-10 dB) |
 |---|---|---|---|---|
-| 300-348 MHz | 315 (radio A, 315 MHz BOM) | -15.2 dB | 41-65 % | 313.7-316.3 MHz |
-| 387-464 MHz | 433 (radio A) | -18.1 dB | 76-99 % | 431.3-436.5 MHz |
-| 779-880 MHz | 868 (radio B) | -21.3 dB | 97-99 % | 843-883 MHz |
-| 870-928 MHz | 915 (radio B) | -21.6 dB | 97-99 % | 902-1044 MHz |
+| 300-348 MHz | 315 (radio A, 315 MHz BOM) | -15.2 dB | 41-65 % | 313.1-315.8 MHz |
+| 387-464 MHz | 433 (radio A) | -18.1 dB | 76-99 % | 431.5-436.7 MHz |
+| 779-880 MHz | 868 (radio B) | -21.3 dB | 97-99 % | 835-880 MHz |
+| 870-928 MHz | 915 (radio B) | -21.6 dB | 97-99 % | 900-1030 MHz |
 
 The SMA jacks and wire holes add an external whip at any frequency
 (L = 71 250 / f mm, table in `tuning.md`).

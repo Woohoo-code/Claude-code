@@ -533,18 +533,17 @@ def build_host(b: Builder):
         if NANO_PINS[31 - k][0] != "GND":
             b.track(NANO_PINS[31 - k][0], [("A1", str(31 - k)), ("J4", str(k))], 0.4)
 
-    ux, uy = 50.0, 47.0                     # 3.3 V LDO
-    b.fp("U2", "Package_TO_SOT_SMD", "SOT-23-5", ux, uy, 0, "AP2112K-3.3",
-         {"1": "+5V", "2": "GND", "3": "+5V", "5": "3V3"})
+    # 3.3 V LDO: XC6206P332MR (SOT-23: 1 GND, 2 VOUT, 3 VIN; 200 mA, JLCPCB
+    # basic part). Rotated 180 deg so VIN faces C5 and VOUT faces C6.
+    ux, uy = 50.0, 47.0
+    b.fp("U2", "Package_TO_SOT_SMD", "SOT-23", ux, uy, 180, "XC6206P332MR",
+         {"1": "GND", "2": "3V3", "3": "+5V"})
     b.fp("C5", *C0603, ux - 4.8, uy, 90, "1uF", {"1": "GND", "2": "+5V"})
     b.fp("C6", "Capacitor_SMD", "C_0805_2012Metric", ux + 3.8, uy, 90, "10uF",
          {"1": "GND", "2": "3V3"})
-    y1, y3 = b.P("U2", "1")[1], b.P("U2", "3")[1]
-    b.track("+5V", [("U2", "1"), (ux - 3.0, y1), (ux - 3.0, y3), ("U2", "3")], PWR)
-    b.track("+5V", [(ux - 3.0, y1), ("C5", "2")], PWR)
-    b.track("3V3", [("U2", "5"), (b.P("C6", "2")[0], b.P("U2", "5")[1]), ("C6", "2")], PWR)
-    b.track("GND", [("U2", "2"), (ux, uy)], TRACK)
-    b.gnd_vias.append((ux, uy, VIA_D, VIA_DRILL))
+    b.track("+5V", [("U2", "3"), (ux - 3.0, uy), ("C5", "2")], PWR)
+    b.track("3V3", [("U2", "2"), (b.P("C6", "2")[0], b.P("U2", "2")[1]), ("C6", "2")], PWR)
+    b.track("GND", [("U2", "1"), ("C6", "1")], PWR)     # C6's ground via serves both
     b.gnd_stub("C5", "1", 0, 1.3)
     b.gnd_stub("C6", "1", 0, 1.3)
 

@@ -17,7 +17,8 @@ Writes:
   results/tuning_<band>.csv   every MHz: part values, S11, efficiency
   results/tuning.md           condensed table (every 5 MHz + ISM centres)
   results/tuning.png          achievable S11 / efficiency across each range
-  match.py                    the board's default fit (DEFAULT_MHZ below)
+  match.py                    the board's default fit (DEFAULT_MHZ below), from
+                              JLCPCB fee-free 0603 values only (CHEAP_*)
 """
 
 import csv
@@ -39,6 +40,10 @@ CAPS = sorted({round(v * 10 ** d, 2) for v in E24 for d in (-1, 0, 1, 2)
                if 0.5 <= v * 10 ** d <= 100})                # pF
 INDS = sorted({round(v * 10 ** d, 1) for v in E12 for d in (0, 1, 2)
                if 1.0 <= v * 10 ** d <= 270})                # nH
+# JLCPCB basic / preferred-extended 0603 parts (no per-part-type fee): the
+# board's default fits use only these, the per-MHz tables use full E24/E12.
+CHEAP_CAPS = [3.0, 4.7, 6.0, 6.8, 8.2, 10, 12, 15, 18, 20, 22, 27, 30, 33, 47, 56, 68, 100]
+CHEAP_INDS = [39.0]   # LQW18AN39NG00D wire-wound (extended; the fee-free 68 nH is Q~12)
 DEFAULT_MHZ = {"433": 433.92, "315": 315.0, "868": 868.3, "915": 915.0}
 DEFAULT_FITTED = {"433", "868"}          # radio A ships on 433, radio B on 868
 REFS = {"433": ("R301", "C301", "L301", "L401"), "315": ("R311", "C311", "L311", "L402"),
@@ -75,19 +80,19 @@ def nearest(values, v):
     return [values[j] for j in range(max(0, i - 1), min(len(values), i + 2))]
 
 
-def series_parts(x, w):
+def series_parts(x, w, caps=CAPS, inds=INDS):
     """Candidate parts realising series reactance x at angular frequency w."""
     if abs(x) < 3:
         return [("0R", 0)]
     if x > 0:
-        return [("L", v) for v in nearest(INDS, x / w * 1e9)]
-    return [("C", v) for v in nearest(CAPS, 1 / (w * -x) * 1e12)]
+        return [("L", v) for v in nearest(inds, x / w * 1e9)] + [("0R", 0)]
+    return [("C", v) for v in nearest(caps, 1 / (w * -x) * 1e12)] + [("0R", 0)]
 
 
-def shunt_parts(b, w):
+def shunt_parts(b, w, caps=CAPS, inds=INDS):
     if b > 0:
-        return [("C", v) for v in nearest(CAPS, b / w * 1e12)]
-    return [("L", v) for v in nearest(INDS, 1 / (w * -b) * 1e9)]
+        return [("C", v) for v in nearest(caps, b / w * 1e12)]
+    return [("L", v) for v in nearest(inds, 1 / (w * -b) * 1e9)]
 
 
 def evaluate(zl, f, s1, sh, s2):
@@ -104,7 +109,7 @@ def evaluate(zl, f, s1, sh, s2):
     return g, float(eff)
 
 
-def l_match(zl, f):
+def l_match(zl, f, caps=CAPS, inds=INDS):
     """Analytic L-sections (both orientations), snapped to real parts."""
     w = 2 * np.pi * f
     r, x = zl.real, zl.imag
@@ -113,8 +118,8 @@ def l_match(zl, f):
         for sgn in (1, -1):
             xp = sgn * math.sqrt(Z0 * r - r * r)
             b = -(1 / complex(r, xp)).imag
-            for s2 in series_parts(xp - x, w):
-                for sh in shunt_parts(b, w):
+            for s2 in series_parts(xp - x, w, caps, inds):
+                for sh in shunt_parts(b, w, caps, inds):
                     cands.append((("0R", 0), sh, s2))
     y = 1 / zl
     g = y.real
@@ -122,18 +127,18 @@ def l_match(zl, f):
         for sgn in (1, -1):
             bt = sgn * math.sqrt(g / Z0 - g * g)
             x1 = -(1 / complex(g, bt)).imag
-            for sh in shunt_parts(bt - y.imag, w):
-                for s1 in series_parts(x1, w):
+            for sh in shunt_parts(bt - y.imag, w, caps, inds):
+                for s1 in series_parts(x1, w, caps, inds):
                     cands.append((s1, sh, ("0R", 0)))
     return cands
 
 
-def best_at(z, f_all, ft):
+def best_at(z, f_all, ft, caps=CAPS, inds=INDS):
     i = int(np.argmin(np.abs(f_all - ft)))
     f = f_all[i]
     z11, z12, z21, z22 = (v[i] for v in z)
     best = None
-    tune_opts = [("0R", 0)] + [("L", v) for v in INDS] + [("C", v) for v in CAPS]
+    tune_opts = [("0R", 0)] + [("L", v) for v in inds] + [("C", v) for v in caps]
     for tp in tune_opts:
         zt = zpart(tp, f)
         zin = z11 - z12 * z21 / (z22 + zt)
@@ -143,7 +148,7 @@ def best_at(z, f_all, ft):
         eff_t = 1 - abs(i2) ** 2 * zt.real / zin.real
         if eff_t <= 0:
             continue
-        for s1, sh, s2 in l_match(zin, f):
+        for s1, sh, s2 in l_match(zin, f, caps, inds):
             gm, eff_m = evaluate(zin, f, s1, sh, s2)
             total = eff_t * eff_m * (1 - gm ** 2)
             simpler = 0.005 * sum(p[0] == "0R" for p in (tp, s1, sh, s2))
@@ -226,7 +231,12 @@ def main():
              'plus "tune" = the series element in the antenna arm. Other frequencies:',
              'see results/tuning.md.', '"""', "", "MATCH = {"]
     for n in NAMES:
-        r = min(table[n], key=lambda r: abs(r["f"] / 1e6 - DEFAULT_MHZ[n]))
+        f_all, z = load_z(n)
+        r = best_at(z, f_all, DEFAULT_MHZ[n] * 1e6, CHEAP_CAPS, CHEAP_INDS)
+        full = min(table[n], key=lambda r: abs(r["f"] / 1e6 - DEFAULT_MHZ[n]))
+        print(f"default {n} @ {DEFAULT_MHZ[n]} MHz, fee-free parts: S11 {r['s11']:.1f} dB, "
+              f"{r['eff'] * 100:.0f} % (any E24 part: {full['s11']:.1f} dB, "
+              f"{full['eff'] * 100:.0f} %)")
         s1 = label(r["s1"])
         sel = s1 if n in DEFAULT_FITTED else f"DNP ({s1} to use)"
         lines.append(f'    "{n}": {{"refs": {REFS[n][:3]!r}, "tune_ref": "{REFS[n][3]}", '

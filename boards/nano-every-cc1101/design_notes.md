@@ -62,8 +62,8 @@ at 300-348 MHz and 76-99 % elsewhere.
 
 - The Nano Every is 5 V logic; the CC1101 is 3.6 V max. A TXS0108E
   (auto-direction, 3.3 V A side, 5 V B side) sits between them.
-- AP2112K-3.3 LDO from the Nano's 5 V pin: 600 mA available, two radios
-  in TX draw ~60 mA.
+- XC6206P332MR 3.3 V LDO (JLCPCB basic part) from the Nano's 5 V pin:
+  200 mA available, two radios in TX draw ~60 mA.
 
 ## Autorouting
 

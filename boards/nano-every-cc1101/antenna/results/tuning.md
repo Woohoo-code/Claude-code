@@ -23,8 +23,8 @@ losses (radiation efficiency of the antenna itself not included).
 | 435 | 43pF | 0R | 2.2pF | 5.6pF | -43.7 dB | 99 % |
 | 440 | 91pF | 0R | 47nH | 0R | -29.5 dB | 98 % |
 | 445 | 43pF | 0R | 39nH | 0R | -32.1 dB | 98 % |
-| 450 | 27pF | 0R | 47nH | 1.8nH | -29.7 dB | 97 % |
-| 455 | 20pF | 0R | 39nH | 1.5nH | -28.7 dB | 97 % |
+| 450 | 27pF | 0R | 39nH | 0R | -30.3 dB | 97 % |
+| 455 | 20pF | 0R | 33nH | 0R | -32.3 dB | 97 % |
 | 460 | 56pF | 0R | 27pF | 0R | -38.7 dB | 96 % |
 
 ## 315 MHz antenna: 300-348 MHz

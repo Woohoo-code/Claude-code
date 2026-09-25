@@ -6,8 +6,8 @@ see results/tuning.md.
 """
 
 MATCH = {
-    "433": {"refs": ('R301', 'C301', 'L301'), "tune_ref": "L401", "s1": '0R', "c": '1.1pF', "s2": '5.1pF', "tune": '51pF', "f_mhz": 433.92, "s11_db": -64.0, "eff_pct": 99},
-    "315": {"refs": ('R311', 'C311', 'L311'), "tune_ref": "L402", "s1": 'DNP (2.7pF to use)', "c": '10pF', "s2": '0R', "tune": '39nH', "f_mhz": 315.0, "s11_db": -34.4, "eff_pct": 41},
-    "868": {"refs": ('R321', 'C321', 'L321'), "tune_ref": "L404", "s1": '0R', "c": '3.6pF', "s2": '6.2pF', "tune": '0R', "f_mhz": 868.3, "s11_db": -41.7, "eff_pct": 99},
-    "915": {"refs": ('R331', 'C331', 'L331'), "tune_ref": "L405", "s1": 'DNP (0R to use)', "c": '2.7pF', "s2": '2.7pF', "tune": '0R', "f_mhz": 915.0, "s11_db": -25.8, "eff_pct": 99},
+    "433": {"refs": ('R301', 'C301', 'L301'), "tune_ref": "L401", "s1": '0R', "c": '3pF', "s2": '6pF', "tune": '47pF', "f_mhz": 433.92, "s11_db": -35.6, "eff_pct": 99},
+    "315": {"refs": ('R311', 'C311', 'L311'), "tune_ref": "L402", "s1": 'DNP (0R to use)', "c": '47pF', "s2": '18pF', "tune": '39nH', "f_mhz": 315.0, "s11_db": -15.6, "eff_pct": 42},
+    "868": {"refs": ('R321', 'C321', 'L321'), "tune_ref": "L404", "s1": '0R', "c": '3pF', "s2": '6pF', "tune": '0R', "f_mhz": 868.3, "s11_db": -21.8, "eff_pct": 99},
+    "915": {"refs": ('R331', 'C331', 'L331'), "tune_ref": "L405", "s1": 'DNP (0R to use)', "c": '3pF', "s2": '3pF', "tune": '0R', "f_mhz": 915.0, "s11_db": -16.9, "eff_pct": 99},
 }

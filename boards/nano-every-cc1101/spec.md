@@ -19,7 +19,7 @@ with an antenna for every band.
 - 2x CC1101RGPR: radio A with the 315/433 MHz front end (433 fitted),
   radio B with the 868/915 MHz front end
 - TXS0108E 3.3 V <-> 5 V level shifter (the Nano Every is 5 V logic)
-- AP2112K-3.3 LDO
+- XC6206P332MR 3.3 V LDO (200 mA)
 
 ## Constraints
 - **2 layers** (cheapest), 1.6 mm FR4, up to 100 x 100 mm

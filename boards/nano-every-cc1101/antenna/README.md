@@ -50,9 +50,10 @@ Each antenna has two sets of 0603 pads:
    |S11| < -10 dB. It writes the tables, the plot and `match.py` (the
    board's default fit: 433.92, 315, 868.3 and 915 MHz).
 
-Default fits and their -10 dB bands: 433: 431.3-436.5 MHz,
-315: 313.7-316.3 MHz, 868: 843-883 MHz, 915: 902-1044 MHz. Each covers
-its ISM band.
+The default fits use only JLCPCB basic / preferred 0603 parts (tune.py
+`CHEAP_CAPS`, plus the 39 nH wire-wound on the 315 MHz arm). Their -10 dB
+bands: 433: 431.5-436.7 MHz, 315: 313.1-315.8 MHz, 868: 835-880 MHz,
+915: 900-1030 MHz. Each covers its ISM band.
 
 ## Limits
 

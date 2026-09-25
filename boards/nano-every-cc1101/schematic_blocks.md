@@ -7,7 +7,7 @@ is in `netlist.md`, generated from the routed board.
 
 ```
  Nano +5V (pin 27) ──┬── C5 1u ── GND
-                     ├── U2 AP2112K-3.3  VIN, EN ── VOUT ──┬── 3V3 ── C6 10u ── GND
+                     ├── U2 XC6206P332MR VIN ────── VOUT ──┬── 3V3 ── C6 10u ── GND
                      │                                     └── R1 1k ── D1 LED ── GND
                      └── U3 VCCB (+ C8 100n)
  3V3 ── U3 VCCA, OE (+ C7 100n), both CC1101s

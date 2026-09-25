@@ -42,11 +42,11 @@ CAT = {
                           "GRM1555C1H5R6CA01D", ""),
     ("C_0402", "330pF"): ("Capacitor 330 pF 5% C0G 0402 (DC block / RF bypass)", "Samsung",
                           "CL05C331JB5NNNC", "C13533"),
-    ("C_0402", "1.0pF"): ("Capacitor 1.0 pF +/-0.1 pF C0G 0402", "Murata",
+    ("C_0402", "1.0pF"): ("Capacitor 1.0 pF +/-0.25 pF C0G 0402", "Murata",
                           "GRM1555C1H1R0BA01D", ""),
-    ("C_0402", "1.5pF"): ("Capacitor 1.5 pF +/-0.1 pF C0G 0402", "Murata",
+    ("C_0402", "1.5pF"): ("Capacitor 1.5 pF +/-0.25 pF C0G 0402", "Murata",
                           "GRM1555C1H1R5BA01D", ""),
-    ("C_0402", "3.3pF"): ("Capacitor 3.3 pF +/-0.1 pF C0G 0402", "Murata",
+    ("C_0402", "3.3pF"): ("Capacitor 3.3 pF +/-0.25 pF C0G 0402", "Murata",
                           "GRM1555C1H3R3BA01D", ""),
     ("C_0402", "100pF"): ("Capacitor 100 pF 5% C0G 0402", "Murata", "GRM1555C1H101JA01D", ""),
     ("C_0402", "12pF"): ("Capacitor 12 pF 5% C0G 0402", "Murata", "GRM1555C1H120JA01D", ""),
@@ -56,6 +56,7 @@ CAT = {
                          "LQW15AN12NJ00D", ""),
     ("L_0402", "18nH"): ("Inductor 18 nH 5% wire-wound 0402 (868/915 balun)", "Murata",
                          "LQW15AN18NJ00D", ""),
+    ("SOT-23", "XC6206P332MR"): ("LDO 3.3 V 200 mA", "Torex", "XC6206P332MR-G", "C5446"),
     ("SOT-23-5", "AP2112K-3.3"): ("LDO 3.3 V 600 mA", "Diodes Inc", "AP2112K-3.3TRG1",
                                   "C51118"),
     ("TSSOP-20", "TXS0108EPWR"): ("8-bit auto-direction level translator 3.3 V <-> 5 V",
@@ -76,7 +77,7 @@ CAT = {
     ("PinHeader_1x15", None): ("Pin header 1x15 2.54 mm male, straight (breakout)", "Megastar",
                                "ZX-PZ2.54-1-15PZZ", "C7501269"),
 }
-FP_KEYS = ["QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "TSSOP-20", "C_0603",
+FP_KEYS = ["QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "SOT-23", "TSSOP-20", "C_0603",
            "C_0805", "R_0603", "L_0603", "LED_0603", "SMA", "Arduino_Nano", "PinHeader_1x15"]
 NOT_PARTS = ("MountingHole", "TestPoint")
 
@@ -93,9 +94,9 @@ JLC = {
     "GRM1555C1H3R9CA01D": ("Murata", "GRM1555C1H3R9CA01D", "C85940"),
     "GRM1555C1H8R2CA01D": ("Murata", "GRM1555C1H8R2CA01D", "C76984"),
     "GRM1555C1H5R6CA01D": ("Murata", "GRM1555C1H5R6CA01D", "C85941"),
-    "GRM1555C1H1R0BA01D": ("Murata", "GRM1555C1H1R0BA01D", "C76952"),
-    "GRM1555C1H1R5BA01D": ("Murata", "GRM1555C1H1R5BA01D", "C76957"),
-    "GRM1555C1H3R3BA01D": ("YAGEO", "CC0402BRNPO9BN3R3", "C327287"),        # sub
+    "GRM1555C1H1R0BA01D": ("FH", "0402CG1R0C500NT", "C1550"),               # fee-free, +/-0.25 pF
+    "GRM1555C1H1R5BA01D": ("FH", "0402CG1R5C500NT", "C1552"),               # fee-free, +/-0.25 pF
+    "GRM1555C1H3R3BA01D": ("FH", "0402CG3R3C500NT", "C1565"),               # fee-free, +/-0.25 pF
     "GRM1555C1H101JA01D": ("FH", "0402CG101J500NT", "C1546"),               # basic
     "GRM1555C1H120JA01D": ("FH", "0402CG120J500NT", "C1547"),               # basic
     "GRM1885C1H1R1CA01D": ("Murata", "GQM1875C2E1R1BB12D", "C3863168"),     # sub, high-Q
@@ -121,6 +122,30 @@ def jlc(entry):
     return d, mfr, mpn, lcsc
 
 
+# Antenna match / tuning defaults (antenna/match.py) are chosen from these
+# JLCPCB basic / preferred-extended 0603 parts (tune.py CHEAP_CAPS).
+CHEAP_0603 = {
+    "3pF": ("Capacitor 3 pF +/-0.25 pF C0G 50 V 0603 (antenna match)", "FH", "0603CG3R0C500NT", "C46219"),
+    "4.7pF": ("Capacitor 4.7 pF +/-0.25 pF C0G 50 V 0603 (antenna match)", "FH", "0603CG4R7C500NT", "C1669"),
+    "6pF": ("Capacitor 6 pF +/-0.25 pF C0G 50 V 0603 (antenna match)", "FH", "0603CG6R0C500NT", "C37474"),
+    "6.8pF": ("Capacitor 6.8 pF +/-0.25 pF C0G 50 V 0603 (antenna match)", "FH", "0603CG6R8C500NT", "C1679"),
+    "8.2pF": ("Capacitor 8.2 pF +/-0.25 pF C0G 50 V 0603 (antenna match)", "FH", "0603CG8R2C500NT", "C1685"),
+    "10pF": ("Capacitor 10 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C100JB8NNNC", "C1634"),
+    "12pF": ("Capacitor 12 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C120JB8NNNC", "C38523"),
+    "15pF": ("Capacitor 15 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C150JB8NNNC", "C1644"),
+    "18pF": ("Capacitor 18 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C180JB8NNNC", "C1647"),
+    "20pF": ("Capacitor 20 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C200JB8NNNC", "C1648"),
+    "22pF": ("Capacitor 22 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C220JB8NNNC", "C1653"),
+    "27pF": ("Capacitor 27 pF 5% C0G 50 V 0603 (antenna match)", "YAGEO", "CC0603JRNPO9BN270", "C107045"),
+    "30pF": ("Capacitor 30 pF 5% C0G 50 V 0603 (antenna match)", "FH", "0603CG300J500NT", "C1658"),
+    "33pF": ("Capacitor 33 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C330JB8NNNC", "C1663"),
+    "47pF": ("Capacitor 47 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C470JB8NNNC", "C1671"),
+    "56pF": ("Capacitor 56 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C560JB8NNNC", "C39148"),
+    "68pF": ("Capacitor 68 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C680JB8NNNC", "C28262"),
+    "100pF": ("Capacitor 100 pF 5% C0G 50 V 0603 (antenna match)", "Samsung", "CL10C101JB8NNNC", "C14858"),
+}
+
+
 def fp_key(fpname):
     return next((k for k in FP_KEYS if k in fpname), None)
 
@@ -135,6 +160,8 @@ def _lookup(fpname, value):
         return CAT[(k, value)]
     if (k, None) in CAT:
         return CAT[(k, None)]
+    if k in ("C_0603", "L_0603") and value in CHEAP_0603:
+        return CHEAP_0603[value]
     m = re.match(r"([\d.]+)(pF|nH)$", value)
     if m and k in ("C_0603", "L_0603", "R_0603"):
         v, u = m.groups()
