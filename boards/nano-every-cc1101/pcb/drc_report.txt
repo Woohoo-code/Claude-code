@@ -1,0 +1,58 @@
+** Drc report for /home/user/Claude-code/boards/nano-every-cc1101/pcb/nano_every_cc1101.kicad_pcb **
+** Created on 2026-09-25 01:18:53 **
+
+** Found 14 DRC violations **
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(163.1150 mm, 147.1100 mm): Line on F.Silkscreen
+    @(162.6600 mm, 147.0578 mm): Line on F.Silkscreen
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(136.1100 mm, 143.3850 mm): Line on F.Silkscreen
+    @(136.0578 mm, 143.8400 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(136.1100 mm, 144.1100 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(136.1100 mm, 143.3850 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(162.3900 mm, 147.1100 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(163.1150 mm, 147.1100 mm): Line on F.Silkscreen
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(134.0000 mm, 142.0000 mm): Footprint U1
+    @(135.9500 mm, 144.2000 mm): Footprint C51
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(134.0000 mm, 142.0000 mm): Footprint U1
+    @(136.9500 mm, 139.3000 mm): Footprint C111
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(167.2000 mm, 147.9500 mm): Footprint C611
+    @(164.5000 mm, 145.0000 mm): Footprint U501
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(164.5000 mm, 145.0000 mm): Footprint U501
+    @(162.3000 mm, 146.9500 mm): Footprint C551
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(197.0000 mm, 113.0000 mm): Track [FEED_433] on F.Cu, length 38.0000 mm
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(114.0000 mm, 137.5000 mm): Track [FEED_315] on F.Cu, length 50.0000 mm
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(191.0000 mm, 155.0000 mm): Track [FEED_868] on F.Cu, length 15.0000 mm
+[track_dangling]: Track has unconnected end
+    Local override; Severity: warning
+    @(191.0000 mm, 162.0000 mm): Track [FEED_915] on F.Cu, length 16.0000 mm
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **

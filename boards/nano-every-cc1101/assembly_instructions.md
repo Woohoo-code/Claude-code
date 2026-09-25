@@ -1,0 +1,68 @@
+# Assembly and bring-up
+
+## Ordering (JLCPCB or similar)
+
+1. **PCB:** upload `pcb/fab/nano_every_cc1101-gerbers.zip`. 2 layers, 1.6 mm,
+   100 x 100 mm, 1 oz copper, any colour, HASL or ENIG (ENIG is kinder to
+   the 0.5 mm-pitch QFNs). Nothing non-standard: 0.15 mm min track/space,
+   0.25 mm min drill.
+2. **Assembly (optional):** upload `pcb/fab/bom-jlcpcb.csv` and
+   `pcb/fab/cpl-jlcpcb.csv`, top side only. They contain only the parts to
+   fit (not-fitted selectors and match pads are left out). In the placement
+   preview, **check the rotation of U1, U501, U2, U3, Y1 and Y501**:
+   KiCad and JLCPCB disagree on some footprint zero angles.
+3. By hand afterwards: 2x 1x15 female headers (Nano socket), optional 1x15
+   male breakout headers J3/J4, optional SMA jacks J1/J2.
+
+## Reflow (if assembling yourself)
+
+Stencil 0.12 mm. Lead-free SAC305 profile: 150-200 C soak 60-120 s,
+60-90 s above 217 C, 245 C peak (260 C max, the CC1101 is MSL3: bake at
+125 C for 24 h if the bag was open more than a week). Use the footprints'
+split paste on the QFN exposed pads.
+
+## Antenna selection (fit exactly one selector per radio)
+
+| Radio | Antenna | Fit | Leave empty |
+|---|---|---|---|
+| A (U1) | 433 MHz PCB (default) | R301 | R311, R403 |
+| A (U1) | 315 MHz PCB | R311 **and swap to the 315 MHz BOM** (below) | R301, R403 |
+| A (U1) | SMA J1 or wire in H1 | R403 (0 ohm) | R301, R311 |
+| B (U501) | 868 MHz PCB (default) | R321 | R331, R406 |
+| B (U501) | 915 MHz PCB | R331 | R321, R406 |
+| B (U501) | SMA J2 or wire in H2 | R406 (0 ohm) | R321, R331 |
+
+Keep the inverted-F shorting jumpers R401 (433), R402 (315), R404 (868) and
+R405 (915) fitted (0 ohm) at all times. The 315 MHz antenna also has a
+series loading inductor, L402, in its arm; it is always fitted.
+Quarter-wave wire whip lengths (from the H1/H2 hole): 164 mm at 433 MHz,
+226 mm at 315 MHz, 82 mm at 868 MHz, 78 mm at 915 MHz.
+
+**315 MHz BOM swap for radio A** (SWRS061I Table 21): C121/C131 6.8 pF,
+C122 12 pF, C123 6.8 pF, L121/L123/L131 33 nH, L122 18 nH; C124/C125
+stay 220 pF.
+
+## Bring-up
+
+1. Before power, meter: 5V to GND and 3V3 to GND not shorted;
+   DCOUPL_A (C51) and DCOUPL_B (C551) not shorted to 3V3.
+2. Plug in the Nano (USB toward the board edge). The green LED = 3.3 V OK.
+   Radio current at idle ~1.7 mA each.
+3. DCOUPL on C51 / C551: ~1.8 V.
+4. SPI check for each radio (CSn low -> wait for MISO low -> SRES 0x30 ->
+   read PARTNUM 0xF0 = 0x00, VERSION 0xF1 = 0x14):
+   radio A CSn = D10, radio B CSn = D9. Keep the unused radio's CSn high.
+5. GDO0 defaults to CLK_XOSC/192 (~135 kHz): radio A on D2, radio B on D4.
+6. RF: TI SmartRF Studio settings; PATABLE for +10 dBm is 0xC2 (315),
+   0xC0 (433), 0xC2 (868), 0xC0 (915) (SWRS061I Table 39), giving
+   ~+10 dBm. With a nanoVNA you can check each printed antenna at its
+   selector pads and fine-tune the T-match (see antenna/README.md).
+
+## Pin map (Nano Every)
+
+| Function | Nano pin |
+|---|---|
+| SCK / MOSI / MISO (shared) | D13 / D11 / D12 |
+| Radio A CSn / GDO0 / GDO2 | D10 / D2 / D3 |
+| Radio B CSn / GDO0 | D9 / D4 |
+| Radio B GDO2 | test pad TP1 (3.3 V level, not level-shifted) |
