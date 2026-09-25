@@ -24,14 +24,19 @@ TRACE_W = 1.5
 FEED_GAP = 1.0
 
 # Tuned in openEMS (see antenna/README.md and antenna/results/).
+# Every arm has a series tuning element (0603) at `tune_at`: 0 ohm, an
+# inductor (lowers the frequency) or a capacitor (raises it). Its value for
+# any frequency comes from tune.py (results/tuning_*.md); the 315 MHz
+# antenna always needs one (it is electrically short: lambda/4 = 238 mm).
 PARAMS = {
-    "433": {"tap": 3.0, "tail": 52.0},
-    # 315 MHz is electrically small on this board (a quarter wave is 238 mm),
-    # so its arm carries a series loading inductor near the feed end.
-    "315": {"tap": 4.0, "tail": 50.0, "load_nh": 47.0, "load_at": (2.0, 42.0)},
-    "868": {"tap": 4.0, "tail": 10.0},
-    "915": {"tap": 4.0, "tail": 8.0},
+    "433": {"tap": 3.0, "tail": 52.0, "tune_at": (40.0, 3.0)},
+    "315": {"tap": 4.0, "tail": 50.0, "tune_at": (2.0, 42.0)},
+    "868": {"tap": 4.0, "tail": 10.0, "tune_at": (97.0, 30.0)},
+    "915": {"tap": 4.0, "tail": 8.0, "tune_at": (97.0, 85.0)},
 }
+# CC1101 bands each antenna tunes across (MHz); radio A covers 300-348 with
+# the 315 MHz front-end BOM and 387-464 with the 433 MHz BOM.
+TUNE_RANGE = {"315": (300, 348), "433": (387, 464), "868": (779, 880), "915": (870, 928)}
 FREQ_MHZ = {"433": 433.92, "315": 315.0, "868": 868.3, "915": 915.0}
 
 
@@ -98,20 +103,16 @@ def split_at(pl, pt, gap=1.0):
 
 
 def load(name):
-    """dict(at, axis, nh) for antennas with a loading inductor, else None."""
+    """dict(at, axis) of the antenna's series tuning element."""
     p = PARAMS[name]
-    if "load_nh" not in p:
-        return None
-    _, axis = split_at(antenna(name)["arm"], p["load_at"])
-    return {"at": p["load_at"], "axis": axis, "nh": p["load_nh"]}
+    _, axis = split_at(antenna(name)["arm"], p["tune_at"])
+    return {"at": p["tune_at"], "axis": axis}
 
 
 def arm_parts(name, **kw):
-    """The arm as drawn: split around the loading inductor if there is one."""
+    """The arm as drawn: split around the tuning element."""
     a = antenna(name, **kw)
-    if "load_nh" not in PARAMS[name]:
-        return [a["arm"]]
-    return split_at(a["arm"], PARAMS[name]["load_at"])[0]
+    return split_at(a["arm"], PARAMS[name]["tune_at"])[0]
 
 
 def shorted(name):

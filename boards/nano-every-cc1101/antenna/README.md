@@ -1,66 +1,79 @@
-# Printed antennas: design and tuning
+# Printed antennas: every CC1101 frequency
 
-Four printed antennas share the board's three copper-free edges:
+The CC1101 tunes continuously over **300-348, 387-464 and 779-928 MHz**.
+The board has four printed antennas, and each can be tuned to any
+frequency in its range with 0603 parts. Values for every MHz are in
+[`results/tuning.md`](results/tuning.md) (every 5 MHz) and
+`results/tuning_<band>.csv` (every 1 MHz).
 
-| Antenna | Radio | Where | Type | Notes |
-|---|---|---|---|---|
-| 433 MHz | A | top strip, 100 x 20 mm | inverted-F | fitted by default (R301) |
-| 315 MHz | A | left strip, 22 x 80 mm | meandered monopole, base-loaded | needs the 315 MHz BOM on radio A |
-| 868 MHz | B | right strip, upper | inverted-F | fitted by default (R321); covers 863-870 MHz |
-| 915 MHz | B | right strip, lower | inverted-F (mirrored) | covers 902-928 MHz |
+| Antenna | Radio | Where | Tunes across | Worst S11 when tuned | Power reaching the antenna |
+|---|---|---|---|---|---|
+| 315 | A (315 MHz front-end BOM) | left strip, meandered inverted-F | 300-348 MHz | -15.2 dB | 41-65 % |
+| 433 | A (433 MHz BOM, fitted) | top strip, inverted-F | 387-464 MHz | -18.1 dB | 76-99 % |
+| 868 | B | right strip, upper, inverted-F | 779-880 MHz | -21.3 dB | 97-99 % |
+| 915 | B | right strip, lower, inverted-F | 870-928 MHz | -21.6 dB | 97-99 % |
 
-The exact geometry (trace centrelines, 1.5 mm wide) is in
-`antenna_geometry.py`, which both the simulation and the board generator
-import. What was simulated is exactly what is on the Gerbers.
+"Power reaching the antenna" is what's left after the losses of the tuning
+and match parts (inductor Q 40, capacitor Q 300). The antenna's own
+radiation efficiency comes on top of that.
+
+![coverage](results/tuning.png)
+
+On top of the printed antennas, each radio has an SMA jack and a wire hole
+for an external whip. Its length for any frequency is in the last table of
+`results/tuning.md` (L = 71 250 / f mm).
+
+## How one antenna covers a whole band
+
+Each antenna has two sets of 0603 pads:
+
+- a **tuning element** in series with its arm (L401 = 433, L402 = 315,
+  L404 = 868, L405 = 915): an inductor makes the arm electrically longer
+  (lower frequency), a capacitor makes it shorter (higher), 0 ohm leaves it
+  as drawn;
+- a **T-match** at its feed: selector S1 (series), shunt, S2 (series).
 
 ## Method
 
-1. **Full-wave model** (`sim_antenna.py`, openEMS FDTD): the whole
-   100 x 100 x 1.6 mm FR4 board (er 4.4, tan d 0.02), both ground layers
-   and **all four antennas** in every run. One antenna is driven by a 50 ohm
-   port at its feed; the others' feeds are left open, as they are on the
-   board when their selector isn't fitted. PML boundaries, run down to -30 dB.
-2. **Length tuning**: each arm's last segment (`tail`) and the inverted-F
-   feed-to-short spacing (`tap`) were iterated until the antenna resonates
-   in its band with a feed impedance a mild match can handle. Each run's
-   Zin(f) is kept in `results/<band>.csv`.
-3. **315 MHz loading coil** (`choose_load.py`): 2-port model with ports at
-   the feed and across the coil gap. Every E12 coil value (with its loss) is
-   evaluated analytically, Zin = Z11 - Z12 Z21 / (Z22 + Z_L).
-4. **T-match** (`design_match.py`): from that Zin, pick an L-section
-   (selector S1 + shunt C + series S2) from standard E12/E24 0603 values
-   that minimises the worst |S11| over +/-1 % of the band centre. The loss
-   of realistic parts (inductor Q 40, capacitor Q 300) is included, and the
-   power lost in the match is reported. The values are written to
-   `match.py`, which the board generator uses for the part values.
+1. **Geometry** (`antenna_geometry.py`) is shared by the model and the
+   board generator, so the Gerbers carry exactly the simulated copper.
+2. **Full-wave model** (`sim_antenna.py --2port`, openEMS FDTD): the whole
+   100 x 100 x 1.6 mm FR4 board (er 4.4, tan d 0.02), both ground layers and
+   all four antennas. Port 1 is at the antenna's feed and port 2 across its
+   tuning-element gap; the neighbours' tuning elements are modelled as
+   0 ohm. This gives the 2-port Z-parameters `results/<band>_z2port.csv`.
+3. **Tuning** (`tune.py`): for any tuning part Z_t the feed impedance is
+   exactly Zin = Z11 - Z12 Z21 / (Z22 + Z_t). For every MHz the script tries
+   0 ohm, every E12 inductor and every E24 capacitor. For each it designs
+   the L-section match analytically, snaps it to real part values with their
+   losses, and keeps the combination that delivers the most power with
+   |S11| < -10 dB. It writes the tables, the plot and `match.py` (the
+   board's default fit: 433.92, 315, 868.3 and 915 MHz).
 
-Results: `results/summary.md` (table) and `results/match.png` (S11 of each
-antenna alone and with its T-match).
+Default fits and their -10 dB bands: 433: 431.3-436.5 MHz,
+315: 313.7-316.3 MHz, 868: 843-883 MHz, 915: 902-1044 MHz. Each covers
+its ISM band.
 
-## Honest limits
+## Limits
 
-- The 315 MHz quarter wave is 238 mm; the left strip allows about 210 mm
-  of meander, which is electrically short. Its arm carries a 47 nH loading
-  coil (L402), chosen from a 2-port model (feed + coil gap, `choose_load.py`)
-  because openEMS's lumped R-L element went unstable in this structure.
-  With coil Q ~ 40, coil + match pass about 40 % of the power to the
-  antenna (-4 dB). It works, but for best 315 MHz range use the SMA/wire
-  option (226 mm whip).
-- The model has no enclosure, hand or USB cable. Those detune printed
-  antennas by a few percent. The T-match pads (and the 2 mm trim marks on
-  each antenna's open end) are there to re-tune: cutting the end raises
-  the frequency.
-- Simulated, not yet measured. Check with a nanoVNA at the selector pad:
-  disconnect the radio side by lifting S1's node-side pad, or measure
-  through the SMA option.
+- **315 MHz is electrically small** here (a quarter wave is 238 mm), so its
+  tuning inductor carries real current and loss: 41-65 % of the power
+  reaches the antenna. For the longest range at 300-348 MHz use the SMA or
+  wire whip.
+- Each tuned setting is narrowband (a few MHz at 315/433, tens of MHz at
+  868/915). Moving to a new frequency means changing the parts on that
+  row of the table.
+- The model has no enclosure, hand or cable, which detune a printed
+  antenna by a few percent. The trim marks on each antenna's open end and a
+  nanoVNA let you correct it: cutting the end raises the frequency.
+- Simulated, not yet measured.
 
 ## Re-running
 
 ```
 # openEMS + CSXCAD Python bindings (https://openems.de)
-python sim_antenna.py 433            # uses PARAMS from antenna_geometry.py
-python sim_antenna.py 433 3 52 out/  # try tap=3 mm, tail=52 mm
-cp out/s11.csv results/433.csv
-python design_match.py               # rewrites match.py + results/
-cd ../pcb && ./make_fab.sh           # regenerate the board with new values
+python sim_antenna.py --2port 433 3 52 out/433   # name, tap, tail, outdir
+cp out/433/z2port.csv results/433_z2port.csv      # (likewise 315/868/915)
+python tune.py                                     # tables, plot, match.py
+cd ../pcb && ./make_fab.sh                         # board + Gerbers with new defaults
 ```

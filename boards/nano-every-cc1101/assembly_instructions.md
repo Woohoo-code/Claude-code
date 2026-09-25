@@ -21,25 +21,30 @@ Stencil 0.12 mm. Lead-free SAC305 profile: 150-200 C soak 60-120 s,
 125 C for 24 h if the bag was open more than a week). Use the footprints'
 split paste on the QFN exposed pads.
 
-## Antenna selection (fit exactly one selector per radio)
+## Antenna selection and tuning (fit exactly one selector per radio)
 
-The shunt and series match parts of every branch (C/L3x1) are fitted
-by default, so switching antenna only means moving the selector.
+As shipped: radio A on the 433 MHz printed antenna at 433.92 MHz, radio B
+on the 868 MHz printed antenna at 868.3 MHz.
 
-| Radio | Antenna | Fit | Leave empty |
+| Radio | Antenna | Selector to fit | Leave empty |
 |---|---|---|---|
-| A (U1) | 433 MHz PCB (default) | R301 = 16 pF | R311, R403 |
-| A (U1) | 315 MHz PCB | R311 = 0 ohm **and swap to the 315 MHz BOM** (below) | R301, R403 |
+| A (U1) | 433 MHz PCB (387-464 MHz) | R301 | R311, R403 |
+| A (U1) | 315 MHz PCB (300-348 MHz) | R311 **and swap to the 315 MHz BOM** (below) | R301, R403 |
 | A (U1) | SMA J1 or wire in H1 | R403 (0 ohm) | R301, R311 |
-| B (U501) | 868 MHz PCB (default) | R321 = 0 ohm | R331, R406 |
-| B (U501) | 915 MHz PCB | R331 = 0 ohm | R321, R406 |
+| B (U501) | 868 MHz PCB (779-880 MHz) | R321 | R331, R406 |
+| B (U501) | 915 MHz PCB (870-928 MHz) | R331 | R321, R406 |
 | B (U501) | SMA J2 or wire in H2 | R406 (0 ohm) | R321, R331 |
 
+**Any other frequency:** look it up in `antenna/results/tuning.md` (every
+5 MHz) or `antenna/results/tuning_<band>.csv` (every MHz), and fit that
+row's four 0603 parts: the antenna's tuning part (L401 = 433, L402 = 315,
+L404 = 868, L405 = 915), its selector (R3x1), shunt (C3x1) and series
+(L3x1). The default parts for every antenna are fitted at the factory, so
+switching between the four default antennas only needs the selector.
+
 Keep the inverted-F shorting jumpers R401 (433), R402 (315), R404 (868) and
-R405 (915) fitted (0 ohm) at all times. The 315 MHz antenna also has a
-series loading inductor, L402, in its arm; it is always fitted.
-Quarter-wave wire whip lengths (from the H1/H2 hole): 164 mm at 433 MHz,
-226 mm at 315 MHz, 82 mm at 868 MHz, 78 mm at 915 MHz.
+R405 (915) fitted (0 ohm) at all times. External whip length for any
+frequency: L = 71 250 / f mm (table at the end of `tuning.md`).
 
 **315 MHz BOM swap for radio A** (SWRS061I Table 21): C121/C131 6.8 pF,
 C122 12 pF, C123 6.8 pF, L121/L123/L131 33 nH, L122 18 nH; C124/C125

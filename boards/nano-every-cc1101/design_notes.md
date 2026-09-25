@@ -50,14 +50,13 @@ channels and that is the ninth signal.
 
 ## Antennas
 
-See `antenna/README.md` for the method and `antenna/results/summary.md`
-for the numbers. In short: the 433, 868 and 915 MHz antennas are inverted-Fs
-tuned for resonance at their band centre with the other three antennas
-present in the model. The T-match then trims the residual mismatch. The
-315 MHz antenna is necessarily small (a quarter wave is 238 mm): it is a
-meandered inverted-F with a series loading inductor (L402) in its arm. Expect
-lower efficiency than the other three; for the best 315 MHz range use the
-SMA or wire-whip option.
+See `antenna/README.md`. Four inverted-F antennas (the 315 MHz one
+meandered) each carry a series tuning element in the arm plus a T-match at
+the feed. A 2-port openEMS model of the whole board (feed + tuning gap)
+gives the exact feed impedance for any tuning part, so `tune.py` can pick
+the parts for **every MHz** of 300-348, 387-464 and 779-928 MHz. It reaches
+S11 below -15 dB everywhere, with 41-65 % of the power reaching the antenna
+at 300-348 MHz and 76-99 % elsewhere.
 
 ## Level shifting and power
 
@@ -87,6 +86,6 @@ are all expected:
 - LCSC numbers are pinned only where checked (crystal, LDO, the 0603
   jellybean parts). JLCPCB matches the rest by MPN; confirm stock.
 - A printed antenna's final tuning depends on its surroundings (enclosure,
-  hand, cable). The T-match pads let you retune with a nanoVNA.
+  hand, cable). The tuning and T-match pads let you retune with a nanoVNA.
 - Radiated use must follow your region's rules (e.g. FCC 15.231/15.247,
   ETSI EN 300 220).

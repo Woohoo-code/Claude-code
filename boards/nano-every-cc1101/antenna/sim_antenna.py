@@ -68,8 +68,12 @@ def run(name, tap, tail, outdir, load_nh=None, two_port_exc=None):
                 d = 1.0 if sy1 > sy0 else -1.0
                 a["short"] = [(sx0, sy0 + d), (sx1, sy1)]
         pls = [("short", a["short"]), ("feed", a["feed"])]
-        pls += [("arm", p) for p in (arm_parts(n, tap=tap, tail=tail) if n == name
-                                     else arm_parts(n))]
+        split = n == name and two_port_exc
+        if split:           # the driven antenna's tuning gap becomes port 2
+            arms = arm_parts(n, tap=tap, tail=tail)
+        else:               # neighbours: tuning element modelled as a 0 ohm link
+            arms = [antenna(n, tap, tail)["arm"] if n == name else antenna(n)["arm"]]
+        pls += [("arm", p) for p in arms]
         for key, pl in pls:
             for i, ((x1, y1), (x2, y2)) in enumerate(zip(pl, pl[1:])):
                 lo = [min(x1, x2) - w2, min(y1, y2) - w2]
@@ -82,8 +86,8 @@ def run(name, tap, tail, outdir, load_nh=None, two_port_exc=None):
                         lo[0] = x1
                     else:
                         hi[0] = x1
-                if key == "arm":
-                    # square ends only where the arm isn't cut for the inductor
+                if key == "arm" and split:
+                    # square ends only where the arm isn't cut for port 2
                     ld = load(n)
                     if ld:
                         lx, ly = ld["at"]
@@ -99,24 +103,13 @@ def run(name, tap, tail, outdir, load_nh=None, two_port_exc=None):
                 xs |= {lo[0], hi[0]}
                 ys |= {lo[1], hi[1]}
         ld = load(n)
-        if ld and n == name and two_port_exc:
+        if ld and split:
             lx, ly = ld["at"]
             if ld["axis"] == "y":
                 st, sp = [lx - w2, ly - 0.5, H], [lx + w2, ly + 0.5, H]
             else:
                 st, sp = [lx - 0.5, ly - w2, H], [lx + 0.5, ly + w2, H]
             load_port = (st, sp, ld["axis"])
-        elif ld:
-            nh = ld["nh"] if (n != name or load_nh is None) else load_nh
-            lx, ly = ld["at"]
-            # pure inductor: openEMS's series R-L element went unstable here, so
-            # the coil's loss (Q ~ 40) is accounted for analytically instead
-            el = csx.AddLumpedElement(f"Lload{n}", ny="xy".index(ld["axis"]), caps=True,
-                                      L=nh * 1e-9)
-            if ld["axis"] == "y":
-                el.AddBox([lx - w2, ly - 0.5, H], [lx + w2, ly + 0.5, H], priority=15)
-            else:
-                el.AddBox([lx - 0.5, ly - w2, H], [lx + 0.5, ly + w2, H], priority=15)
 
     a = ants[name]
     (gx, gy), (tx, ty) = a["feed_pt"], a["feed"][0]

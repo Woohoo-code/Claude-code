@@ -21,6 +21,9 @@ pads). `_A` nets belong to radio A (U1, 315/433 MHz), `_B` nets to radio B
 | ANT_B | C625.2, R321.1, R331.2, R406.2 |
 | AREF | A1.18, J4.13 |
 | ARM_315 | L402.1 |
+| ARM_433 | L401.2 |
+| ARM_868 | L404.1 |
+| ARM_915 | L405.2 |
 | CSN_A | U1.7, U3.5 |
 | CSN_B | U3.8, U501.7 |
 | D0_RX | A1.2, J3.2 |
@@ -42,9 +45,9 @@ pads). `_A` nets belong to radio A (U1, 315/433 MHz), `_B` nets to radio B
 | EXT_A | H1.1, J1.1, R403.1 |
 | EXT_B | H2.1, J2.1, R406.1 |
 | FEED_315 | L311.1, L402.2, R402.1 |
-| FEED_433 | L301.2, R401.2 |
-| FEED_868 | L321.2, R404.2 |
-| FEED_915 | L331.1, R405.2 |
+| FEED_433 | L301.2, L401.1, R401.2 |
+| FEED_868 | L321.2, L404.2, R404.2 |
+| FEED_915 | L331.1, L405.1, R405.2 |
 | GDO0_A | U1.6, U3.6 |
 | GDO0_B | U3.9, U501.6 |
 | GDO2_A | U1.3, U3.7 |

@@ -62,26 +62,25 @@ C122 8.2 pF, C123 5.6 pF, C124/C125 220 pF.
 ```
 (Refdes on the board: L631, L621, C621, C631, L632, C622, L622, C624, L623, C623, L624, C625.)
 
-## 6. Antenna selection + T-matches
+## 6. Antenna selection, T-matches and tuning parts
 
 ```
-                 ┌─ R301 ─┬─ L301 ── 433 IFA (short R401 to GND)
- ANT_A ──────────┤        C301
-                 │        GND
-                 ├─ R311 ─┬─ L311 ── 315 IFA (short R402, loading coil L402 in the arm)
+                 ┌─ R301 ─┬─ L301 ── 433 IFA ─[L401]─ arm   (short R401 to GND)
+                 │        C301
+ ANT_A ──────────┼─ R311 ─┬─ L311 ── 315 IFA ─[L402]─ arm   (short R402)
                  │        C311
                  └─ R403 ── EXT_A ── H1 (wire) ── J1 (SMA)
 
- ANT_B ──────────┬─ R321 ─┬─ L321 ── 868 IFA (short R404)
+                 ┌─ R321 ─┬─ L321 ── 868 IFA ─[L404]─ arm   (short R404)
                  │        C321
-                 ├─ R331 ─┬─ L331 ── 915 IFA (short R405)
+ ANT_B ──────────┼─ R331 ─┬─ L331 ── 915 IFA ─[L405]─ arm   (short R405)
                  │        C331
                  └─ R406 ── EXT_B ── H2 (wire) ── J2 (SMA)
 ```
-Rxxx = selector (fit one per radio), Cxxx = shunt, Lxxx = series. Values
-are in `antenna/match.py`, and the parts may be C, L or 0 ohm: the shunt
-position can hold an inductor and the series positions a capacitor, as the
-match requires.
+R3x1 = selector (fit one per radio), C3x1 = shunt, L3x1 = series, L40x =
+series tuning part in the antenna arm. Any of these positions can hold a
+capacitor, an inductor or 0 ohm. Values per frequency are in
+`antenna/results/tuning.md`, and the defaults in `antenna/match.py`.
 
 ## 7. Nano Every + breakout
 

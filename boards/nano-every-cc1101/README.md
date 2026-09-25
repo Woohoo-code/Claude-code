@@ -1,9 +1,10 @@
 # nano-every-cc1101: Arduino Nano Every + 2x CC1101, every sub-GHz band
 
 A 100 x 100 mm **2-layer** carrier board for an Arduino Nano Every with two
-TI CC1101 radios, so every band the CC1101 supports (300-348, 387-464 and
-779-928 MHz) is covered. It has a printed antenna for each band, tuned with
-a full-wave openEMS model, plus an SMA jack and a wire-whip hole per radio.
+TI CC1101 radios, so every frequency the CC1101 supports (300-348, 387-464
+and 779-928 MHz) is covered. Four printed antennas, each tunable across its
+range with 0603 parts (values per MHz from a full-wave openEMS model), plus
+an SMA jack and a wire-whip hole per radio.
 The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pads.
 
 | Top | Bottom (viewed from below) |
@@ -17,37 +18,40 @@ The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pad
 | Board | 100 x 100 x 1.6 mm, 2 layers, FR4 |
 | Radio A (U1) | CC1101, 315/433 MHz front end (433 fitted) |
 | Radio B (U501) | CC1101, 868/915 MHz front end |
-| Antennas | printed 433 MHz (top edge), 315 MHz (left edge, loaded), 868 MHz and 915 MHz (right edge); SMA J1/J2; wire holes H1/H2 |
+| Antennas | 4 printed, tunable across 300-348 / 387-464 / 779-928 MHz; SMA J1/J2; wire holes H1/H2 |
 | Host | Arduino Nano Every in sockets, USB at the board edge, every pin re-broken-out on J3/J4 |
 | Glue | TXS0108E 5 V <-> 3.3 V level shifter, AP2112K 3.3 V LDO, power LED |
 
-Simulated antenna performance (with the T-match fitted; full table in
-[`antenna/results/summary.md`](antenna/results/summary.md), plot in
-`antenna/results/match.png`):
+**Every CC1101 frequency is covered by a printed antenna.** Each antenna
+has a tuning part in its arm and a T-match at its feed, and
+[`antenna/results/tuning.md`](antenna/results/tuning.md) gives the parts for
+every MHz (simulated with openEMS, full board, all four antennas present):
 
-| Antenna | Arm (mm) | Tap / tail (mm) | Z at f0 (ohm) | S11 unmatched | T-match S1 / shunt / S2 | S11 matched | -10 dB band (MHz) | match loss |
-|---|---|---|---|---|---|---|---|---|
-| 433 MHz | 153 | 3 / 52 | 73.8-13.9j | -13.1 dB | 16pF / 56nH / 0R | -15.9 dB | 431-437 | 0.1 dB |
-| 315 MHz | 211 | 4 / 50 | 27.7+55.2j | -4.1 dB | 0R / 27nH / 6.8pF | -18.7 dB | 313-317 | 0.1 dB |
-| 868 MHz | 60 | 4 / 10 | 26.6+53.8j | -4.1 dB | 0R / 3.6pF / 6.2pF | -31.0 dB | 847-883 | 0.0 dB |
-| 915 MHz | 58 | 4 / 8 | 36.4+90.1j | -2.7 dB | 0R / 2.4pF / 2.7pF | -26.1 dB | 899-1041 | 0.0 dB |
+| CC1101 band | Antenna | Worst S11 when tuned | Power reaching the antenna | Default fit (-10 dB) |
+|---|---|---|---|---|
+| 300-348 MHz | 315 (radio A, 315 MHz BOM) | -15.2 dB | 41-65 % | 313.7-316.3 MHz |
+| 387-464 MHz | 433 (radio A) | -18.1 dB | 76-99 % | 431.3-436.5 MHz |
+| 779-880 MHz | 868 (radio B) | -21.3 dB | 97-99 % | 843-883 MHz |
+| 870-928 MHz | 915 (radio B) | -21.6 dB | 97-99 % | 902-1044 MHz |
 
-Match loss = power lost in the T-match parts (0603, inductor Q 40, capacitor Q 300).
-315 MHz additionally loses power in its arm's 47 nH loading coil (L402, Q 40): coil + match pass about 40 % (-4 dB) of the power on to the antenna (`choose_load.py`), so expect noticeably less range at 315 MHz than on the other bands.
-ISM bands covered by the -10 dB bands: 433.05-434.79 (433), 314-316 (315), 863-870 (868), 902-928 (915).
+The SMA jacks and wire holes add an external whip at any frequency
+(L = 71 250 / f mm, table in `tuning.md`).
+
+![coverage](antenna/results/tuning.png)
 
 ## Choosing the antenna
 
-Fit **one** selector per radio (0603; R301 is a 16 pF capacitor, the others 0 ohm):
+Fit **one** selector per radio; the board ships set up for 433.92 MHz
+(radio A) and 868.3 MHz (radio B):
 
 | Radio | 433 MHz PCB | 315 MHz PCB | 868 MHz PCB | 915 MHz PCB | SMA / wire |
 |---|---|---|---|---|---|
-| A | **R301** 16 pF (default) | R311 0R + 315 MHz BOM | | | R403 0R |
-| B | | | **R321** 0R (default) | R331 0R | R406 0R |
+| A | **R301** (default) | R311 + 315 MHz BOM | | | R403 0R |
+| B | | | **R321** (default) | R331 | R406 0R |
 
-Wire whip lengths (quarter wave, from H1/H2): 164 mm @ 433, 226 mm @ 315,
-82 mm @ 868, 78 mm @ 915. See `assembly_instructions.md` for the 315 MHz
-BOM swap.
+For another frequency, fit the row for it from `antenna/results/tuning.md`
+(tuning part L40x, selector R3x1, shunt C3x1, series L3x1).
+`assembly_instructions.md` has the 315 MHz front-end BOM swap.
 
 ## Pins (Nano Every)
 
@@ -83,8 +87,9 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
 - Designed and simulated, not yet built or measured. Check each antenna
   with a nanoVNA once built; the T-match pads and the 2 mm trim marks on
   each antenna's open end are there to retune.
-- 315 MHz from a 100 mm board is electrically small: it works, but with
-  noticeably less efficiency than the others. The SMA/whip option is better
-  at 315 MHz.
+- 300-348 MHz from a 100 mm board is electrically small: it works (41-65 %
+  of the power reaches the antenna), but the SMA/whip option gives more range.
+- A tuned setting is narrowband; changing frequency means changing the
+  parts on that table row.
 - No `.kicad_sch` schematic; the netlist is generated from the board.
 - Not certified. Radiated use must follow your region's rules.

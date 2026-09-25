@@ -9,10 +9,10 @@ C6,1,Capacitor 10 uF 10% X5R 25 V 0805,Samsung,CL21A106KAYNNNE,C_0805,LCSC C1585
 C122,1,Capacitor 8.2 pF +/-0.25 pF C0G 0402,Murata,GRM1555C1H8R2CA01D,C_0402,
 C123,1,Capacitor 5.6 pF +/-0.25 pF C0G 0402,Murata,GRM1555C1H5R6CA01D,C_0402,
 "C124, C125",2,Capacitor 220 pF 5% C0G 0402,Murata,GRM1555C1H221JA01D,C_0402,
-C301,1,Inductor 56 nH wire-wound 2 % 0603 (antenna tuning),Murata,LQW18AN56NG00D,C_0603,
-C311,1,Inductor 27 nH wire-wound 2 % 0603 (antenna tuning),Murata,LQW18AN27NG00D,C_0603,
+C301,1,Capacitor 1.1 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H1R1CA01D,C_0603,
+C311,1,Capacitor 10 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H100JA01D,C_0603,
 C321,1,Capacitor 3.6 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H3R6CA01D,C_0603,
-C331,1,Capacitor 2.4 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H2R4CA01D,C_0603,
+C331,1,Capacitor 2.7 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H2R7CA01D,C_0603,
 C621,1,Capacitor 1.0 pF +/-0.1 pF C0G 0402,Murata,GRM1555C1H1R0BA01D,C_0402,
 "C622, C631",2,Capacitor 1.5 pF +/-0.1 pF C0G 0402,Murata,GRM1555C1H1R5BA01D,C_0402,
 C623,1,Capacitor 3.3 pF +/-0.1 pF C0G 0402,Murata,GRM1555C1H3R3BA01D,C_0402,
@@ -24,18 +24,19 @@ J3,1,Pin header 1x15 2.54 mm male (breakout),Generic,,PinHeader_1x15,
 J4,1,Pin header 1x15 2.54 mm male (breakout),Generic,,PinHeader_1x15,
 "L121, L123, L131",3,Inductor 27 nH 5% multilayer 0402,Murata,LQG15HS27NJ02D,L_0402,
 L122,1,Inductor 22 nH 5% multilayer 0402,Murata,LQG15HS22NJ02D,L_0402,
-L301,1,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,L_0603,LCSC C21189
-L311,1,Capacitor 6.8 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H6R8CA01D,L_0603,
+L301,1,Capacitor 5.1 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H5R1CA01D,L_0603,
+"L311, L404, L405",3,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,L_0603,LCSC C21189
 L321,1,Capacitor 6.2 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H6R2CA01D,L_0603,
 L331,1,Capacitor 2.7 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H2R7CA01D,L_0603,
-L402,1,Inductor 47 nH wire-wound 2 % 0603 (antenna tuning),Murata,LQW18AN47NG00D,L_0603,
+L401,1,Capacitor 51 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H510JA01D,L_0603,
+L402,1,Inductor 39 nH wire-wound 2 % 0603 (antenna tuning),Murata,LQW18AN39NG00D,L_0603,
 "L621, L623, L624, L631",4,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,L_0402,
 "L622, L632",2,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,L_0402,
 R1,1,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,R_0603,LCSC C21190
 "R171, R671",2,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),KOA Speer,RK73H1ETTP5602F,R_0402,
-R301,1,Capacitor 16 pF C0G 50 V 0603 (antenna match),Murata,GRM1885C1H160JA01D,R_0603,
-"R311, R331",2,not fitted (DNP (0R to use)),,,R_0603,leave empty unless re-selecting the antenna
-"R321, R401, R402, R404, R405",5,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,R_0603,LCSC C21189
+"R301, R321, R401, R402, R404, R405",6,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,R_0603,LCSC C21189
+R311,1,not fitted (DNP (2.7pF to use)),,,R_0603,leave empty unless re-selecting the antenna
+R331,1,not fitted (DNP (0R to use)),,,R_0603,leave empty unless re-selecting the antenna
 "R403, R406",2,not fitted (DNP),,,R_0603,leave empty unless re-selecting the antenna
 "U1, U501",2,"Sub-1 GHz RF transceiver, 300-928 MHz",Texas Instruments,CC1101RGPR,QFN,
 U2,1,LDO 3.3 V 600 mA,Diodes Inc,AP2112K-3.3TRG1,SOT-23-5,LCSC C51118

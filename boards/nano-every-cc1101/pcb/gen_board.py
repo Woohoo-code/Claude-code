@@ -395,11 +395,11 @@ def ifa(b: Builder, name, short_ref, short_at, short_rot, gnd_dxdy):
     ld = ag.load(name)
     if not ld:
         b.track(feed, parts[0], ANT_W)
-    else:                             # series loading inductor in the arm
+    else:                             # series tuning element in the arm
         far = f"ARM_{name}"
-        lref = f"L4{short_ref[-2:]}"
+        lref = MATCH[name]["tune_ref"]
         b.two_pin(lref, *L0603, *ld["at"], 90 if ld["axis"] == "y" else 0,
-                  f'{ld["nh"]:g}nH', parts[0][-1], feed, far)
+                  MATCH[name]["tune"], parts[0][-1], feed, far)
         pf = next(p.GetNumber() for p in b.fps[lref].Pads() if p.GetNetname() == feed)
         pa = next(p.GetNumber() for p in b.fps[lref].Pads() if p.GetNetname() == far)
 
@@ -739,8 +739,8 @@ def import_ses(board, path, net):
 
 
 def drop_dangling(board):
-    """Remove signal vias the router left with copper on one layer only, and
-    sub-0.1 mm router stubs with a free end."""
+    """Remove signal vias the router left with copper on one layer only (it
+    reached the pad stub on the top layer instead)."""
     tracks = [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"]
     for v in [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA"]:
         if v.GetNetname() in ("GND", ""):
@@ -750,23 +750,6 @@ def drop_dangling(board):
                   if t.GetNetCode() == v.GetNetCode() and p in (t.GetStart(), t.GetEnd())}
         if len(layers) < 2:
             board.Remove(v)
-    pads = [p for fp in board.GetFootprints() for p in fp.Pads()]
-    changed = True
-    while changed:
-        changed = False
-        items = list(board.GetTracks())
-        for t in [x for x in items if x.GetClass() == "PCB_TRACK" and x.GetLength() < FromMM(0.1)]:
-            for end in (t.GetStart(), t.GetEnd()):
-                touching = [o for o in items if o is not t and o.GetNetCode() == t.GetNetCode()
-                            and ((o.GetClass() == "PCB_VIA" and o.GetPosition() == end) or
-                                 (o.GetClass() == "PCB_TRACK" and end in (o.GetStart(), o.GetEnd())))]
-                on_pad = any(p.GetNetCode() == t.GetNetCode() and p.HitTest(end) for p in pads)
-                if not touching and not on_pad:
-                    board.Remove(t)
-                    changed = True
-                    break
-            if changed:
-                break
 
 
 def silkscreen(b: Builder):
@@ -829,7 +812,9 @@ def silkscreen(b: Builder):
         "radio A: 433 R301 | 315 R311 | SMA/wire R403",
         "radio B: 868 R321 | 915 R331 | SMA/wire R406",
         "IFA shorts R401 R402 R404 R405: always 0R",
-        "wire whip: 164mm@433 226@315 82@868 78@915",
+        "ANY FREQUENCY 300-348/387-464/779-928 MHz:",
+        "fit tune L40x + R3x1/C3x1/L3x1 per tuning.md",
+        "whip for SMA/wire: L(mm) = 71250 / f(MHz)",
         "",
         "SPI: D13 SCK  D11 MOSI  D12 MISO",
         "radio A: CSn D10  GDO0 D2  GDO2 D3",
