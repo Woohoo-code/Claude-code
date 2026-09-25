@@ -6,7 +6,7 @@
   ../bom.csv             grouped BOM in pcba-builder's format
   fab/bom-no-nano.csv    purchasing BOM: every fitted part except the Nano Every
   fab/bom-jlcpcb.csv     JLCPCB assembly BOM (fitted parts only)
-  fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts, SMA jacks, J3/J4)
+  fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts; SMA jacks, J3/J4 by hand)
 """
 
 import collections
@@ -182,6 +182,12 @@ def _lookup(fpname, value):
     raise SystemExit(f"no catalog entry for {fpname} / {value}")
 
 
+def hand_fit(name):
+    """Optional parts left out of JLCPCB assembly to keep it cheap (no
+    through-hole step, two fewer extended part types)."""
+    return "PinHeader" in name or "SMA" in name
+
+
 def bom_value(name, value):
     """J3/J4 carry their pin range as value; buy them as one line."""
     return "1x15 header" if "PinHeader" in name else value
@@ -258,8 +264,7 @@ def main():
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
         if "Arduino_Nano" in name:
             continue
-        how = ("assembler (THT)" if "PinHeader" in name else
-               "assembler (SMD, board edge)" if "SMA" in name else "SMT")
+        how = "hand solder (optional)" if hand_fit(name) else "SMT"
         buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, bom_value(name, value),
                         how), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
@@ -275,8 +280,8 @@ def main():
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
-        if "Arduino_Nano" in name:
-            continue        # the Nano plugs in; the SMA jacks and J3/J4 are assembled
+        if "Arduino_Nano" in name or hand_fit(name):
+            continue        # the Nano plugs in; SMA jacks / J3,J4 are optional, by hand
         jl.setdefault((bom_value(name, value), name, mpn, lcsc), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-jlcpcb.csv"), "w", newline="") as f:
         w = csv.writer(f)

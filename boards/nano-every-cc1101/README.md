@@ -46,8 +46,8 @@ Fit **one** selector per radio; the board ships set up for 433.92 MHz
 
 | Radio | 433 MHz PCB | 315 MHz PCB | 868 MHz PCB | 915 MHz PCB | SMA / wire |
 |---|---|---|---|---|---|
-| A | **R301** (default) | R311 + 315 MHz BOM | | | R403 0R |
-| B | | | **R321** (default) | R331 | R406 0R |
+| A | **R301** (default) | R311 + L402 39 nH + 315 MHz BOM | | | R403 0R + J1 |
+| B | | | **R321** (default) | R331 | R406 0R + J2 |
 
 For another frequency, fit the row for it from `antenna/results/tuning.md`
 (tuning part L40x, selector R3x1, shunt C3x1, series L3x1).
@@ -69,10 +69,13 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
    (fitted parts only; check the rotations in the preview). Every line has
    an in-stock LCSC number (checked 2026-09-25; out-of-stock design parts
    were swapped for same-value/package C0G/NP0 equivalents, see `JLC` in
-   `pcb/fab_outputs.py`), including the SMA jacks J1/J2 (BAT WIRELESS
-   BWSMA-KE-P001, C496550, edge mount) and the J3/J4 1x15 headers
-   (C7501269, through-hole assembly).
-3. By hand: Nano sockets (2x 1x15 female).
+   `pcb/fab_outputs.py`). The BOM is cost-minimised: every part that has a
+   JLCPCB basic / preferred equivalent uses it (10 extended part types
+   left), and there is no through-hole part, so **Economic PCBA** works.
+3. By hand: Nano sockets (2x 1x15 female). Optional, not assembled (to keep
+   the order cheap): SMA jacks J1/J2 (BAT WIRELESS BWSMA-KE-P001, LCSC
+   C496550), J3/J4 1x15 breakout headers (LCSC C7501269), and L402 (39 nH,
+   only for the 315 MHz antenna).
 
 ## Files
 

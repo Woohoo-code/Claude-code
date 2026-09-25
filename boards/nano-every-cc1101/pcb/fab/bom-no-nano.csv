@@ -22,17 +22,16 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 21,1,L311,18pF,Capacitor 18 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C180JB8NNNC,C1647,L_0603,SMT
 22,1,L331,3pF,Capacitor 3 pF +/-0.25 pF C0G 50 V 0603 (antenna match),FH,0603CG3R0C500NT,C46219,L_0603,SMT
 23,1,L401,47pF,Capacitor 47 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C470JB8NNNC,C1671,L_0603,SMT
-24,1,L402,39nH,Inductor 39 nH wire-wound 2 % 0603 (antenna tuning),Murata,LQW18AN39NG00D,C86134,L_0603,SMT
-25,2,L404 L405,0R,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,C21189,L_0603,SMT
-26,4,L621 L623 L624 L631,12nH,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,C82920,L_0402,SMT
-27,2,L622 L632,18nH,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,C82917,L_0402,SMT
-28,1,R1,1k,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,C21190,R_0603,SMT
-29,2,R171 R671,56k 1%,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),UNI-ROYAL,0402WGF5602TCE,C25796,R_0402,SMT
-30,6,R301 R321 R401 R402 R404 R405,0R,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,C21189,R_0603,SMT
-31,2,U1 U501,CC1101RGPR,"Sub-1 GHz RF transceiver, 300-928 MHz",Texas Instruments,CC1101RGPR,C29953,QFN,SMT
-32,1,U2,XC6206P332MR,LDO 3.3 V 200 mA,Torex,XC6206P332MR-G,C5446,SOT-23,SMT
-33,1,U3,TXS0108EPWR,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,C17206,TSSOP-20,SMT
-34,2,Y1 Y501,26MHz,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,C70573,Crystal,SMT
-35,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,"assembler (SMD, board edge)"
-36,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,assembler (THT)
-37,2,S1 S2,1x15 F,Female header 1x15 2.54 mm (socket for the Nano Every),Generic,,,HDR-1x15-F,hand solder
+24,2,L404 L405,0R,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,C21189,L_0603,SMT
+25,4,L621 L623 L624 L631,12nH,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,C82920,L_0402,SMT
+26,2,L622 L632,18nH,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,C82917,L_0402,SMT
+27,1,R1,1k,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,C21190,R_0603,SMT
+28,2,R171 R671,56k 1%,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),UNI-ROYAL,0402WGF5602TCE,C25796,R_0402,SMT
+29,6,R301 R321 R401 R402 R404 R405,0R,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,C21189,R_0603,SMT
+30,2,U1 U501,CC1101RGPR,"Sub-1 GHz RF transceiver, 300-928 MHz",Texas Instruments,CC1101RGPR,C29953,QFN,SMT
+31,1,U2,XC6206P332MR,LDO 3.3 V 200 mA,Torex,XC6206P332MR-G,C5446,SOT-23,SMT
+32,1,U3,TXS0108EPWR,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,C17206,TSSOP-20,SMT
+33,2,Y1 Y501,26MHz,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,C70573,Crystal,SMT
+34,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,hand solder (optional)
+35,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,hand solder (optional)
+36,2,S1 S2,1x15 F,Female header 1x15 2.54 mm (socket for the Nano Every),Generic,,,HDR-1x15-F,hand solder

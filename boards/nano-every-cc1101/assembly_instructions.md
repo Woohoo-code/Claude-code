@@ -9,13 +9,13 @@
 2. **Assembly (optional):** upload `pcb/fab/bom-jlcpcb.csv` and
    `pcb/fab/cpl-jlcpcb.csv`, top side only. They contain only the parts to
    fit (not-fitted selectors and match pads are left out). In the placement
-   preview, **check the rotation of U1, U501, U2, U3, Y1, Y501, the SMA
-   jacks J1/J2** (the jack body must point off the bottom board edge) **and
-   the J3/J4 headers** (pins inside their silkscreen outlines): KiCad and
-   JLCPCB disagree on some footprint zero angles. J1/J2 are BAT WIRELESS
-   BWSMA-KE-P001 (LCSC C496550) edge-mount jacks for 1.6 mm boards; J3/J4
-   are 1x15 male headers (LCSC C7501269) fitted by through-hole assembly.
-3. By hand afterwards: 2x 1x15 female headers (Nano socket).
+   preview, **check the rotation of U1, U501, U2, U3, Y1 and Y501**: KiCad
+   and JLCPCB disagree on some footprint zero angles. No through-hole
+   parts, so Economic PCBA is enough.
+3. By hand afterwards: 2x 1x15 female headers (Nano socket). Optional:
+   SMA jacks J1/J2 (BWSMA-KE-P001, LCSC C496550; body off the bottom
+   edge), 1x15 breakout headers J3/J4 (LCSC C7501269), and for the 315 MHz
+   antenna L402 = 39 nH wire-wound 0603 (Murata LQW18AN39NG00D).
 
 ## Reflow (if assembling yourself)
 
@@ -32,11 +32,11 @@ on the 868 MHz printed antenna at 868.3 MHz.
 | Radio | Antenna | Selector to fit | Leave empty |
 |---|---|---|---|
 | A (U1) | 433 MHz PCB (387-464 MHz) | R301 | R311, R403 |
-| A (U1) | 315 MHz PCB (300-348 MHz) | R311 **and swap to the 315 MHz BOM** (below) | R301, R403 |
-| A (U1) | SMA J1 or wire in H1 | R403 (0 ohm) | R301, R311 |
+| A (U1) | 315 MHz PCB (300-348 MHz) | R311 + L402 39 nH **and swap to the 315 MHz BOM** (below) | R301, R403 |
+| A (U1) | SMA J1 (solder it on) or wire in H1 | R403 (0 ohm) | R301, R311 |
 | B (U501) | 868 MHz PCB (779-880 MHz) | R321 | R331, R406 |
 | B (U501) | 915 MHz PCB (870-928 MHz) | R331 | R321, R406 |
-| B (U501) | SMA J2 or wire in H2 | R406 (0 ohm) | R321, R331 |
+| B (U501) | SMA J2 (solder it on) or wire in H2 | R406 (0 ohm) | R321, R331 |
 
 **Any other frequency:** look it up in `antenna/results/tuning.md` (every
 5 MHz) or `antenna/results/tuning_<band>.csv` (every MHz), and fit that

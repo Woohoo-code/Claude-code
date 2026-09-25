@@ -239,9 +239,12 @@ def main():
               f"{full['eff'] * 100:.0f} %)")
         s1 = label(r["s1"])
         sel = s1 if n in DEFAULT_FITTED else f"DNP ({s1} to use)"
+        tune = label(r["tune"])
+        if n not in DEFAULT_FITTED and r["tune"][0] == "L":
+            tune = f"DNP ({tune} to use)"     # extended part: fit by hand when needed
         lines.append(f'    "{n}": {{"refs": {REFS[n][:3]!r}, "tune_ref": "{REFS[n][3]}", '
                      f'"s1": {sel!r}, "c": {label(r["sh"])!r}, "s2": {label(r["s2"])!r}, '
-                     f'"tune": {label(r["tune"])!r}, "f_mhz": {DEFAULT_MHZ[n]}, '
+                     f'"tune": {tune!r}, "f_mhz": {DEFAULT_MHZ[n]}, '
                      f'"s11_db": {r["s11"]:.1f}, "eff_pct": {r["eff"] * 100:.0f}}},')
     lines.append("}")
     open(os.path.join(HERE, "match.py"), "w").write("\n".join(lines) + "\n")

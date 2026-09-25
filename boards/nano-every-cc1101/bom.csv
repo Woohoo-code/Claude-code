@@ -26,7 +26,7 @@ L122,1,Inductor 22 nH 5% multilayer 0402,Murata,LQG15HS22NJ02D,L_0402,LCSC C1267
 L311,1,Capacitor 18 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C180JB8NNNC,L_0603,LCSC C1647
 L331,1,Capacitor 3 pF +/-0.25 pF C0G 50 V 0603 (antenna match),FH,0603CG3R0C500NT,L_0603,LCSC C46219
 L401,1,Capacitor 47 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C470JB8NNNC,L_0603,LCSC C1671
-L402,1,Inductor 39 nH wire-wound 2 % 0603 (antenna tuning),Murata,LQW18AN39NG00D,L_0603,LCSC C86134
+L402,1,not fitted (DNP (39nH to use)),,,L_0603,leave empty unless re-selecting the antenna
 "L404, L405",2,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,L_0603,LCSC C21189
 "L621, L623, L624, L631",4,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,L_0402,LCSC C82920
 "L622, L632",2,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,L_0402,LCSC C82917
