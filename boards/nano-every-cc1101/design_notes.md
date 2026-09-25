@@ -10,8 +10,8 @@ carries two:
 
 | Radio | Chip | Front end | Bands | Antennas |
 |---|---|---|---|---|
-| A | U1 | Fig. 10 (L/C balun + LC low-pass), 433 MHz values fitted | 387-464 MHz; 300-348 MHz after the 315 MHz BOM swap | PCB 433 (top edge), PCB 315 (left edge), SMA J1, wire H1 |
-| B | U501 | Fig. 11 (wire-wound balun + LC low-pass) | 779-928 MHz | PCB 868 and PCB 915 (right edge), SMA J2, wire H2 |
+| A | U1 | Fig. 10 (L/C balun + LC low-pass), 433 MHz values fitted | 387-464 MHz; 300-348 MHz after the 315 MHz BOM swap | coils AE1 433, AE2 315; SMA J1 |
+| B | U501 | Fig. 11 (wire-wound balun + LC low-pass) | 779-928 MHz | coils AE3 868, AE4 915; SMA J2 |
 
 Both share SPI (SCK/MOSI/MISO; the CC1101's SO pin is high-impedance while
 CSn is high) and have their own CSn and GDO0. Radio A also has GDO2 on the
@@ -22,13 +22,13 @@ channels and that is the ninth signal.
 
 | Item | Value |
 |---|---|
-| Size | 100 x 100 mm (the cheapest fab price tier) |
+| Size | 70 x 45 mm (coil antennas instead of printed ones) |
 | Layers | **2**: F.Cu parts + routing + ground pour, B.Cu ground plane + a few routes |
 | Thickness | 1.6 mm FR4 |
 | Min track / space | 0.15 / 0.15 mm (0.15 mm only inside the two CC1101 clusters) |
 | Vias | 0.6 / 0.3 mm; 0.5 / 0.25 mm inside the CC1101 clusters |
-| Ground | solid pour on both layers over the 60 x 80 mm ground region, 223 ground vias |
-| Antenna strips | copper-free: top 100 x 20 mm, left 22 x 80 mm, right 18 x 80 mm |
+| Ground | solid pour on both layers except the coil strips, 153 ground vias |
+| Coil strips | copper-free, 7 x 15 mm at the top-right and bottom-right corners |
 
 ## RF layout
 
@@ -43,20 +43,26 @@ channels and that is the ninth signal.
 - 50 ohm lines are 1.2 mm grounded coplanar waveguide with 0.2 mm gaps
   (51 ohm on 1.6 mm FR4) over the unbroken B.Cu ground, with stitching vias
   along both sides wherever they fit.
-- Each T-match sits within ~3 mm of its antenna feed, so the simulated
-  feed impedance is what the match sees.
+- Each radio has a short vertical 50 ohm bus; every antenna branch starts
+  with its selector right on the bus, so an unselected branch is a stub of
+  only a few mm (negligible below 1 GHz).
 - The B.Cu ground plane is kept free of routing under both RF paths, all
-  match networks and the SMA lines (Freerouting keep-outs).
+  match networks and the SMA lines (Freerouting keep-outs), and two ground
+  corridors per radio are kept open so the CC1101 exposed pad and its
+  decoupling grounds always reach the main pours.
 
 ## Antennas
 
-See `antenna/README.md`. Four inverted-F antennas (the 315 MHz one
-meandered) each carry a series tuning element in the arm plus a T-match at
-the feed. A 2-port openEMS model of the whole board (feed + tuning gap)
-gives the exact feed impedance for any tuning part, so `tune.py` can pick
-the parts for **every MHz** of 300-348, 387-464 and 779-928 MHz. It reaches
-S11 below -15 dB everywhere, with 41-65 % of the power reaching the antenna
-at 300-348 MHz and 76-99 % elsewhere.
+Four helical spring ("coil") antennas, one per band, BAT WIRELESS
+BWxxxSNX (315/433/868/915 MHz, LCSC C496553-C496556). They stand up from
+the right-hand board edge in two copper-free strips, 8.7 mm apart, with a
+ground-via fence along the strip edge; the board's ground pour is their
+counterpoise. They are pre-tuned by the maker, so the default T-match is
+0 ohm / empty / 0 ohm. They are not simulated on this board: the earlier
+printed-antenna study in `antenna/` (openEMS) does not apply to them.
+All four are fitted, so the unselected coil next to the active one acts as
+a parasitic element; expect a small detuning (largest for 868 vs 915) and
+trim the T-match with a nanoVNA if needed.
 
 ## Level shifting and power
 
@@ -74,18 +80,22 @@ never routed: every ground pad has its own via into both pours.
 
 ## DRC
 
-`pcb/drc_report.txt`: 0 errors and 0 unconnected pads. The warnings left
-are all expected:
-- the four antennas' open ends ("track has unconnected end"),
-- decoupling caps inside the QFN courtyards (C51/C111/C551/C611),
-- library silkscreen outlines touching.
+`pcb/drc_report.txt`: **0 violations, 0 unconnected pads**. Two project
+settings make that possible without hiding real problems:
+- `pcb/nano_every_cc1101.kicad_dru` lets the CC1101 decoupling / bias
+  parts' courtyards touch the QFN's courtyard margin (their pads and bodies
+  clear the package, as in TI's reference layouts). C41/C51 were moved
+  0.15 mm out so the DCOUPL cap's body clears the package by 0.1 mm.
+- the library-sync check is off: `gen_board.py` clips footprint silkscreen
+  strokes that would land on pads or past the board edge, so the placed
+  footprints intentionally differ from the library copies.
 
 ## Before ordering
 
 - Check part rotations in the assembler's placement preview.
 - LCSC numbers are pinned only where checked (crystal, LDO, the 0603
   jellybean parts). JLCPCB matches the rest by MPN; confirm stock.
-- A printed antenna's final tuning depends on its surroundings (enclosure,
-  hand, cable). The tuning and T-match pads let you retune with a nanoVNA.
+- A coil's final tuning depends on its surroundings (enclosure, hand,
+  cable). The T-match pads let you retune with a nanoVNA.
 - Radiated use must follow your region's rules (e.g. FCC 15.231/15.247,
   ETSI EN 300 220).

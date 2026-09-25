@@ -3,19 +3,20 @@
 ## Ordering (JLCPCB or similar)
 
 1. **PCB:** upload `pcb/fab/nano_every_cc1101-gerbers.zip`. 2 layers, 1.6 mm,
-   100 x 100 mm, 1 oz copper, any colour, HASL or ENIG (ENIG is kinder to
+   70 x 45 mm, 1 oz copper, any colour, HASL or ENIG (ENIG is kinder to
    the 0.5 mm-pitch QFNs). Nothing non-standard: 0.15 mm min track/space,
    0.25 mm min drill.
-2. **Assembly (optional):** upload `pcb/fab/bom-jlcpcb.csv` and
-   `pcb/fab/cpl-jlcpcb.csv`, top side only. They contain only the parts to
-   fit (not-fitted selectors and match pads are left out). In the placement
-   preview, **check the rotation of U1, U501, U2, U3, Y1 and Y501**: KiCad
-   and JLCPCB disagree on some footprint zero angles. No through-hole
-   parts, so Economic PCBA is enough.
+2. **Assembly:** upload `pcb/fab/bom-jlcpcb.csv` and
+   `pcb/fab/cpl-jlcpcb.csv`, top side. They contain only the parts to fit
+   (not-fitted selectors and match pads are left out), including the four
+   coil antennas AE1-AE4, which are through-hole: pick an assembly option
+   with through-hole soldering. In the placement preview, **check the
+   rotation of U1, U501, U2, U3, Y1 and Y501**: KiCad and JLCPCB disagree
+   on some footprint zero angles. The coils must stand upright in their
+   holes at the right-hand edge.
 3. By hand afterwards: 2x 1x15 female headers (Nano socket). Optional:
-   SMA jacks J1/J2 (BWSMA-KE-P001, LCSC C496550; body off the bottom
-   edge), 1x15 breakout headers J3/J4 (LCSC C7501269), and for the 315 MHz
-   antenna L402 = 39 nH wire-wound 0603 (Murata LQW18AN39NG00D).
+   SMA jacks J1/J2 (BWSMA-KE-P001, LCSC C496550; body off the right edge)
+   and the 1x15 breakout headers J3/J4 (LCSC C7501269).
 
 ## Reflow (if assembling yourself)
 
@@ -24,32 +25,27 @@ Stencil 0.12 mm. Lead-free SAC305 profile: 150-200 C soak 60-120 s,
 125 C for 24 h if the bag was open more than a week). Use the footprints'
 split paste on the QFN exposed pads.
 
-## Antenna selection and tuning (fit exactly one selector per radio)
+## Antenna selection (fit exactly one selector per radio)
 
-As shipped: radio A on the 433 MHz printed antenna at 433.92 MHz, radio B
-on the 868 MHz printed antenna at 868.3 MHz.
+As shipped: radio A on the 433 MHz coil AE1, radio B on the 868 MHz coil
+AE3. All four coils are fitted; moving one 0603 0 ohm part switches band.
 
 | Radio | Antenna | Selector to fit | Leave empty |
 |---|---|---|---|
-| A (U1) | 433 MHz PCB (387-464 MHz) | R301 | R311, R403 |
-| A (U1) | 315 MHz PCB (300-348 MHz) | R311 + L402 39 nH **and swap to the 315 MHz BOM** (below) | R301, R403 |
-| A (U1) | Coil antenna in H1 (e.g. BW433SNX21-5W2) | R403 (0 ohm) | R301, R311, R407 |
-| A (U1) | SMA J1 (solder it on) | R403 + R407 (0 ohm) | R301, R311 |
-| B (U501) | 868 MHz PCB (779-880 MHz) | R321 | R331, R406 |
-| B (U501) | 915 MHz PCB (870-928 MHz) | R331 | R321, R406 |
-| B (U501) | Coil antenna in H2 (e.g. BW868SNX20-5Z6) | R406 (0 ohm) | R321, R331, R408 |
-| B (U501) | SMA J2 (solder it on) | R406 + R408 (0 ohm) | R321, R331 |
+| A (U1) | 433 MHz coil AE1 | R301 | R311, R403 |
+| A (U1) | 315 MHz coil AE2 | R311 **and swap to the 315 MHz BOM** (below) | R301, R403 |
+| A (U1) | SMA J1 (solder it on) | R403 | R301, R311 |
+| B (U501) | 868 MHz coil AE3 | R321 | R331, R406 |
+| B (U501) | 915 MHz coil AE4 | R331 | R321, R406 |
+| B (U501) | SMA J2 (solder it on) | R406 | R321, R331 |
 
-**Any other frequency:** look it up in `antenna/results/tuning.md` (every
-5 MHz) or `antenna/results/tuning_<band>.csv` (every MHz), and fit that
-row's four 0603 parts: the antenna's tuning part (L401 = 433, L402 = 315,
-L404 = 868, L405 = 915), its selector (R3x1), shunt (C3x1) and series
-(L3x1). The default parts for every antenna are fitted at the factory, so
-switching between the four default antennas only needs the selector.
-
-Keep the inverted-F shorting jumpers R401 (433), R402 (315), R404 (868) and
-R405 (915) fitted (0 ohm) at all times. External whip length for any
-frequency: L = 71 250 / f mm (table at the end of `tuning.md`).
+**Retuning a coil:** each coil branch is selector R3x1, shunt pad C3x1
+(empty) and series part L3x1 (0 ohm) right at the coil. With a nanoVNA on
+the SMA (fit R403/R406 and the jack) or on the selector pads, add a small
+shunt capacitor at C3x1 and/or swap L3x1 for a capacitor or inductor to
+centre the coil on another frequency. For frequencies far from the four
+coil bands, use the SMA jack with an external antenna (quarter-wave whip
+L = 71 250 / f mm).
 
 **315 MHz BOM swap for radio A** (SWRS061I Table 21): C121/C131 6.8 pF,
 C122 12 pF, C123 6.8 pF, L121/L123/L131 33 nH, L122 18 nH; C124/C125
@@ -68,8 +64,8 @@ stay 330 pF.
 5. GDO0 defaults to CLK_XOSC/192 (~135 kHz): radio A on D2, radio B on D4.
 6. RF: TI SmartRF Studio settings; PATABLE for +10 dBm is 0xC2 (315),
    0xC0 (433), 0xC2 (868), 0xC0 (915) (SWRS061I Table 39), giving
-   ~+10 dBm. With a nanoVNA you can check each printed antenna at its
-   selector pads and fine-tune the T-match (see antenna/README.md).
+   ~+10 dBm. With a nanoVNA you can check each coil at its selector pads
+   and fine-tune its T-match.
 
 ## Pin map (Nano Every)
 

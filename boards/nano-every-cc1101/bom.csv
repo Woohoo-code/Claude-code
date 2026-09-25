@@ -1,5 +1,9 @@
 RefDes,Qty,Description,Manufacturer,MPN,Package,Notes
 A1,1,Arduino Nano Every (plugs into 2x 1x15 female 2.54 mm headers),Arduino,ABX00028,Arduino_Nano,
+AE1,1,"Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",BAT WIRELESS,BW433SNX21-5W2,Coil_Spring,LCSC C496554
+AE2,1,"Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",BAT WIRELESS,BW315SNX39-6W3,Coil_Spring,LCSC C496553
+AE3,1,"Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",BAT WIRELESS,BW868SNX20-5Z6,Coil_Spring,LCSC C496555
+AE4,1,"Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",BAT WIRELESS,BW915SNX17-5W2,Coil_Spring,LCSC C496556
 C5,1,Capacitor 1 uF 10% X5R 0603,Samsung,CL10A105KB8NNNC,C_0603,LCSC C15849
 C6,1,Capacitor 10 uF 10% X5R 25 V 0805,Samsung,CL21A106KAYNNNE,C_0805,LCSC C15850
 "C7, C8",2,Capacitor 100 nF 10% X7R 50 V 0603,Yageo,CC0603KRX7R9BB104,C_0603,LCSC C14663
@@ -9,8 +13,7 @@ C6,1,Capacitor 10 uF 10% X5R 25 V 0805,Samsung,CL21A106KAYNNNE,C_0805,LCSC C1585
 C122,1,Capacitor 8.2 pF +/-0.25 pF C0G 0402,Murata,GRM1555C1H8R2CA01D,C_0402,LCSC C76984
 C123,1,Capacitor 5.6 pF +/-0.25 pF C0G 0402,Murata,GRM1555C1H5R6CA01D,C_0402,LCSC C85941
 "C124, C125",2,Capacitor 330 pF 5% C0G 0402 (DC block / RF bypass),Samsung,CL05C331JB5NNNC,C_0402,LCSC C13533
-"C301, C321, C331",3,Capacitor 3 pF +/-0.25 pF C0G 50 V 0603 (antenna match),FH,0603CG3R0C500NT,C_0603,LCSC C46219
-C311,1,Capacitor 47 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C470JB8NNNC,C_0603,LCSC C1671
+"C301, C311, C321, C331",4,not fitted (DNP),,,C_0603,leave empty unless re-selecting the antenna
 C621,1,Capacitor 1.0 pF +/-0.1 pF C0G 0402,YAGEO,CC0402BRNPO9BN1R0,C_0402,LCSC C309455
 "C622, C631",2,Capacitor 1.5 pF +/-0.1 pF C0G 0402,FH,0402CG1R5B500NT,C_0402,LCSC C285112
 C623,1,Capacitor 3.3 pF +/-0.1 pF C0G 0402,YAGEO,CC0402BRNPO9BN3R3,C_0402,LCSC C327287
@@ -22,23 +25,15 @@ J3,1,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15
 J4,1,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,PinHeader_1x15,LCSC C7501269
 "L121, L123, L131",3,Inductor 27 nH 5% multilayer 0402,Murata,LQG15HS27NJ02D,L_0402,LCSC C12669
 L122,1,Inductor 22 nH 5% multilayer 0402,Murata,LQG15HS22NJ02D,L_0402,LCSC C12670
-"L301, L321",2,Capacitor 6 pF +/-0.25 pF C0G 50 V 0603 (antenna match),FH,0603CG6R0C500NT,L_0603,LCSC C37474
-L311,1,Capacitor 18 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C180JB8NNNC,L_0603,LCSC C1647
-L331,1,Capacitor 3 pF +/-0.25 pF C0G 50 V 0603 (antenna match),FH,0603CG3R0C500NT,L_0603,LCSC C46219
-L401,1,Capacitor 47 pF 5% C0G 50 V 0603 (antenna match),Samsung,CL10C470JB8NNNC,L_0603,LCSC C1671
-L402,1,not fitted (DNP (39nH to use)),,,L_0603,leave empty unless re-selecting the antenna
-"L404, L405",2,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,L_0603,LCSC C21189
+"L301, L311, L321, L331",4,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,L_0603,LCSC C21189
 "L621, L623, L624, L631",4,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,L_0402,LCSC C82920
 "L622, L632",2,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,L_0402,LCSC C82917
 R1,1,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,R_0603,LCSC C21190
 "R171, R671",2,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),UNI-ROYAL,0402WGF5602TCE,R_0402,LCSC C25796
-"R301, R321, R401, R402, R404, R405",6,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,R_0603,LCSC C21189
-"R311, R331",2,not fitted (DNP (0R to use)),,,R_0603,leave empty unless re-selecting the antenna
-"R403, R406, R407, R408",4,not fitted (DNP),,,R_0603,leave empty unless re-selecting the antenna
+"R301, R321",2,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,R_0603,LCSC C21189
+"R311, R331, R403, R406",4,not fitted (DNP),,,R_0603,leave empty unless re-selecting the antenna
 "U1, U501",2,"Sub-1 GHz RF transceiver, 300-928 MHz",Texas Instruments,CC1101RGPR,QFN,LCSC C29953
 U2,1,LDO 3.3 V 200 mA,Torex,XC6206P332MR-G,SOT-23,LCSC C5446
 U3,1,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,TSSOP-20,LCSC C17206
 "Y1, Y501",2,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,Crystal,LCSC C70573
 "S1, S2",2,Female header 1x15 2.54 mm (Nano socket),Generic,,HDR-1x15-F,optional; or solder the Nano directly
-H1,1,"Coil antenna 433 MHz, spring 5 mm x 21 mm (radio A)",BAT WIRELESS,BW433SNX21-5W2,spring,"optional, LCSC C496554"
-H2,1,"Coil antenna 868 MHz, spring 5 mm x 20 mm (radio B)",BAT WIRELESS,BW868SNX20-5Z6,spring,"optional, LCSC C496555"

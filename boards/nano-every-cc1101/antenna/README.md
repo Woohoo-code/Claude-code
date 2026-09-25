@@ -1,5 +1,11 @@
 # Printed antennas: every CC1101 frequency
 
+> **v1 study, not used by the current board.** The board now uses coil
+> (helical spring) antennas at the edge of a 70 x 45 mm PCB; this folder is
+> the openEMS model and per-MHz tuning of the earlier 100 x 100 mm version
+> with four printed inverted-F antennas, kept for reference.
+
+
 The CC1101 tunes continuously over **300-348, 387-464 and 779-928 MHz**.
 The board has four printed antennas, and each can be tuned to any
 frequency in its range with 0603 parts. Values for every MHz are in

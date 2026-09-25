@@ -1,26 +1,29 @@
 #!/usr/bin/env python3
-"""Generate nano_every_cc1101.kicad_pcb: a 100 x 100 mm, 2-layer carrier for
-an Arduino Nano Every with two TI CC1101 radios covering every CC1101 band:
+"""Generate nano_every_cc1101.kicad_pcb: a compact 70 x 45 mm, 2-layer
+carrier for an Arduino Nano Every with two TI CC1101 radios:
 
   radio A (U1)   : 315 / 433 MHz front end (433 MHz BOM fitted)
-                   -> printed IFA 433 (top edge), printed IFA 315 (left edge),
-                      SMA J1 / wire H1
+                   -> coil antennas AE1 433 MHz (selected) + AE2 315 MHz,
+                      optional SMA J1
   radio B (U501) : 868 / 915 MHz front end
-                   -> printed IFA 868 and IFA 915 (right edge), SMA J2 / wire H2
+                   -> coil antennas AE3 868 MHz (selected) + AE4 915 MHz,
+                      optional SMA J2
 
-Every antenna branch starts with a series selector part (fit it to use that
-antenna, leave it off otherwise), then a shunt part and a second series
-part: a T-match right at the antenna feed, valued from the openEMS model
-(antenna/match.py).
+The antennas are helical spring ("coil") antennas standing up from the
+board edge, JLCPCB-assembled through-hole parts. Every antenna branch
+starts at the radio's 50 ohm bus with a series selector (fit it to use that
+antenna), then a shunt part and a second series part: a T-match right at
+the coil for retuning (default: 0R / not fitted / 0R). All four coils are
+fitted; moving one 0R selector per radio switches band.
 
 Run with KiCad 7's Python (`/usr/bin/python3 gen_board.py`). Steps:
   1. place parts; hand-route both CC1101 clusters (radio A = the
-     boards/cc1101-mini layout rotated 90 deg; radio B = the same core with
-     TI's 868/915 MHz balun), every RF line, match network and antenna, the
-     LDO/level-shifter power stubs and the Nano breakout links
+     boards/cc1101-mini layout; radio B = the same core with TI's 868/915 MHz
+     balun), every RF line and match network, the LDO/level-shifter power
+     stubs and the Nano breakout links
   2. autoroute the remaining digital/power nets with Freerouting (GND is
      excluded: it lands on the pours through its own vias)
-  3. stitch and pour ground on both layers, save
+  3. stitch and pour ground on both layers (clear of the coils), save
 
 Coordinates: board mm, origin top-left, +y down.
 """
@@ -37,10 +40,13 @@ import pcbnew
 from pcbnew import FromMM, VECTOR2I
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "antenna"))
-import antenna_geometry as ag  # noqa: E402
-from antenna_geometry import BOARD, GND_X0, GND_X1, GND_Y0, TRACE_W as ANT_W  # noqa: E402
-from match import MATCH  # noqa: E402
+W, H = 70.0, 45.0                       # board outline
+COIL_X = 66.3                           # coil antenna column (right edge)
+STRIP_X = 63.0                          # no ground right of this beside the coils
+# ground pour outline: whole board except the two coil strips (the SMA jacks
+# in between keep their ground)
+POUR = [(0, 0), (STRIP_X, 0), (STRIP_X, 15.3), (W, 15.3), (W, 29.7), (STRIP_X, 29.7),
+        (STRIP_X, H), (0, H)]
 
 OUT = os.path.join(HERE, "nano_every_cc1101.kicad_pcb")
 FP_ROOT = os.environ.get("KICAD7_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
@@ -79,8 +85,8 @@ CORE = {
            {"1": "XOSC_Q1*", "2": "GND", "3": "XOSC_Q2*", "4": "GND"}),
     "C81": (*C0402, 3.9, 11.2, 90, "27pF", {"1": "GND", "2": "XOSC_Q1*"}),
     "C101": (*C0402, 9.35, 11.2, 90, "27pF", {"1": "GND", "2": "XOSC_Q2*"}),
-    "C41": (*C0402, 3.35, 7.8, 90, "100nF", {"1": "GND", "2": "3V3"}),
-    "C51": (*C0402, 4.3, 7.95, 90, "100nF", {"1": "GND", "2": "DCOUPL*"}),
+    "C41": (*C0402, 3.2, 7.8, 90, "100nF", {"1": "GND", "2": "3V3"}),
+    "C51": (*C0402, 4.15, 7.95, 90, "100nF", {"1": "GND", "2": "DCOUPL*"}),   # body 0.1 mm clear of U
     "R171": (*R0402, 7.6, 2.3, 90, "56k 1%", {"1": "RBIAS*", "2": "GND"}),
     "C181": (*C0402, 5.75, 1.3, 0, "100nF", {"1": "GND", "2": "3V3"}),
     "C151": (*C0402, 8.85, 2.3, 90, "100nF", {"1": "3V3", "2": "GND"}),
@@ -88,7 +94,7 @@ CORE = {
 }
 CORE_GND_ESCAPE = {
     "C181": (4.8, 0.75), "R171": (7.6, 1.2), "C151": (8.85, 1.2),
-    "C41": (3.35, 9.0), "C51": (3.35, 9.0), "C111": (9.75, 9.6),
+    "C41": (3.2, 9.0), "C51": (3.2, 9.0), "C111": (9.75, 9.6),
     "C101": (8.75, 12.0), "C81": (3.1, 11.68),
 }
 
@@ -128,9 +134,9 @@ RF_868 = {
 }
 RF_868_GND = {"C131": (11.75, 2.55), "C124": (11.75, 11.95), "C123": (16.4, 9.0)}
 
-RADIO_A_AT, RADIO_B_AT = (34.0, 42.0), (64.5, 45.0)
+RADIO_A_AT, RADIO_B_AT = (38.5, 7.0), (38.5, 36.5)     # U centres, both rot 0
 
-NANO_X0, NANO_Y0 = 42.4, 57.0         # Nano pad 1 (rotation 0: USB at the bottom)
+NANO_X0, NANO_Y0 = 8.5, 5.5           # Nano pad 1 (rotation 0: USB at the bottom edge)
 NANO_PINS = {
     1: ("D1_TX", "TX"), 2: ("D0_RX", "RX"), 3: ("RST", "RST"), 4: ("GND", "GND"),
     5: ("D2", "D2"), 6: ("D3", "D3"), 7: ("D4", "D4"), 8: ("D5", "D5"),
@@ -290,8 +296,8 @@ def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
     T("GDO2*", [("U1", "3"), (3.72, 5.985)], ct); V("GDO2*", 3.72, 5.985)
     T("GDO0*", [("U1", "6"), (5.5, 8.4), (5.3, 8.65)], ct); V("GDO0*", 5.3, 8.65)
     T("CSN*", [("U1", "7"), (6.0, 8.75)], ct); V("CSN*", 6.0, 8.75)
-    T("3V3", [("U1", "4"), (3.35, 6.5), ("C41", "2")], 0.2); V("3V3", 3.2, 6.5)
-    T("DCOUPL*", [("U1", "5"), (4.3, 7.0), ("C51", "2")], cp)
+    T("3V3", [("U1", "4"), (3.2, 6.5), ("C41", "2")], 0.2); V("3V3", 3.2, 6.5)
+    T("DCOUPL*", [("U1", "5"), (4.15, 7.0), ("C51", "2")], cp)
     T("3V3", [("U1", "18"), (6.5, 3.25), (6.4, 2.95)], cp); V("3V3", 6.4, 2.95)
     T("3V3", [(6.4, 2.95), (6.4, 1.3), ("C181", "2")], cp)
     T("3V3", [("U1", "15"), (8.7, 5.0), (8.7, 5.5), ("U1", "14")], cp)
@@ -373,161 +379,62 @@ def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
     b.created = []
 
 
-# ======================= antennas + match networks ========================
-def t_match(b: Builder, name, node_pt, feed_pt, s1_at, c_at, s2_at, rot, c_rot, node_net):
-    """Selector S1 -> shunt C -> series S2 for antenna `name`, pads assigned
-    by proximity (node side / antenna side / chain side). Returns the pad
-    positions: (s1_node, s1_mid, c_mid, c_gnd, s2_mid, s2_feed)."""
-    m = MATCH[name]
-    r1, rc, r2 = m["refs"]
-    mid, feed = f"M_{name}", f"FEED_{name}"
-    n1 = b.two_pin(r1, *R0603, *s1_at, rot, m["s1"], node_pt, node_net, mid)
-    n2 = b.two_pin(r2, *L0603, *s2_at, rot, m["s2"], feed_pt, feed, mid)
-    nc = b.two_pin(rc, *C0603, *c_at, c_rot, m["c"], s1_at, mid, "GND")
-    return (b.P(r1, n1[0]), b.P(r1, n1[1]), b.P(rc, nc[0]), b.P(rc, nc[1]),
-            b.P(r2, n2[1]), b.P(r2, n2[0]))
+# ======================= coil antennas + match networks ===================
+# band -> radio, (selector, shunt, series) refs, coil ref, row y, selected, part.
+# All four coils are fitted; each radio's selector picks one (radio A's 315 MHz
+# coil also needs the 315 MHz front-end BOM). Coils sit 8.7 mm apart so the
+# unselected one loads the active one as little as the board allows.
+COILS = {
+    "433": ("A", ("R301", "C301", "L301"), "AE1", 3.3, True, "BW433SNX21-5W2"),
+    "315": ("A", ("R311", "C311", "L311"), "AE2", 12.0, False, "BW315SNX39-6W3"),
+    "915": ("B", ("R331", "C331", "L331"), "AE4", 33.0, False, "BW915SNX17-5W2"),
+    "868": ("B", ("R321", "C321", "L321"), "AE3", 41.7, True, "BW868SNX20-5Z6"),
+}
+BUS_X = {"A": 51.0, "B": 54.0}          # each radio's vertical 50 ohm bus
+SMA = {"A": ("R403", "J1", 18.8), "B": ("R406", "J2", 26.2)}
 
 
-def ifa(b: Builder, name, short_ref, short_at, short_rot, gnd_dxdy):
-    """Draw antenna `name` and its 0R shorting jumper."""
-    a = ag.antenna(name)
-    feed = f"FEED_{name}"
-    b.track(feed, a["feed"], ANT_W)
-    parts = ag.arm_parts(name)
-    ld = ag.load(name)
-    if not ld:
-        b.track(feed, parts[0], ANT_W)
-    else:                             # series tuning element in the arm
-        far = f"ARM_{name}"
-        lref = MATCH[name]["tune_ref"]
-        b.two_pin(lref, *L0603, *ld["at"], 90 if ld["axis"] == "y" else 0,
-                  MATCH[name]["tune"], parts[0][-1], feed, far)
-        pf = next(p.GetNumber() for p in b.fps[lref].Pads() if p.GetNetname() == feed)
-        pa = next(p.GetNumber() for p in b.fps[lref].Pads() if p.GetNetname() == far)
-
-        def pull_back(pl, at_end, d=1.0):
-            """Shorten a polyline by d mm at its start or end."""
-            pl = list(pl)
-            (x0, y0), (x1, y1) = (pl[-2], pl[-1]) if at_end else (pl[1], pl[0])
-            L = math.hypot(x1 - x0, y1 - y0)
-            q = (x1 - (x1 - x0) * d / L, y1 - (y1 - y0) * d / L)
-            if at_end:
-                pl[-1] = q
-            else:
-                pl[0] = q
-            return pl
-
-        p0 = pull_back(parts[0], True)
-        p1 = pull_back(parts[1], False)
-        b.track(feed, p0, ANT_W)
-        b.track(feed, [p0[-1], (lref, pf)], 0.8)
-        b.track(far, p1, ANT_W)
-        b.track(far, [(lref, pa), p1[0]], 0.8)
-    s_end = a["short"][1]
-    b.two_pin(short_ref, *R0603, *short_at, short_rot,
-              "0R" if ag.shorted(name) else "DNP", s_end, feed, "GND")
-    pads = sorted(b.fps[short_ref].Pads(), key=lambda p: p.GetNetname() != feed)
-    ant_pad, gnd_pad = pads[0].GetNumber(), pads[1].GetNumber()
-    b.track(feed, [(short_ref, ant_pad), s_end], ANT_W)
-    b.gnd_stub(short_ref, gnd_pad, *gnd_dxdy)
-    return a
+def coil_branch(b: Builder, band):
+    radio, (r1, rc, r2), ae, y, selected, part = COILS[band]
+    bx = BUS_X[radio]
+    bus, mid, feed = f"ANT_{radio}", f"M_{band}", f"FEED_{band}"
+    s1x, cx, s2x = bx + 2.2, bx + 4.6, bx + 7.0
+    up = -1 if y > H - 6 else 1          # shunt below the line, above it on the bottom row
+    n1 = b.two_pin(r1, *R0603, s1x, y, 0, "0R" if selected else "DNP", (bx, y), bus, mid)
+    n2 = b.two_pin(r2, *L0603, s2x, y, 0, "0R", (s2x - 1, y), mid, feed)
+    nc = b.two_pin(rc, *C0603, cx, y + 1.3 * up, 90, "DNP", (cx, y), mid, "GND")
+    b.fp(ae, "nano_every_cc1101", "Coil_Spring_D5.5_THT", COIL_X, y, 0, part, {"1": feed})
+    b.track(bus, [(bx, y), (r1, n1[0])], RF_50)
+    b.track(mid, [(r1, n1[1]), (r2, n2[0])], RF_SEL)
+    b.track(mid, [(rc, nc[0]), (cx, y)], RF_SEL)
+    b.track(feed, [(r2, n2[1]), (ae, "1")], RF_SEL)
+    b.gnd_stub(rc, nc[1], 0, 1.2 * up)
 
 
-def build_antennas(b: Builder):
-    # ---- radio A: node N_A = (29, 32.5) --------------------------------
-    na, node = "ANT_A", (29.0, 32.5)
-    a433 = ifa(b, "433", "R401", (23.0, 21.3), 90, (0, 1.3))
-    f433 = a433["feed"][0]
-    p = t_match(b, "433", node, (29.0, 20.0), (29.0, 26.0), (31.3, 24.3), (29.0, 22.6),
-                90, 0, na)
-    b.track(na, [p[0], node], RF_SEL)
-    b.track("M_433", [p[1], p[4]], RF_SEL)
-    b.track("M_433", [p[2], (29.0, p[2][1])], RF_SEL)
-    rc = MATCH["433"]["refs"][1]
-    gp = next(x.GetNumber() for x in b.fps[rc].Pads() if x.GetNetname() == "GND")
-    b.gnd_stub(rc, gp, 1.3, 0)
-    b.track("FEED_433", [p[5], (29.0, 20.6), f433], RF_SEL)
-
-    a315 = ifa(b, "315", "R402", (23.3, 28.5), 0, (1.3, 0))
-    f315 = a315["feed"][0]
-    fy = f315[1]
-    p = t_match(b, "315", node, (22.0, fy), (27.2, fy), (25.5, fy + 2.3), (24.0, fy),
-                0, 90, na)
-    b.track(na, [p[0], node], RF_SEL)
-    b.track("M_315", [p[1], p[4]], RF_SEL)
-    b.track("M_315", [p[2], (p[2][0], fy)], RF_SEL)
-    rc = MATCH["315"]["refs"][1]
-    gp = next(x.GetNumber() for x in b.fps[rc].Pads() if x.GetNetname() == "GND")
-    b.gnd_stub(rc, gp, 0, 1.3)
-    b.track("FEED_315", [p[5], f315], RF_SEL)
-
-    ya = b.P("C125", "2")
-    b.track(na, [("C125", "2"), (ya[0] - 1.0, ya[1])], RF_IN)
-    b.track(na, [(ya[0] - 1.0, ya[1]), node], RF_50)
-    b.two_pin("R403", *R0603, 27.0, 35.2, 90, "DNP", node, na, "EXT_A")
-    ext_pad = next(x.GetNumber() for x in b.fps["R403"].Pads() if x.GetNetname() == "EXT_A")
-    node_pad = next(x.GetNumber() for x in b.fps["R403"].Pads() if x.GetNetname() == na)
-    b.track(na, [node, ("R403", node_pad)], RF_SEL)
-    b.fp("J1", "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", 27.0, BOARD - 2.7,
-         270, "SMA", {"1": "SMA_A", "2": "GND"})
-    # H1/H2: coil (helical spring) antenna or wire whip, 1.2 mm hole for the
-    # 0.8-1.0 mm pins of the BAT WIRELESS BWxxxSNX spring antennas
-    b.fp("H1", "TestPoint", "TestPoint_THTPad_D2.5mm_Drill1.2mm", 27.0, 60.0, 0, "coil",
-         {"1": "EXT_A"})
-    b.track("EXT_A", [("R403", ext_pad), ("H1", "1")], RF_50)
-    # R407 links H1 on to the SMA jack; left empty so a coil in H1 has no
-    # open stub (37 mm of line would detune it). Fit 0R to use J1.
-    b.two_pin("R407", *R0603, 27.0, 64.5, 90, "DNP", (27.0, 60.0), "EXT_A", "SMA_A")
-    ha = next(x.GetNumber() for x in b.fps["R407"].Pads() if x.GetNetname() == "EXT_A")
-    ja = next(x.GetNumber() for x in b.fps["R407"].Pads() if x.GetNetname() == "SMA_A")
-    b.track("EXT_A", [("H1", "1"), ("R407", ha)], RF_50)
-    b.track("SMA_A", [("R407", ja), ("J1", "1")], RF_50)
-
-    # ---- radio B: node N_B = (80, yb) ----------------------------------
-    nb = "ANT_B"
-    yb = b.P("C625", "2")[1]
-    nodeb = (80.0, yb)
-    b.track(nb, [("C625", "2"), nodeb], RF_IN)
-
-    a868 = ifa(b, "868", "R404", (80.7, ag.antenna("868")["short"][0][1]), 0, (-1.3, 0))
-    f868 = a868["feed"][0]
-    p = t_match(b, "868", nodeb, (82.0, f868[1]), (80.0, 30.3), (77.6, 28.7), (80.0, 27.1),
-                90, 0, nb)
-    b.track(nb, [nodeb, p[0]], RF_50)
-    b.track("M_868", [p[1], p[4]], RF_SEL)
-    b.track("M_868", [p[2], (80.0, p[2][1])], RF_SEL)
-    rc = MATCH["868"]["refs"][1]
-    gp = next(x.GetNumber() for x in b.fps[rc].Pads() if x.GetNetname() == "GND")
-    b.gnd_stub(rc, gp, -1.3, 0)
-    b.track("FEED_868", [p[5], (80.0, f868[1]), f868], RF_SEL)
-
-    a915 = ifa(b, "915", "R405", (80.7, ag.antenna("915")["short"][0][1]), 0, (0, 1.5))
-    f915 = a915["feed"][0]
-    p = t_match(b, "915", nodeb, (82.0, f915[1]), (80.0, f915[1] - 4.7),
-                (77.6, f915[1] - 3.1), (80.0, f915[1] - 1.5), 90, 0, nb)
-    b.track(nb, [nodeb, p[0]], RF_50)
-    b.track("M_915", [p[1], p[4]], RF_SEL)
-    b.track("M_915", [p[2], (80.0, p[2][1])], RF_SEL)
-    rc = MATCH["915"]["refs"][1]
-    gp = next(x.GetNumber() for x in b.fps[rc].Pads() if x.GetNetname() == "GND")
-    b.gnd_stub(rc, gp, -1.3, 0)
-    b.track("FEED_915", [p[5], (80.0, f915[1]), f915], RF_SEL)
-
-    b.two_pin("R406", *R0603, 78.0, yb + 2.3, 90, "DNP", nodeb, nb, "EXT_B")
-    ext_pad = next(x.GetNumber() for x in b.fps["R406"].Pads() if x.GetNetname() == "EXT_B")
-    node_pad = next(x.GetNumber() for x in b.fps["R406"].Pads() if x.GetNetname() == nb)
-    b.track(nb, [(79.0, yb), (78.0, yb + 1.0), ("R406", node_pad)], RF_SEL)
-    b.fp("J2", "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", 73.0, BOARD - 2.7,
-         270, "SMA", {"1": "SMA_B", "2": "GND"})
-    b.fp("H2", "TestPoint", "TestPoint_THTPad_D2.5mm_Drill1.2mm", 73.0, 70.0, 0, "coil",
-         {"1": "EXT_B"})
-    ey = b.P("R406", ext_pad)[1]
-    b.track("EXT_B", [("R406", ext_pad), (73.0, ey + 5.0), ("H2", "1")], RF_50)
-    b.two_pin("R408", *R0603, 73.0, 74.5, 90, "DNP", (73.0, 70.0), "EXT_B", "SMA_B")
-    hb = next(x.GetNumber() for x in b.fps["R408"].Pads() if x.GetNetname() == "EXT_B")
-    jb = next(x.GetNumber() for x in b.fps["R408"].Pads() if x.GetNetname() == "SMA_B")
-    b.track("EXT_B", [("H2", "1"), ("R408", hb)], RF_50)
-    b.track("SMA_B", [("R408", jb), ("J2", "1")], RF_50)
+def build_rf(b: Builder):
+    for radio in ("A", "B"):
+        bx = BUS_X[radio]
+        rows = [v[3] for v in COILS.values() if v[0] == radio]
+        ax, ay = b.P("C125" if radio == "A" else "C625", "2")      # balun output (ANT_x)
+        b.track(f"ANT_{radio}", [(ax, ay), (bx, ay)], RF_IN)
+        sel, jack, jy = SMA[radio]
+        # SMA selector right at the bus end, so an unused jack line is no stub
+        sy = max(rows) + 2.3 if radio == "A" else min(rows) - 2.3
+        b.two_pin(sel, *R0603, bx, sy, 90, "DNP", (bx, sy - 1 if radio == "A" else sy + 1),
+                  f"ANT_{radio}", f"SMA_{radio}")
+        near = next(p.GetNumber() for p in b.fps[sel].Pads() if p.GetNetname() == f"ANT_{radio}")
+        far = next(p.GetNumber() for p in b.fps[sel].Pads() if p.GetNetname() == f"SMA_{radio}")
+        b.track(f"ANT_{radio}", [(bx, min(rows)), (bx, max(rows))], RF_50)
+        b.track(f"ANT_{radio}", [(bx, max(rows) if radio == "A" else min(rows)), (sel, near)],
+                RF_50)
+        b.fp(jack, "nano_every_cc1101", "SMA_BWSMA-KE-P001_EdgeMount", W - 2.7, jy, 0, "SMA",
+             {"1": f"SMA_{radio}", "2": "GND"})
+        fx, fy = b.P(sel, far)
+        ly = fy + 1.7 if radio == "A" else fy - 1.6
+        b.track(f"SMA_{radio}", [(fx, fy), (fx, ly), (61.5, ly), (61.5 + abs(jy - ly), jy),
+                                 (jack, "1")], RF_50)
+    for band in COILS:
+        coil_branch(b, band)
 
 
 # ======================= host side =========================================
@@ -549,10 +456,10 @@ def build_host(b: Builder):
 
     # 3.3 V LDO: XC6206P332MR (SOT-23: 1 GND, 2 VOUT, 3 VIN; 200 mA, JLCPCB
     # basic part). Rotated 180 deg so VIN faces C5 and VOUT faces C6.
-    ux, uy = 50.0, 47.0
+    ux, uy = 48.8, 19.5
     b.fp("U2", "Package_TO_SOT_SMD", "SOT-23", ux, uy, 180, "XC6206P332MR",
          {"1": "GND", "2": "3V3", "3": "+5V"})
-    b.fp("C5", *C0603, ux - 4.8, uy, 90, "1uF", {"1": "GND", "2": "+5V"})
+    b.fp("C5", *C0603, ux - 3.9, uy, 90, "1uF", {"1": "GND", "2": "+5V"})
     b.fp("C6", "Capacitor_SMD", "C_0805_2012Metric", ux + 3.8, uy, 90, "10uF",
          {"1": "GND", "2": "3V3"})
     b.track("+5V", [("U2", "3"), (ux - 3.0, uy), ("C5", "2")], PWR)
@@ -561,9 +468,9 @@ def build_host(b: Builder):
     b.gnd_stub("C5", "1", 0, 1.3)
     b.gnd_stub("C6", "1", 0, 1.3)
 
-    b.fp("D1", "LED_SMD", "LED_0603_1608Metric", 44.0, 52.0, 0, "red",
+    b.fp("D1", "LED_SMD", "LED_0603_1608Metric", 46.5, 27.5, 0, "red",
          {"1": "GND", "2": "LED_A"})
-    b.fp("R1", *R0603, 47.0, 52.0, 0, "1k", {"1": "LED_A", "2": "3V3"})
+    b.fp("R1", *R0603, 49.5, 27.5, 0, "1k", {"1": "LED_A", "2": "3V3"})
     b.track("LED_A", [("D1", "2"), ("R1", "1")])
     b.gnd_stub("D1", "1", 0, 1.4)
 
@@ -571,45 +478,45 @@ def build_host(b: Builder):
     for ch, (a, bb) in TXS.items():
         txs[TXS_A_PIN[ch]] = a
         txs[TXS_B_PIN[ch]] = bb
-    tx, ty = 50.0, 36.0
-    b.fp("U3", "Package_SO", "TSSOP-20_4.4x6.5mm_P0.65mm", tx, ty, 270, "TXS0108EPWR", txs)
-    b.fp("C7", *C0603, tx + 2.275, ty - 5.7, 90, "100nF", {"1": "3V3", "2": "GND"})
-    b.fp("C8", *C0603, tx + 2.275, ty + 5.7, 90, "100nF", {"1": "GND", "2": "+5V"})
+    tx, ty = 40.0, 23.0
+    # rot 180: B side (5 V, pins 11-20) faces the Nano, A side (3.3 V) the radios
+    b.fp("U3", "Package_SO", "TSSOP-20_4.4x6.5mm_P0.65mm", tx, ty, 180, "TXS0108EPWR", txs)
+    vx, vy = b.P("U3", "2")                 # VCCA
+    b.fp("C7", *C0603, vx + 2.6, vy, 0, "100nF", {"1": "3V3", "2": "GND"})
+    wx, wy = b.P("U3", "19")                # VCCB
+    b.fp("C8", *C0603, wx - 2.6, wy, 0, "100nF", {"1": "GND", "2": "+5V"})
     b.track("3V3", [("U3", "2"), ("C7", "1")], PWR)
     b.track("+5V", [("U3", "19"), ("C8", "2")], PWR)
     b.gnd_stub("C7", "2", 0, -1.3)
     b.gnd_stub("C8", "1", 0, 1.3)
     x, y = b.P("U3", "11")
-    b.track("GND", [("U3", "11"), (x, y + 1.0), (x - 1.0, y + 1.6)], TRACK)
-    b.gnd_vias.append((x - 1.0, y + 1.6, VIA_D, VIA_DRILL))
+    b.track("GND", [("U3", "11"), (x - 1.4, y)], TRACK)
+    b.gnd_vias.append((x - 1.4, y, VIA_D, VIA_DRILL))
 
     # radio B GDO2 has no free level-shifter channel: 3.3 V test pad
-    b.fp("TP1", "TestPoint", "TestPoint_Pad_D1.5mm", 58.5, 40.0, 0, "GDO2_B",
+    b.fp("TP1", "TestPoint", "TestPoint_Pad_D1.5mm", 48.0, 23.5, 0, "GDO2_B",
          {"1": "GDO2_B"})
-
-    for ref, (x, y) in {"H3": (45.0, 24.0), "H4": (68.0, 24.0),
-                        "H5": (30.5, 88.0), "H6": (69.5, 88.0)}.items():
-        b.fp(ref, "MountingHole", "MountingHole_3.2mm_M3", x, y, 0, "M3", {})
 
 
 # ======================= main ==============================================
 def main() -> int:
     b = Builder()
-    build_radio(b, "A", 0, "433", RADIO_A_AT, 90)
+    build_radio(b, "A", 0, "433", RADIO_A_AT, 0)
     build_radio(b, "B", 500, "868", RADIO_B_AT, 0)
-    build_antennas(b)
+    build_rf(b)
     build_host(b)
     board = b.board
+    clip_footprint_silk(board)
 
     edge = pcbnew.PCB_SHAPE(board)
     edge.SetShape(pcbnew.SHAPE_T_RECT)
     edge.SetStart(b.pt(0, 0))
-    edge.SetEnd(b.pt(BOARD, BOARD))
+    edge.SetEnd(b.pt(W, H))
     edge.SetLayer(pcbnew.Edge_Cuts)
     edge.SetWidth(FromMM(0.1))
     board.Add(edge)
-    b.ds.SetAuxOrigin(b.pt(0, BOARD))
-    b.ds.SetGridOrigin(b.pt(0, BOARD))
+    b.ds.SetAuxOrigin(b.pt(0, H))
+    b.ds.SetGridOrigin(b.pt(0, H))
 
     # ---- autoroute --------------------------------------------------------
     keepouts = []
@@ -633,14 +540,19 @@ def main() -> int:
         board.Add(z)
         keepouts.append(z)
 
-    keepout(0, 0, BOARD, GND_Y0 + 0.5)                  # antenna strips
-    keepout(0, 0, GND_X0 + 0.5, BOARD)
-    keepout(GND_X1 - 0.5, 0, BOARD, BOARD)
-    keepout(GND_X0, GND_Y0, 38.5, 39.0)                  # radio A RF + matches
-    keepout(25.0, 34.0, 29.0, BOARD)                     # EXT_A line
-    keepout(68.0, 40.5, GND_X1, 52.0)                    # radio B RF
-    keepout(76.0, GND_Y0, GND_X1, BOARD)                 # radio B lines + matches
-    keepout(71.0, 46.0, 79.0, BOARD)                     # EXT_B line
+    # ground corridors the router must leave open, per radio (mini coords
+    # shifted to the cluster): B.Cu from inside the AVDD ring up past the SI
+    # via, F.Cu from the C41/C51/C81 ground escapes out to the main pour
+    for ux, uy in (RADIO_A_AT, RADIO_B_AT):
+        dx, dy = ux - 6.5, uy - 6.0
+        keepout(dx + 5.45, max(0.0, dy - 0.3), dx + 6.1, dy + 5.0, (pcbnew.B_Cu,))
+        keepout(31.0, dy + 9.4, dx + 3.4, dy + 10.0, (pcbnew.F_Cu,))
+    keepout(41.5, 0, W, 16.5)                            # radio A balun, bus, coils
+    keepout(50.0, 13.0, W, 17.6)                         # SMA_A line
+    keepout(59.0, 13.0, W, 21.5)
+    keepout(42.0, 32.0, W, H)                            # radio B balun, bus, coils
+    keepout(53.0, 27.5, W, 32.0)                         # SMA_B line
+    keepout(59.0, 21.5, W, 32.0)
 
     for x, y, d, drill in b.gnd_vias:
         b.via("GND", x, y, d, drill)
@@ -659,7 +571,7 @@ def main() -> int:
         text = text.replace("(class GND_PLANE", "(class GND_PLANE GND", 1)
         open(dsn, "w").write(text)
         subprocess.run(["xvfb-run", "-a", "java", "-jar", FREEROUTING, "-de", dsn, "-do", ses,
-                        "-mp", "40", "-mt", "1", "-inc", "GND_PLANE"], check=True,
+                        "-mp", "120", "-mt", "1", "-inc", "GND_PLANE"], check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=3600)
         import_ses(board, ses, b.net)
         os.remove(dsn)
@@ -680,7 +592,7 @@ def main() -> int:
         z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
         ol = z.Outline()
         ol.NewOutline()
-        for x, y in [(GND_X0, GND_Y0), (GND_X1, GND_Y0), (GND_X1, BOARD), (GND_X0, BOARD)]:
+        for x, y in POUR:
             ol.Append(FromMM(OX + x), FromMM(OY + y))
         board.Add(z)
 
@@ -690,7 +602,18 @@ def main() -> int:
     board = pcbnew.LoadBoard(OUT)
     board.BuildConnectivity()
     pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+    for _ in range(4):                       # tie any isolated ground pieces in
+        if not join_ground_islands(board):
+            break
+        pcbnew.ZONE_FILLER(board).Fill(board.Zones())
     pcbnew.SaveBoard(OUT, board)
+    # footprints are generated (silk clipped off pads), so a library-sync
+    # check is meaningless here; everything else stays at KiCad defaults
+    import json
+    pro = OUT.replace(".kicad_pcb", ".kicad_pro")
+    d = json.load(open(pro))
+    d["board"]["design_settings"]["rule_severities"]["lib_footprint_mismatch"] = "ignore"
+    json.dump(d, open(pro, "w"), indent=2)
     print(f"wrote {OUT}")
     return 0
 
@@ -755,16 +678,163 @@ def import_ses(board, path, net):
 
 def drop_dangling(board):
     """Remove signal vias the router left with copper on one layer only (it
-    reached the pad stub on the top layer instead)."""
+    reached the pad stub on the top layer instead), and a hand-placed escape
+    stub that only led to such a via. A track counts as touching a via when
+    it passes within the via's radius (router ends are rounded on import)."""
     tracks = [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"]
+
+    def touches(t, p, r):
+        a, c = t.GetStart(), t.GetEnd()
+        vx, vy = c.x - a.x, c.y - a.y
+        L2 = vx * vx + vy * vy
+        u = 0 if L2 == 0 else max(0, min(1, ((p.x - a.x) * vx + (p.y - a.y) * vy) / L2))
+        return math.hypot(p.x - (a.x + u * vx), p.y - (a.y + u * vy)) <= r
+
     for v in [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA"]:
         if v.GetNetname() in ("GND", ""):
             continue
-        p = v.GetPosition()
-        layers = {t.GetLayer() for t in tracks
-                  if t.GetNetCode() == v.GetNetCode() and p in (t.GetStart(), t.GetEnd())}
-        if len(layers) < 2:
-            board.Remove(v)
+        p, r = v.GetPosition(), v.GetWidth() / 2
+        near = [t for t in tracks if t.GetNetCode() == v.GetNetCode() and touches(t, p, r)]
+        if len({t.GetLayer() for t in near}) >= 2:
+            continue
+        board.Remove(v)
+        for t in near:                       # stub that only led to this via
+            end = t.GetEnd() if touches_pt(t.GetEnd(), p, r) else t.GetStart()
+            linked = [o for o in tracks if o is not t and o.GetNetCode() == t.GetNetCode()
+                      and o.GetLayer() == t.GetLayer() and touches(o, end, t.GetWidth() / 2)]
+            on_pad = any(pad.HitTest(end) for fp in board.GetFootprints() for pad in fp.Pads()
+                         if pad.GetNetCode() == t.GetNetCode())
+            if not linked and not on_pad:
+                board.Remove(t)
+                tracks.remove(t)
+
+
+def touches_pt(q, p, r):
+    return math.hypot(q.x - p.x, q.y - p.y) <= r
+
+
+def join_ground_islands(board, step=0.2):
+    """Find GND pour pieces not connected (through vias) to the main pour and
+    add a via where such a piece overlaps the other layer's main pour, clear
+    of pads and of the fill edges. Returns the number of vias added."""
+    vias = [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA" and t.GetNetname() == "GND"]
+    pieces = []                       # (layer, outline)
+    for z in board.Zones():
+        for L in (pcbnew.F_Cu, pcbnew.B_Cu):
+            if z.IsOnLayer(L) and z.GetNetname() == "GND":
+                fp = z.GetFilledPolysList(L)
+                pieces += [(L, fp.Outline(i)) for i in range(fp.OutlineCount())]
+    vset = [set(i for i, v in enumerate(vias) if ol.PointInside(v.GetPosition()))
+            for _, ol in pieces]
+    parent = list(range(len(pieces)))
+
+    def find(k):
+        while parent[k] != k:
+            k = parent[k]
+        return k
+    for i in range(len(pieces)):
+        for j in range(i + 1, len(pieces)):
+            if vset[i] & vset[j]:
+                parent[find(i)] = find(j)
+    main = find(max(range(len(pieces)), key=lambda i: abs(pieces[i][1].Area())))
+    pads = [(p.GetPosition(), max(p.GetBoundingBox().GetWidth(), p.GetBoundingBox().GetHeight()))
+            for fp in board.GetFootprints() for p in fp.Pads()]
+    r = FromMM(VIA_D / 2 + 0.15)
+    added = 0
+    done = set()
+    for i, (L, ol) in enumerate(pieces):
+        g = find(i)
+        if g == main or g in done:
+            continue
+        others = [pieces[j][1] for j in range(len(pieces))
+                  if find(j) == main and pieces[j][0] != L]
+        bb = ol.BBox()
+        spot = None
+        for yy in range(bb.GetY(), bb.GetBottom(), FromMM(step)):
+            for xx in range(bb.GetX(), bb.GetRight(), FromMM(step)):
+                pt = VECTOR2I(xx, yy)
+                ring = [VECTOR2I(int(xx + r * math.cos(t * math.pi / 4)),
+                                 int(yy + r * math.sin(t * math.pi / 4))) for t in range(8)]
+                if not all(ol.PointInside(q) for q in ring + [pt]):
+                    continue
+                if not any(all(o.PointInside(q) for q in ring + [pt]) for o in others):
+                    continue
+                if any(math.dist((pt.x, pt.y), (pp.x, pp.y)) < sz / 2 + FromMM(0.5)
+                       for pp, sz in pads):
+                    continue
+                spot = pt
+                break
+            if spot:
+                break
+        if spot:
+            v = pcbnew.PCB_VIA(board)
+            v.SetViaType(pcbnew.VIATYPE_THROUGH)
+            v.SetPosition(spot)
+            v.SetWidth(FromMM(VIA_D))
+            v.SetDrill(FromMM(VIA_DRILL))
+            v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+            v.SetNet(board.FindNet("GND"))
+            board.Add(v)
+            added += 1
+            done.add(g)
+            print(f"ground island joined with a via at "
+                  f"({pcbnew.ToMM(spot.x) - OX:.2f}, {pcbnew.ToMM(spot.y) - OY:.2f})")
+    return added
+
+
+def clip_footprint_silk(board, margin=0.12):
+    """Drop footprint silkscreen strokes that touch a pad (their own or a
+    neighbour's): fabs clip them anyway, and KiCad flags them as silk over
+    copper / silk overlap. Keeps the rest of each outline."""
+    pads = []
+    for fp in board.GetFootprints():
+        for pad in fp.Pads():
+            bb = pad.GetBoundingBox()
+            pads.append((pcbnew.ToMM(bb.GetX()), pcbnew.ToMM(bb.GetY()),
+                         pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom()),
+                         pad.IsOnLayer(pcbnew.F_Cu), pad.IsOnLayer(pcbnew.B_Cu)))
+
+    def samples(item):
+        sh = item.GetShape()
+        if sh == pcbnew.SHAPE_T_SEGMENT:
+            a, c = item.GetStart(), item.GetEnd()
+            n = max(2, int(math.dist((a.x, a.y), (c.x, c.y)) / FromMM(0.05)))
+            return [(a.x + (c.x - a.x) * i / n, a.y + (c.y - a.y) * i / n) for i in range(n + 1)]
+        if sh == pcbnew.SHAPE_T_CIRCLE:
+            cx, cy, r = item.GetCenter().x, item.GetCenter().y, item.GetRadius()
+            return [(cx + r * math.cos(t / 90 * math.pi), cy + r * math.sin(t / 90 * math.pi))
+                    for t in range(180)]
+        if sh == pcbnew.SHAPE_T_ARC:
+            return [(p.x, p.y) for p in (item.GetStart(), item.GetArcMid(), item.GetEnd())]
+        bb = item.GetBoundingBox()
+        return [(bb.GetX(), bb.GetY()), (bb.GetRight(), bb.GetBottom())]
+
+    removed = 0
+    for fp in board.GetFootprints():
+        for item in list(fp.GraphicalItems()):
+            layer = item.GetLayer()
+            if layer not in (pcbnew.F_SilkS, pcbnew.B_SilkS) or \
+                    item.GetClass() not in ("FP_SHAPE", "MGRAPHIC"):
+                continue
+            front = layer == pcbnew.F_SilkS
+            w = pcbnew.ToMM(item.GetWidth()) / 2 + margin
+            hit = False
+            for px, py in samples(item):
+                x, y = pcbnew.ToMM(int(px)), pcbnew.ToMM(int(py))
+                if not (OX + 0.3 < x < OX + W - 0.3 and OY + 0.3 < y < OY + H - 0.3):
+                    hit = True               # at / past the board edge (Nano overhang)
+                    break
+                for x0, y0, x1, y1, on_f, on_b in pads:
+                    if (on_f if front else on_b) and \
+                            math.hypot(max(x0 - x, 0, x - x1), max(y0 - y, 0, y - y1)) < w:
+                        hit = True
+                        break
+                if hit:
+                    break
+            if hit:
+                fp.Remove(item)
+                removed += 1
+    print(f"clipped {removed} footprint silkscreen strokes off pads / the edge")
 
 
 def silkscreen(b: Builder):
@@ -777,67 +847,44 @@ def silkscreen(b: Builder):
         t.SetPosition(b.pt(x, y))
         t.SetLayer(layer)
         t.SetTextSize(VECTOR2I(FromMM(size), FromMM(size)))
-        t.SetTextThickness(FromMM(max(0.15, size * 0.15)))
+        t.SetTextThickness(FromMM(max(0.12, size * 0.15)))
         t.SetTextAngleDegrees(rot)
         t.SetMirrored(layer == pcbnew.B_SilkS)
         t.SetHorizJustify(just)
         board.Add(t)
 
-    def line(x0, y0, x1, y1, w=0.15):
-        s = pcbnew.PCB_SHAPE(board)
-        s.SetShape(pcbnew.SHAPE_T_SEGMENT)
-        s.SetStart(b.pt(x0, y0))
-        s.SetEnd(b.pt(x1, y1))
-        s.SetLayer(pcbnew.F_SilkS)
-        s.SetWidth(FromMM(w))
-        board.Add(s)
-
     for n in range(1, 16):
         x, y = b.P("J3", str(n))
-        text(NANO_PINS[n][1], x - 1.6, y, just=pcbnew.GR_TEXT_H_ALIGN_RIGHT)
+        text(NANO_PINS[n][1], x - 1.3, y, size=0.8, just=pcbnew.GR_TEXT_H_ALIGN_RIGHT)
     for k in range(1, 16):
         x, y = b.P("J4", str(k))
-        text(NANO_PINS[31 - k][1], x + 1.6, y, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
-    text("USB", 50.0, 97.8)
-    text("NANO EVERY", 50.0, 75.0, size=1.5, rot=90)
-
-    text("433 MHz ANTENNA - radio A", 60.0, 9.0, size=1.2)
-    text("315 MHz ANTENNA - radio A (315 BOM)", 17.5, 66.0, size=1.2, rot=90)
-    text("868 MHz - radio B", 87.5, 38.0, size=1.0, rot=90)
-    text("915 MHz - radio B", 87.5, 79.0, size=1.0, rot=90)
-    for name in ag.NAMES:            # trim ticks: 2 mm apart, last 10 mm of each arm
-        (xa, ya), (xb, yb) = ag.antenna(name)["arm"][-2:]
-        L = math.hypot(xb - xa, yb - ya)
-        ux, uy = (xb - xa) / L, (yb - ya) / L
-        for i in range(6):
-            px, py = xb - ux * 2.0 * i, yb - uy * 2.0 * i
-            line(px - uy * 1.2, py + ux * 1.2, px - uy * 2.2, py + ux * 2.2)
-    text("SMA A", 27.0, 88.0, rot=90)
-    text("SMA B", 73.0, 88.0, rot=90)
-    text("COIL A", 24.6, 60.0, rot=90)
-    text("COIL B", 70.6, 70.0, rot=90)
-    text("GDO2_B", 58.5, 42.2)
-    text("3V3", 44.0, 54.0)
+        text(NANO_PINS[31 - k][1], x + 1.3, y, size=0.8, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
+    cx = NANO_X0 + 7.62
+    text("NANO EVERY", cx, NANO_Y0 + 17.8, size=1.5, rot=90)
+    text("RADIO A  315/433 MHz", 40.0, 14.4, size=0.8)
+    text("RADIO B  868/915 MHz", 40.0, 43.9, size=0.8)
+    for band, (radio, refs, ae, y, selected, part) in COILS.items():
+        text(band, 61.3, y - 1.4, size=0.8)
+    text("SMA A", 58.0, SMA["A"][2] + 0.4, size=0.8)
+    text("SMA B", 58.0, SMA["B"][2] - 0.4, size=0.8)
+    text("GDO2_B", 49.3, 23.5, size=0.8, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
 
     rows = [
         "NANO EVERY + 2x CC1101   300-928 MHz",
-        "2-layer  100 x 100 mm  v1.0",
+        "2-layer  70 x 45 mm  v2.0  coil antennas",
         "",
-        "ANTENNA SELECT - fit ONE selector per radio",
-        "radio A: 433 R301 | 315 R311 | coil R403 | SMA +R407",
-        "radio B: 868 R321 | 915 R331 | coil R406 | SMA +R408",
-        "IFA shorts R401 R402 R404 R405: always 0R",
-        "ANY FREQUENCY 300-348/387-464/779-928 MHz:",
-        "fit tune L40x + R3x1/C3x1/L3x1 per tuning.md",
-        "coil in H1/H2: BAT WIRELESS BWxxxSNX spring",
+        "ANTENNA - fit ONE selector per radio",
+        "A: 433 coil R301 | 315 coil R311 | SMA R403",
+        "B: 868 coil R321 | 915 coil R331 | SMA R406",
+        "coil retune: C3x1 shunt, L3x1 series",
         "",
         "SPI: D13 SCK  D11 MOSI  D12 MISO",
-        "radio A: CSn D10  GDO0 D2  GDO2 D3",
-        "radio B: CSn D9   GDO0 D4  GDO2 pad",
+        "A: CSn D10  GDO0 D2  GDO2 D3",
+        "B: CSn D9   GDO0 D4  GDO2 pad",
     ]
     for i, r in enumerate(rows):
         if r:
-            text(r, 52.0, 28.5 + i * 1.8, size=1.0, layer=pcbnew.B_SilkS)
+            text(r, 45.5, 17.0 + i * 1.5, size=0.8, layer=pcbnew.B_SilkS)
 
 
 def stitch_ground(board, add_via, pitch=4.0, clearance=0.3):
@@ -896,15 +943,19 @@ def stitch_ground(board, add_via, pitch=4.0, clearance=0.3):
                 return False
         return True
 
-    cands = [(GND_X0 + 1.0 + 2.5 * i, GND_Y0 + 1.0) for i in range(25)]
-    cands += [(GND_X0 + 1.0, GND_Y0 + 1.0 + 2.5 * i) for i in range(33)]
-    cands += [(GND_X1 - 1.0, GND_Y0 + 1.0 + 2.5 * i) for i in range(33)]
-    cands += [(GND_X0 + 1.0 + 2.5 * i, BOARD - 1.0) for i in range(25)]
-    cands += [(GND_X0 + 2.5 + pitch * ix, GND_Y0 + 3.0 + pitch * iy)
-              for iy in range(20) for ix in range(15)]
+    def in_pour(x, y, m=0.8):
+        if not (m <= x <= W - m and m <= y <= H - m):
+            return False
+        return not (x > STRIP_X - m and (y < 15.3 + m or y > 29.7 - m))
+
+    cands = [(1.0 + 2.5 * i, 1.0) for i in range(30)] + [(1.0 + 2.5 * i, H - 1.0) for i in range(30)]
+    cands += [(1.0, 1.0 + 2.5 * i) for i in range(20)]
+    cands += [(STRIP_X - 1.0, 1.0 + 2.0 * i) for i in range(23)]      # fence beside the coils
+    cands += [(W - 1.0, 16.3 + 2.5 * i) for i in range(6)]
+    cands += [(2.0 + pitch * ix, 2.5 + pitch * iy) for iy in range(12) for ix in range(18)]
     placed = []
     for x, y in cands:
-        if not (GND_X0 + 0.8 <= x <= GND_X1 - 0.8 and GND_Y0 + 0.8 <= y <= BOARD - 0.8):
+        if not in_pour(x, y):
             continue
         if ok(x, y) and all(math.hypot(x - px, y - py) >= 1.5 for px, py in placed):
             add_via(x, y)
@@ -915,3 +966,4 @@ def stitch_ground(board, add_via, pitch=4.0, clearance=0.3):
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

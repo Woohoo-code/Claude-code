@@ -40,10 +40,10 @@ and a script that regenerates the board through KiCad 7's `pcbnew` API.
 
 - [`boards/cc1101-mini/`](boards/cc1101-mini/): an 18.5 x 12.6 mm 4-layer
   TI CC1101 433 MHz module with a U.FL connector.
-- [`boards/nano-every-cc1101/`](boards/nano-every-cc1101/): a 100 x 100 mm
+- [`boards/nano-every-cc1101/`](boards/nano-every-cc1101/): a 70 x 45 mm
   **2-layer** Arduino Nano Every carrier with two CC1101s covering every
-  CC1101 band. It has printed 315/433/868/915 MHz antennas tuned with openEMS
-  (plus SMA and wire options), a level shifter, an LDO and a pin breakout.
+  CC1101 band. It has JLCPCB-assembled coil antennas for 315/433/868/915 MHz
+  (plus optional SMA jacks), a level shifter, an LDO and a pin breakout.
   Freerouting autoroutes the non-RF nets.
 
 ## Requirements

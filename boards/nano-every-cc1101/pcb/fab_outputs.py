@@ -19,8 +19,6 @@ import pcbnew
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PCB = os.path.join(HERE, "nano_every_cc1101.kicad_pcb")
-sys.path.insert(0, os.path.join(HERE, "..", "antenna"))
-from match import MATCH  # noqa: E402
 
 # (footprint name, value) -> (description, manufacturer, MPN, LCSC)
 # LCSC numbers and stock substitutes are applied from JLC below.
@@ -70,6 +68,14 @@ CAT = {
     ("R_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("L_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("LED_0603", "red"): ("LED red 0603", "Hubei KENTO Elec", "KT-0603R", "C2286"),
+    ("Coil_Spring", "BW433SNX21-5W2"): ("Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",
+                                        "BAT WIRELESS", "BW433SNX21-5W2", "C496554"),
+    ("Coil_Spring", "BW315SNX39-6W3"): ("Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",
+                                        "BAT WIRELESS", "BW315SNX39-6W3", "C496553"),
+    ("Coil_Spring", "BW915SNX17-5W2"): ("Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",
+                                        "BAT WIRELESS", "BW915SNX17-5W2", "C496556"),
+    ("Coil_Spring", "BW868SNX20-5Z6"): ("Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",
+                                        "BAT WIRELESS", "BW868SNX20-5Z6", "C496555"),
     ("SMA", "SMA"): ("SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board", "BAT WIRELESS",
                      "BWSMA-KE-P001", "C496550"),
     ("Arduino_Nano", "Arduino Nano Every"): ("Arduino Nano Every (plugs into 2x 1x15 female "
@@ -77,7 +83,7 @@ CAT = {
     ("PinHeader_1x15", None): ("Pin header 1x15 2.54 mm male, straight (breakout)", "Megastar",
                                "ZX-PZ2.54-1-15PZZ", "C7501269"),
 }
-FP_KEYS = ["QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "SOT-23", "TSSOP-20", "C_0603",
+FP_KEYS = ["Coil_Spring", "QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "SOT-23", "TSSOP-20", "C_0603",
            "C_0805", "R_0603", "L_0603", "LED_0603", "SMA", "Arduino_Nano", "PinHeader_1x15"]
 NOT_PARTS = ("MountingHole", "TestPoint")
 
@@ -182,15 +188,6 @@ def _lookup(fpname, value):
     raise SystemExit(f"no catalog entry for {fpname} / {value}")
 
 
-# Coil (helical spring) antennas for H1 (radio A) / H2 (radio B), hand-soldered
-# like a Flipper-style internal coil; other bands: BW315SNX39-6W3 (C496553),
-# BW915SNX17-5W2 (C496556).
-COILS = [
-    ("H1", "Coil antenna 433 MHz, spring 5 mm x 21 mm (radio A)", "BW433SNX21-5W2", "C496554"),
-    ("H2", "Coil antenna 868 MHz, spring 5 mm x 20 mm (radio B)", "BW868SNX20-5Z6", "C496555"),
-]
-
-
 def hand_fit(name):
     """Optional parts left out of JLCPCB assembly to keep it cheap (no
     through-hole step, two fewer extended part types)."""
@@ -265,8 +262,6 @@ def main():
                             f"LCSC {lcsc}" if lcsc else ""])
         w.writerow(["S1, S2", 2, "Female header 1x15 2.54 mm (Nano socket)", "Generic", "",
                     "HDR-1x15-F", "optional; or solder the Nano directly"])
-        for ref, d, mpn, lcsc in COILS:
-            w.writerow([ref, 1, d, "BAT WIRELESS", mpn, "spring", f"optional, LCSC {lcsc}"])
 
     os.makedirs(os.path.join(HERE, "fab"), exist_ok=True)
 
@@ -275,7 +270,8 @@ def main():
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
         if "Arduino_Nano" in name:
             continue
-        how = "hand solder (optional)" if hand_fit(name) else "SMT"
+        how = ("hand solder (optional)" if hand_fit(name) else
+               "assembler (THT)" if "Coil_Spring" in name else "SMT")
         buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, bom_value(name, value),
                         how), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
@@ -288,9 +284,6 @@ def main():
         w.writerow([len(rows) + 1, 2, "S1 S2", "1x15 F", "Female header 1x15 2.54 mm "
                     "(socket for the Nano Every)", "Generic", "", "", "HDR-1x15-F",
                     "hand solder"])
-        for i, (ref, d, mpn, lcsc) in enumerate(COILS, len(rows) + 2):
-            w.writerow([i, 1, ref, "coil", d, "BAT WIRELESS", mpn, lcsc, "spring, 1 pin",
-                        "hand solder (optional; fit R403/R406 0R to use)"])
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:

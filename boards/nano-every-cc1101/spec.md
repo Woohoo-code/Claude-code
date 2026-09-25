@@ -8,8 +8,9 @@ with an antenna for every band.
 ## Inputs / outputs
 - Arduino Nano Every in 2x 1x15 2.54 mm sockets; USB on the board edge
 - Every Nano pin broken out again on two 1x15 2.54 mm male headers
-- Printed antennas: 315, 433, 868 and 915 MHz (inverted-F, openEMS-tuned)
-- External antennas: one SMA edge jack and one wire-whip hole per radio
+- Coil (helical spring) antennas: 315, 433, 868 and 915 MHz, all
+  JLCPCB-assembled, one selected per radio
+- External antenna option: one SMA edge jack per radio (hand-fit)
 
 ## Power
 - From the Nano's 5 V (USB or VIN); on-board 3.3 V LDO for the radios
@@ -22,9 +23,11 @@ with an antenna for every band.
 - XC6206P332MR 3.3 V LDO (200 mA)
 
 ## Constraints
-- **2 layers** (cheapest), 1.6 mm FR4, up to 100 x 100 mm
+- **2 layers** (cheapest), 1.6 mm FR4, 70 x 45 mm
 - Print ready: Gerbers + drills + JLCPCB BOM/CPL, within standard
   2-layer rules (0.15 mm track/space, 0.3 mm vias outside the CC1101 area)
 
 ## Notes
 - Antenna selection by fitting one 0603 selector per radio
+- Cheapest parts of the same quality (JLCPCB basic / preferred wherever
+  possible)

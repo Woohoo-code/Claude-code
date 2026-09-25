@@ -1,11 +1,13 @@
-# nano-every-cc1101: Arduino Nano Every + 2x CC1101, every sub-GHz band
+# nano-every-cc1101: Arduino Nano Every + 2x CC1101, coil antennas
 
-A 100 x 100 mm **2-layer** carrier board for an Arduino Nano Every with two
-TI CC1101 radios, so every frequency the CC1101 supports (300-348, 387-464
-and 779-928 MHz) is covered. Four printed antennas, each tunable across its
-range with 0603 parts (values per MHz from a full-wave openEMS model), plus
-a coil (helical spring) antenna position and an SMA jack per radio.
-The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pads.
+A compact 70 x 45 mm **2-layer** carrier board for an Arduino Nano Every
+with two TI CC1101 radios covering the CC1101's bands (300-348, 387-464
+and 779-928 MHz). Each band has its own **coil (helical spring) antenna**,
+the small upright kind used in handheld sub-GHz gadgets, so the board no
+longer needs room for large printed antennas. All four coils are
+JLCPCB-assembled; one 0 ohm selector per radio picks the band.
+The Gerbers are generated and pass KiCad DRC with **0 violations, 0
+unconnected pads**.
 
 | Top | Bottom (viewed from below) |
 |---|---|
@@ -15,63 +17,35 @@ The Gerbers are generated and pass KiCad DRC with 0 errors and 0 unconnected pad
 
 | | |
 |---|---|
-| Board | 100 x 100 x 1.6 mm, 2 layers, FR4 |
+| Board | 70 x 45 x 1.6 mm, 2 layers, FR4 |
 | Radio A (U1) | CC1101, 315/433 MHz front end (433 fitted) |
 | Radio B (U501) | CC1101, 868/915 MHz front end |
-| Antennas | 4 printed, tunable across 300-348 / 387-464 / 779-928 MHz; coil antennas in H1/H2; SMA J1/J2 |
+| Antennas | 4 coil antennas AE1-AE4 (433, 315, 868, 915 MHz), each with a T-match for retuning; optional SMA J1/J2 |
 | Host | Arduino Nano Every in sockets, USB at the board edge, every pin re-broken-out on J3/J4 |
 | Glue | TXS0108E 5 V <-> 3.3 V level shifter, XC6206 3.3 V LDO, power LED |
 
-**Every CC1101 frequency is covered by a printed antenna.** Each antenna
-has a tuning part in its arm and a T-match at its feed, and
-[`antenna/results/tuning.md`](antenna/results/tuning.md) gives the parts for
-every MHz (simulated with openEMS, full board, all four antennas present):
+## Antennas
 
-| CC1101 band | Antenna | Worst S11 when tuned | Power reaching the antenna | Default fit (-10 dB) |
-|---|---|---|---|---|
-| 300-348 MHz | 315 (radio A, 315 MHz BOM) | -15.2 dB | 41-65 % | 313.1-315.8 MHz |
-| 387-464 MHz | 433 (radio A) | -18.1 dB | 76-99 % | 431.5-436.7 MHz |
-| 779-880 MHz | 868 (radio B) | -21.3 dB | 97-99 % | 835-880 MHz |
-| 870-928 MHz | 915 (radio B) | -21.6 dB | 97-99 % | 900-1030 MHz |
+| Coil | Band | Radio | Part (BAT WIRELESS) | LCSC | Selected as shipped |
+|---|---|---|---|---|---|
+| AE1 | 433 MHz | A | BW433SNX21-5W2 (5 x 21 mm) | C496554 | **yes** (R301 0R) |
+| AE2 | 315 MHz | A | BW315SNX39-6W3 (6 x 39 mm) | C496553 | fit R311, remove R301, + 315 MHz BOM |
+| AE3 | 868 MHz | B | BW868SNX20-5Z6 (5 x 20 mm) | C496555 | **yes** (R321 0R) |
+| AE4 | 915 MHz | B | BW915SNX17-5W2 (5 x 17 mm) | C496556 | fit R331, remove R321 |
+| J1 / J2 | any | A / B | SMA edge jack, optional (hand-fit) | C496550 | fit R403 / R406 |
 
-The coil holes H1/H2 also take a plain wire whip, and the SMA jacks an
-external antenna, at any frequency (whip L = 71 250 / f mm, table in
-`tuning.md`).
+Each radio has a short 50 ohm bus; every antenna branch starts with its own
+selector right at the bus (so unused branches are only a few mm of line),
+then a shunt pad (C3x1) and a series part (L3x1, 0 ohm) at the coil for
+retuning with a nanoVNA. The coils are pre-tuned by the maker for their
+band; they are not simulated on this board. Frequencies between the coil
+bands need a retune of that branch's T-match, or an external antenna on the
+SMA jack (quarter-wave whip L = 71 250 / f mm).
 
-![coverage](antenna/results/tuning.png)
-
-## Choosing the antenna
-
-Fit **one** selector per radio; the board ships set up for 433.92 MHz
-(radio A) and 868.3 MHz (radio B):
-
-| Radio | 433 MHz PCB | 315 MHz PCB | 868 MHz PCB | 915 MHz PCB | Coil (H1/H2) | SMA |
-|---|---|---|---|---|---|---|
-| A | **R301** (default) | R311 + L402 39 nH + 315 MHz BOM | | | R403 0R + coil | R403 + R407 0R + J1 |
-| B | | | **R321** (default) | R331 | R406 0R + coil | R406 + R408 0R + J2 |
-
-For another frequency, fit the row for it from `antenna/results/tuning.md`
-(tuning part L40x, selector R3x1, shunt C3x1, series L3x1).
-`assembly_instructions.md` has the 315 MHz front-end BOM swap.
-
-### Coil antennas (Flipper-style)
-
-H1 (radio A) and H2 (radio B) take a helical spring antenna, the compact
-coiled type used in handheld sub-GHz gadgets: solder its pin into the
-hole so it stands up from the board, then move that radio's selector to
-R403 / R406 (0 ohm). R407 / R408 stay empty so the unused SMA line does
-not load the coil. JLCPCB/LCSC parts (5 mm wide, about 20 mm tall,
-pre-tuned by the maker):
-
-| Band | Part | LCSC |
-|---|---|---|
-| 315 MHz | BAT WIRELESS BW315SNX39-6W3 | C496553 |
-| 433 MHz | BAT WIRELESS BW433SNX21-5W2 | C496554 |
-| 868 MHz | BAT WIRELESS BW868SNX20-5Z6 | C496555 |
-| 915 MHz | BAT WIRELESS BW915SNX17-5W2 | C496556 |
-
-The printed antennas stay the default: they are larger and radiate
-better; the coil is the small, tidy option (and easy to swap per band).
+The coils stand up from the board edge in a copper-free strip, 8.7 mm apart.
+All four are fitted, so the unused coil next to the active one detunes it a
+little (most for 868 vs 915, which are close in frequency): check with a
+nanoVNA and trim the T-match if you need the last dB.
 
 ## Pins (Nano Every)
 
@@ -83,43 +57,39 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
 ## Ordering (print ready)
 
 1. PCB: upload `pcb/fab/nano_every_cc1101-gerbers.zip`. 2 layers, 1.6 mm,
-   100 x 100 mm, 1 oz. All standard rules (0.15 mm track/space, 0.25 mm
+   70 x 45 mm, 1 oz. All standard rules (0.15 mm track/space, 0.25 mm
    minimum drill), no special options.
-2. Assembly (optional): `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv`
-   (fitted parts only; check the rotations in the preview). Every line has
-   an in-stock LCSC number (checked 2026-09-25; out-of-stock design parts
-   were swapped for same-value/package C0G/NP0 equivalents, see `JLC` in
-   `pcb/fab_outputs.py`). The BOM is cost-minimised: every part that has a
-   JLCPCB basic / preferred equivalent of the same quality uses it (13 extended part types
-   left), and there is no through-hole part, so **Economic PCBA** works.
-3. By hand: Nano sockets (2x 1x15 female). Optional, not assembled (to keep
-   the order cheap): SMA jacks J1/J2 (BAT WIRELESS BWSMA-KE-P001, LCSC
-   C496550), J3/J4 1x15 breakout headers (LCSC C7501269), and L402 (39 nH,
-   only for the 315 MHz antenna).
+2. Assembly: `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv` (top side,
+   fitted parts only, every line with an in-stock LCSC number, basic /
+   preferred parts wherever the quality is the same). The four coils are
+   through-hole parts, so choose an assembly option that includes
+   through-hole soldering. Check the rotations of U1, U501, U2, U3, Y1 and
+   Y501 in the preview.
+3. By hand: Nano sockets (2x 1x15 female). Optional: SMA jacks J1/J2
+   (LCSC C496550) and the J3/J4 breakout headers (LCSC C7501269).
 
 ## Files
 
 | Path | What |
 |---|---|
-| `pcb/nano_every_cc1101.kicad_pcb` / `.kicad_pro` | The routed KiCad 7 board |
-| `pcb/gen_board.py` | Generates the whole board (placement, RF routing, antennas, autorouting, pours) |
+| `pcb/nano_every_cc1101.kicad_pcb` / `.kicad_pro` / `.kicad_dru` | The routed KiCad 7 board (+ the one custom DRC rule) |
+| `pcb/gen_board.py` | Generates the whole board (placement, RF routing, autorouting, pours, silkscreen) |
+| `pcb/lib/nano_every_cc1101.pretty` | Coil antenna and SMA footprints |
 | `pcb/fab_outputs.py`, `pcb/make_fab.sh` | DRC, netlist, BOMs, CPL, Gerbers, renders |
 | `pcb/fab/nano_every_cc1101-fab-package.zip` | Everything to order: Gerber zip + both BOMs + CPL |
-| `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every (MPNs and LCSC numbers, all JLCPCB-stocked) |
-| `pcb/fab/` | Gerbers + drills (zip), JLCPCB assembly BOM + CPL |
+| `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every |
 | `pcb/drc_report.txt` | KiCad DRC report |
-| `antenna/` | Antenna geometry, openEMS model, match designer, results |
+| `antenna/` | v1 printed-antenna study (openEMS), kept for reference |
 | `bom.csv`, `netlist.md` | Generated from the board |
 | `schematic_blocks.md`, `design_notes.md`, `assembly_instructions.md` | Design docs, bring-up |
 
 ## Limits
 
-- Designed and simulated, not yet built or measured. Check each antenna
-  with a nanoVNA once built; the T-match pads and the 2 mm trim marks on
-  each antenna's open end are there to retune.
-- 300-348 MHz from a 100 mm board is electrically small: it works (41-65 %
-  of the power reaches the antenna), but the SMA/whip option gives more range.
-- A tuned setting is narrowband; changing frequency means changing the
-  parts on that table row.
+- Designed, not yet built or measured. Check each coil with a nanoVNA once
+  built; the T-match pads are there to retune.
+- A coil is narrowband (roughly its ISM band); other frequencies need a
+  T-match retune or the SMA jack.
+- 315 MHz needs radio A's 315 MHz front-end BOM swap (see
+  `assembly_instructions.md`).
 - No `.kicad_sch` schematic; the netlist is generated from the board.
 - Not certified. Radiated use must follow your region's rules.

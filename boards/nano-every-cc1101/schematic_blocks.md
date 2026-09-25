@@ -62,25 +62,26 @@ C122 8.2 pF, C123 5.6 pF, C124/C125 330 pF (DC block / RF bypass; TI uses 220 pF
 ```
 (Refdes on the board: L631, L621, C621, C631, L632, C622, L622, C624, L623, C623, L624, C625.)
 
-## 6. Antenna selection, T-matches and tuning parts
+## 6. Antenna selection and coil T-matches
 
 ```
-                 ┌─ R301 ─┬─ L301 ── 433 IFA ─[L401]─ arm   (short R401 to GND)
-                 │        C301
- ANT_A ──────────┼─ R311 ─┬─ L311 ── 315 IFA ─[L402]─ arm   (short R402)
-                 │        C311
-                 └─ R403 ── EXT_A ── H1 (coil) ── R407 ── J1 (SMA)
+                 ┌─ R301 0R ─┬─ L301 0R ── AE1 coil 433 MHz
+                 │           C301 (empty)
+ ANT_A ──────────┼─ R311 ────┬─ L311 0R ── AE2 coil 315 MHz
+                 │           C311 (empty)
+                 └─ R403 ── SMA_A ── J1 (SMA, optional)
 
-                 ┌─ R321 ─┬─ L321 ── 868 IFA ─[L404]─ arm   (short R404)
-                 │        C321
- ANT_B ──────────┼─ R331 ─┬─ L331 ── 915 IFA ─[L405]─ arm   (short R405)
-                 │        C331
-                 └─ R406 ── EXT_B ── H2 (coil) ── R408 ── J2 (SMA)
+                 ┌─ R321 0R ─┬─ L321 0R ── AE3 coil 868 MHz
+                 │           C321 (empty)
+ ANT_B ──────────┼─ R331 ────┬─ L331 0R ── AE4 coil 915 MHz
+                 │           C331 (empty)
+                 └─ R406 ── SMA_B ── J2 (SMA, optional)
 ```
-R3x1 = selector (fit one per radio), C3x1 = shunt, L3x1 = series, L40x =
-series tuning part in the antenna arm. Any of these positions can hold a
-capacitor, an inductor or 0 ohm. Values per frequency are in
-`antenna/results/tuning.md`, and the defaults in `antenna/match.py`.
+R3x1 = selector (fit one per radio), C3x1 = shunt to GND, L3x1 = series.
+The shunt and series positions take a capacitor, an inductor or 0 ohm to
+retune a coil; as shipped they are empty / 0 ohm (the coils are
+pre-tuned). Each selector sits right on its radio's bus, so an unselected
+branch is only a few mm of line.
 
 ## 7. Nano Every + breakout
 
