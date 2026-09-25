@@ -9,10 +9,12 @@
 2. **Assembly (optional):** upload `pcb/fab/bom-jlcpcb.csv` and
    `pcb/fab/cpl-jlcpcb.csv`, top side only. They contain only the parts to
    fit (not-fitted selectors and match pads are left out). In the placement
-   preview, **check the rotation of U1, U501, U2, U3, Y1 and Y501**:
-   KiCad and JLCPCB disagree on some footprint zero angles.
+   preview, **check the rotation of U1, U501, U2, U3, Y1, Y501 and the SMA
+   jacks J1/J2** (the jack body must point off the bottom board edge):
+   KiCad and JLCPCB disagree on some footprint zero angles. J1/J2 are
+   edge-mount through-hole parts, sourced by MPN (Amphenol 132289).
 3. By hand afterwards: 2x 1x15 female headers (Nano socket), optional 1x15
-   male breakout headers J3/J4, optional SMA jacks J1/J2.
+   male breakout headers J3/J4.
 
 ## Reflow (if assembling yourself)
 

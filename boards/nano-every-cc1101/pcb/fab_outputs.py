@@ -6,7 +6,7 @@
   ../bom.csv             grouped BOM in pcba-builder's format
   fab/bom-no-nano.csv    purchasing BOM: every fitted part except the Nano Every
   fab/bom-jlcpcb.csv     JLCPCB assembly BOM (fitted parts only)
-  fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts only)
+  fab/cpl-jlcpcb.csv     JLCPCB placement file (fitted SMT parts + SMA jacks)
 """
 
 import collections
@@ -171,9 +171,10 @@ def main():
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
         if "Arduino_Nano" in name:
             continue
-        hand = "PinHeader" in name or "SMA" in name
+        how = ("hand solder" if "PinHeader" in name else
+               "assembler (edge-mount)" if "SMA" in name else "SMT")
         buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, value,
-                        "hand solder" if hand else "SMT"), []).append(fp.GetReference())
+                        how), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Item", "Qty", "RefDes", "Value", "Description", "Manufacturer", "MPN",
@@ -187,8 +188,8 @@ def main():
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
-        if "Arduino_Nano" in name or "PinHeader" in name or "SMA" in name:
-            continue        # hand-fitted / optional through-hole parts
+        if "Arduino_Nano" in name or "PinHeader" in name:
+            continue        # hand-fitted / optional through-hole parts (SMA jacks are assembled)
         jl.setdefault((value, name, mpn, lcsc), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-jlcpcb.csv"), "w", newline="") as f:
         w = csv.writer(f)

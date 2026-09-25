@@ -66,8 +66,11 @@ and `CC1101 radioB = new Module(9, 4, RADIOLIB_NC);`.
    100 x 100 mm, 1 oz. All standard rules (0.15 mm track/space, 0.25 mm
    minimum drill), no special options.
 2. Assembly (optional): `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv`
-   (fitted parts only; check the rotations in the preview).
-3. By hand: Nano sockets (2x 1x15 female), optional J3/J4 headers and SMA jacks.
+   (fitted parts only, SMA jacks J1/J2 included; check the rotations in the
+   preview). The jacks are edge-mount through-hole parts with no LCSC number:
+   JLCPCB sources them by MPN (Amphenol 132289) or you pick an equivalent
+   edge-mount SMA jack for 1.6 mm boards.
+3. By hand: Nano sockets (2x 1x15 female), optional J3/J4 headers.
 
 ## Files
 
