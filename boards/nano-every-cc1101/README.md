@@ -62,6 +62,19 @@ monitor). Compiled for the Nano Every (arduino:megaavr 1.8.8, RadioLib
 7.7.1): **25.5 KB of 48 KB flash (51 %), 1.3 KB of 6 KB RAM (20 %)**, so
 there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
 
+## Verification
+
+Everything was checked before release (`verify/VERIFICATION.md`, re-run
+with `verify/run_all.sh`): DRC 0/0; Gerber DFM against JLCPCB's limits;
+every IC pin against the vendor pin names and the Nano against the
+ABX00028 datasheet; the CPL fitted part by part onto JLCPCB's own
+footprints (66/66 match); live stock; a 2-D field solver for the 50 ohm
+lines (49.7-51.4 ohm); a simulation of each antenna feed from the routed
+copper (S11 -19 to -35 dB, 97-99 % of the power reaching the coil); the
+CC1101 harmonic filters; the power budget.
+
+![assembly preview](verify/assembly_preview.png)
+
 ## Ordering (print ready)
 
 1. PCB: upload `pcb/fab/nano_every_cc1101-gerbers.zip` (**not** the
@@ -74,10 +87,12 @@ there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
    **Everything except the Nano Every is assembled**: all SMD parts, the
    four coil antennas, the SMA jacks J1/J2, the J3/J4 breakout headers and
    the two 1x15 Nano sockets S1/S2 (Megastar ZX-PM2.54-1-15PY, LCSC
-   C7499333, soldered into the Nano's holes). Coils, headers and sockets are
-   through-hole, so choose an assembly option with through-hole soldering.
-   Check the rotations of U1, U501, U2, U3, Y1, Y501 and J1/J2 in the
-   preview.
+   C7499333, soldered into the Nano's holes). Choose **Economic PCBA**
+   (Standard PCBA needs boards of 70 x 70 mm or more); it takes the
+   through-hole coils, headers and sockets and needs no rails or fiducials.
+   The CPL carries JLCPCB's own footprint angles (checked part by part,
+   see `verify/VERIFICATION.md`), so the placement preview should show every
+   part on its pads without changes.
 3. The Nano Every ABX00028 comes with its two 1x15 headers **loose** in the
    box; solder them on first. Easiest way to get them straight: push the
    headers (long pins down) into S1/S2 on this board, lay the Nano on top,
@@ -99,6 +114,7 @@ there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
 | `pcb/fab/bom-no-nano.csv` | Purchasing BOM: every part except the Nano Every |
 | `pcb/drc_report.txt` | KiCad DRC report |
 | `firmware/dual_cc1101/` | Example sketch: both radios with RadioLib |
+| `verify/` | Pre-order checks and simulations (`run_all.sh`, `VERIFICATION.md`, results, previews) |
 | `antenna/` | v1 printed-antenna study (openEMS), kept for reference |
 | `bom.csv`, `netlist.md` | Generated from the board |
 | `schematic_blocks.md`, `design_notes.md`, `assembly_instructions.md` | Design docs, bring-up |

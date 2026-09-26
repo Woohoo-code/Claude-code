@@ -45,8 +45,10 @@ COIL_X = 66.3                           # coil antenna column (right edge)
 STRIP_X = 63.0                          # no ground right of this beside the coils
 # ground pour outline: whole board except the two coil strips (the SMA jacks
 # in between keep their ground)
+SILK_MIN_H, SILK_MIN_W = 1.0, 0.15      # JLCPCB legend minimums (mm)
 # front silkscreen labels that ground-stitching vias must not cut through
-SILK_BOXES = [(31.5, 13.8, 48.5, 15.0), (31.5, 43.3, 48.5, 44.5)]
+SILK_BOXES = [(31.5, 13.7, 50.5, 15.1), (31.5, 43.2, 50.5, 44.6),
+              (0.2, 4.2, 4.0, 42.4), (28.2, 4.2, 32.6, 42.4)]     # + the Nano pin labels
 POUR = [(0, 0), (STRIP_X, 0), (STRIP_X, 15.3), (W, 15.3), (W, 29.7), (STRIP_X, 29.7),
         (STRIP_X, H), (0, H)]
 
@@ -54,6 +56,7 @@ OUT = os.path.join(HERE, "nano_every_cc1101.kicad_pcb")
 FP_ROOT = os.environ.get("KICAD7_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
 LOCAL_LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
 FREEROUTING = os.environ.get("FREEROUTING_JAR", "/tmp/claude-0/freerouting.jar")
+FR_OPTS = "-mp 120 -mt 1"               # Freerouting passes / optimizer threads
 OX, OY = 100.0, 100.0
 
 TRACK = 0.25
@@ -150,9 +153,22 @@ NANO_PINS = {
     27: ("+5V", "5V"), 28: ("RST", "RST"), 29: ("GND", "GND"), 30: ("VIN", "VIN"),
 }
 # TXS0108E: channel -> (A side @3.3 V, B side @5 V)
-TXS = {1: ("SCLK", "D13_SCK"), 2: ("SI", "D11_MOSI"), 3: ("SO", "D12_MISO"),
-       4: ("CSN_A", "D10"), 5: ("GDO0_A", "D2"), 6: ("GDO2_A", "D3"),
-       7: ("CSN_B", "D9"), 8: ("GDO0_B", "D4")}
+# TXS0108E channels: (A side @3.3 V, B side @5 V). TXS_ORDER picks which pair
+# goes on channel 1..8 (A1..A8 = pins 1,3..9; B1..B8 = pins 20,18..12).
+TXS_PAIRS = {"SCLK": ("SCLK", "D13_SCK"), "SI": ("SI", "D11_MOSI"), "SO": ("SO", "D12_MISO"),
+             "CSN_A": ("CSN_A", "D10"), "GDO0_A": ("GDO0_A", "D2"), "GDO2_A": ("GDO2_A", "D3"),
+             "CSN_B": ("CSN_B", "D9"), "GDO0_B": ("GDO0_B", "D4")}
+TXS_ORDERS = [
+    ["SCLK", "SI", "SO", "CSN_A", "GDO0_A", "GDO2_A", "CSN_B", "GDO0_B"],
+    ["CSN_B", "GDO0_B", "SCLK", "SI", "SO", "CSN_A", "GDO0_A", "GDO2_A"],
+    ["GDO2_A", "GDO0_A", "CSN_A", "SO", "SI", "SCLK", "GDO0_B", "CSN_B"],
+    ["GDO0_A", "GDO2_A", "GDO0_B", "CSN_B", "CSN_A", "SI", "SO", "SCLK"],
+    ["SCLK", "SO", "SI", "CSN_A", "CSN_B", "GDO0_B", "GDO2_A", "GDO0_A"],
+]
+TXS_ORDER = int(os.environ.get("TXS_ORDER", "3"))   # Nano pin order: shortest routing (placement search)
+TXS_ROT = int(os.environ.get("TXS_ROT", "270"))
+TXS_POS = tuple(float(v) for v in os.environ.get("TXS_POS", "40.0,23.0").split(","))
+TXS = {k + 1: TXS_PAIRS[name] for k, name in enumerate(TXS_ORDERS[TXS_ORDER])}
 TXS_A_PIN = {1: "1", 2: "3", 3: "4", 4: "5", 5: "6", 6: "7", 7: "8", 8: "9"}
 TXS_B_PIN = {1: "20", 2: "18", 3: "17", 4: "16", 5: "15", 6: "14", 7: "13", 8: "12"}
 
@@ -407,9 +423,9 @@ def coil_branch(b: Builder, band):
     nc = b.two_pin(rc, *C0603, cx, y + 1.3 * up, 90, "DNP", (cx, y), mid, "GND")
     b.fp(ae, "nano_every_cc1101", "Coil_Spring_D5.5_THT", COIL_X, y, 0, part, {"1": feed})
     b.track(bus, [(bx, y), (r1, n1[0])], RF_50)
-    b.track(mid, [(r1, n1[1]), (r2, n2[0])], RF_SEL)
+    b.track(mid, [(r1, n1[1]), (r2, n2[0])], RF_50)       # 50 ohm CPWG all the way
     b.track(mid, [(rc, nc[0]), (cx, y)], RF_SEL)
-    b.track(feed, [(r2, n2[1]), (ae, "1")], RF_SEL)
+    b.track(feed, [(r2, n2[1]), (ae, "1")], RF_50)
     b.gnd_stub(rc, nc[1], 0, 1.2 * up)
 
 
@@ -480,20 +496,27 @@ def build_host(b: Builder):
     for ch, (a, bb) in TXS.items():
         txs[TXS_A_PIN[ch]] = a
         txs[TXS_B_PIN[ch]] = bb
-    tx, ty = 40.0, 23.0
-    # rot 180: B side (5 V, pins 11-20) faces the Nano, A side (3.3 V) the radios
-    b.fp("U3", "Package_SO", "TSSOP-20_4.4x6.5mm_P0.65mm", tx, ty, 180, "TXS0108EPWR", txs)
-    vx, vy = b.P("U3", "2")                 # VCCA
-    b.fp("C7", *C0603, vx + 2.6, vy, 0, "100nF", {"1": "3V3", "2": "GND"})
-    wx, wy = b.P("U3", "19")                # VCCB
-    b.fp("C8", *C0603, wx - 2.6, wy, 0, "100nF", {"1": "GND", "2": "+5V"})
-    b.track("3V3", [("U3", "2"), ("C7", "1")], PWR)
-    b.track("+5V", [("U3", "19"), ("C8", "2")], PWR)
-    b.gnd_stub("C7", "2", 0, -1.3)
-    b.gnd_stub("C8", "1", 0, 1.3)
-    x, y = b.P("U3", "11")
-    b.track("GND", [("U3", "11"), (x - 1.4, y)], TRACK)
-    b.gnd_vias.append((x - 1.4, y, VIA_D, VIA_DRILL))
+    tx, ty = TXS_POS
+    b.fp("U3", "Package_SO", "TSSOP-20_4.4x6.5mm_P0.65mm", tx, ty, TXS_ROT, "TXS0108EPWR", txs)
+
+    def outward(pin, d):
+        """Point d mm straight out from U3's pin (away from the package)."""
+        x, y = b.P("U3", pin)
+        if abs(x - tx) > abs(y - ty):
+            return (x + math.copysign(d, x - tx), y), 0
+        return (x, y + math.copysign(d, y - ty)), 90
+
+    for ref, pin, net in (("C7", "2", "3V3"), ("C8", "19", "+5V")):   # VCCA / VCCB
+        (cx, cy), crot = outward(pin, 2.6)
+        near, far = b.two_pin(ref, *C0603, cx, cy, crot, "100nF", b.P("U3", pin), net, "GND")
+        b.track(net, [("U3", pin), (ref, near)], PWR)
+        fx, fy = b.P(ref, far)
+        ux, uy = (fx - cx), (fy - cy)
+        n = math.hypot(ux, uy)
+        b.gnd_stub(ref, far, 1.0 * ux / n, 1.0 * uy / n)
+    (gx, gy), _ = outward("11", 1.4)
+    b.track("GND", [("U3", "11"), (gx, gy)], TRACK)
+    b.gnd_vias.append((gx, gy, VIA_D, VIA_DRILL))
 
     # radio B GDO2 has no free level-shifter channel: 3.3 V test pad
     b.fp("TP1", "TestPoint", "TestPoint_Pad_D1.5mm", 48.0, 23.5, 0, "GDO2_B",
@@ -572,8 +595,12 @@ def main() -> int:
         text = re.sub(r"(\(class kicad_default[^\n]*?) GND( |\n)", r"\1\2", text, count=1)
         text = text.replace("(class GND_PLANE", "(class GND_PLANE GND", 1)
         open(dsn, "w").write(text)
+        if os.environ.get("KEEP_DSN"):
+            import shutil
+            shutil.copy(dsn, os.environ["KEEP_DSN"])
+        fr_opts = os.environ.get("FR_OPTS", FR_OPTS).split()
         subprocess.run(["xvfb-run", "-a", "java", "-jar", FREEROUTING, "-de", dsn, "-do", ses,
-                        "-mp", "120", "-mt", "1", "-inc", "GND_PLANE"], check=True,
+                        *fr_opts, "-inc", "GND_PLANE"], check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=3600)
         import_ses(board, ses, b.net)
         os.remove(dsn)
@@ -683,6 +710,9 @@ def drop_dangling(board):
     reached the pad stub on the top layer instead), and a hand-placed escape
     stub that only led to such a via. A track counts as touching a via when
     it passes within the via's radius (router ends are rounded on import)."""
+    for t in [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"]:
+        if t.GetLength() < FromMM(0.01):     # zero-length wires from the session import
+            board.Remove(t)
     tracks = [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"]
 
     def touches(t, p, r):
@@ -784,7 +814,7 @@ def join_ground_islands(board, step=0.2):
     return added
 
 
-def clip_footprint_silk(board, margin=0.12):
+def clip_footprint_silk(board, margin=0.15):
     """Drop footprint silkscreen strokes that touch a pad (their own or a
     neighbour's): fabs clip them anyway, and KiCad flags them as silk over
     copper / silk overlap. Keeps the rest of each outline."""
@@ -819,6 +849,8 @@ def clip_footprint_silk(board, margin=0.12):
                     item.GetClass() not in ("FP_SHAPE", "MGRAPHIC"):
                 continue
             front = layer == pcbnew.F_SilkS
+            if item.GetWidth() < FromMM(SILK_MIN_W):   # library strokes are 0.12 mm
+                item.SetWidth(FromMM(SILK_MIN_W))
             w = pcbnew.ToMM(item.GetWidth()) / 2 + margin
             hit = False
             for px, py in samples(item):
@@ -848,8 +880,9 @@ def silkscreen(b: Builder):
         t.SetText(s)
         t.SetPosition(b.pt(x, y))
         t.SetLayer(layer)
+        size = max(size, SILK_MIN_H)          # JLCPCB: >= 1.0 mm, stroke >= h/6
         t.SetTextSize(VECTOR2I(FromMM(size), FromMM(size)))
-        t.SetTextThickness(FromMM(max(0.12, size * 0.15)))
+        t.SetTextThickness(FromMM(max(SILK_MIN_W, size / 5.5)))
         t.SetTextAngleDegrees(rot)
         t.SetMirrored(layer == pcbnew.B_SilkS)
         t.SetHorizJustify(just)
@@ -857,36 +890,52 @@ def silkscreen(b: Builder):
 
     for n in range(1, 16):
         x, y = b.P("J3", str(n))
-        text(NANO_PINS[n][1], x - 1.3, y, size=0.8, just=pcbnew.GR_TEXT_H_ALIGN_RIGHT)
+        text(NANO_PINS[n][1], x - 1.3, y, size=1.0, just=pcbnew.GR_TEXT_H_ALIGN_RIGHT)
     for k in range(1, 16):
         x, y = b.P("J4", str(k))
-        text(NANO_PINS[31 - k][1], x + 1.3, y, size=0.8, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
+        text(NANO_PINS[31 - k][1], x + 1.3, y, size=1.0, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
     cx = NANO_X0 + 7.62
+    # the Nano Every's own outline (ABX00028: 17.78 x 43.18 mm, pins centred)
+    # instead of the library footprint's clipped one; open at the USB end,
+    # which sits on the board edge
+    nano = b.fps["A1"]
+    for item in list(nano.GraphicalItems()):
+        if item.GetLayer() == pcbnew.F_SilkS and item.GetClass() in ("FP_SHAPE", "MGRAPHIC"):
+            nano.Remove(item)
+    x0, x1 = cx - 17.78 / 2, cx + 17.78 / 2
+    y0 = NANO_Y0 + 35.56 / 2 - 43.18 / 2
+    y1 = H - 0.5
+    for seg in ((x0, y1, x0, y0), (x0, y0, x1, y0), (x1, y0, x1, y1)):
+        ln = pcbnew.PCB_SHAPE(board)
+        ln.SetShape(pcbnew.SHAPE_T_SEGMENT)
+        ln.SetStart(b.pt(seg[0], seg[1])); ln.SetEnd(b.pt(seg[2], seg[3]))
+        ln.SetLayer(pcbnew.F_SilkS); ln.SetWidth(FromMM(SILK_MIN_W))
+        board.Add(ln)
     text("NANO EVERY", cx, NANO_Y0 + 17.8, size=1.5, rot=90)
-    text("RADIO A  315/433 MHz", 40.0, 14.4, size=0.8)
-    text("RADIO B  868/915 MHz", 40.0, 43.9, size=0.8)
+    text("RADIO A 315/433 MHz", 41.0, 14.4)
+    text("RADIO B 868/915 MHz", 41.0, 43.9)
     for band, (radio, refs, ae, y, selected, part) in COILS.items():
-        text(band, 61.3, y - 1.4, size=0.8)
-    text("SMA A", 58.0, SMA["A"][2] + 0.4, size=0.8)
-    text("SMA B", 58.0, SMA["B"][2] - 0.4, size=0.8)
-    text("GDO2_B", 49.3, 23.5, size=0.8, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
+        text(band, 61.3, y - 1.5)
+    text("SMA A", 58.0, SMA["A"][2] + 0.4)
+    text("SMA B", 58.0, SMA["B"][2] - 0.4)
+    text("GDO2_B", 49.3, 23.5, just=pcbnew.GR_TEXT_H_ALIGN_LEFT)
 
     rows = [
-        "NANO EVERY + 2x CC1101   300-928 MHz",
-        "2-layer  70 x 45 mm  v2.0  coil antennas",
+        "NANO EVERY + 2x CC1101  300-928 MHz",
+        "70 x 45 mm  2-layer  v2.1",
         "",
-        "ANTENNA - fit ONE selector per radio",
-        "A: 433 coil R301 | 315 coil R311 | SMA R403",
-        "B: 868 coil R321 | 915 coil R331 | SMA R406",
-        "coil retune: C3x1 shunt, L3x1 series",
+        "ANTENNA: fit ONE selector/radio",
+        "A: 433 R301  315 R311  SMA R403",
+        "B: 868 R321  915 R331  SMA R406",
+        "coil retune: C3x1 shunt, L3x1",
         "",
-        "SPI: D13 SCK  D11 MOSI  D12 MISO",
-        "A: CSn D10  GDO0 D2  GDO2 D3",
-        "B: CSn D9   GDO0 D4  GDO2 pad",
+        "SPI D13 SCK  D11 MOSI  D12 MISO",
+        "A: CSn D10 GDO0 D2 GDO2 D3",
+        "B: CSn D9  GDO0 D4 GDO2 pad",
     ]
     for i, r in enumerate(rows):
         if r:
-            text(r, 45.5, 17.0 + i * 1.5, size=0.8, layer=pcbnew.B_SilkS)
+            text(r, 47.5, 16.0 + i * 1.75, layer=pcbnew.B_SilkS)
 
 
 def stitch_ground(board, add_via, pitch=4.0, clearance=0.3):

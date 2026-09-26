@@ -11,12 +11,14 @@
    is assembled:** all SMD parts, the four coil antennas AE1-AE4, the SMA
    jacks J1/J2, the breakout headers J3/J4 and the Nano sockets S1/S2
    (two 1x15 female headers, LCSC C7499333, in the Nano's own holes).
-   Not-fitted selectors and match pads are left out. The coils, headers and
-   sockets are through-hole: pick an assembly option with through-hole
-   soldering. In the placement preview, **check the rotation of U1, U501,
-   U2, U3, Y1, Y501 and J1/J2** (jack bodies off the right edge): KiCad and
-   JLCPCB disagree on some footprint zero angles. The coils stand upright
-   at the right-hand edge.
+   Not-fitted selectors and match pads are left out. Choose **Economic
+   PCBA** (Standard needs 70 x 70 mm or larger); it solders the through-hole
+   coils, headers and sockets and needs no rails or fiducials. The CPL
+   already carries JLCPCB's own footprint angles (KiCad and JLCPCB differ
+   for the TSSOP, the SOT-23, the headers and the sockets; every part was
+   fitted onto JLCPCB's footprint, `verify/VERIFICATION.md`), so the
+   preview should show every part on its pads, the SMA bodies off the
+   right edge and the coils upright at the right-hand edge.
 3. Afterwards: The Nano Every ABX00028 comes with its two 1x15 headers **loose** in the
    box; solder them on first. Easiest way to get them straight: push the
    headers (long pins down) into S1/S2 on this board, lay the Nano on top,

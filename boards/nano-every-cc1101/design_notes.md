@@ -40,9 +40,11 @@ channels and that is the ninth signal.
 - Radio B keeps the same core and replaces the balun with TI's 868/915 MHz
   network (L131/L121 series, C121 across, C131 + L132, L122 + C124 + C122,
   then L123-C123-L124-C125).
-- 50 ohm lines are 1.2 mm grounded coplanar waveguide with 0.2 mm gaps
-  (51 ohm on 1.6 mm FR4) over the unbroken B.Cu ground, with stitching vias
-  along both sides wherever they fit.
+- 50 ohm lines are 1.2 mm grounded coplanar waveguide with 0.2 mm gaps over
+  the unbroken B.Cu ground (49.7-51.4 ohm from a 2-D field solve of the real
+  cross-section, `verify/fieldsolve.py`), with stitching vias along both
+  sides wherever they fit. Each coil branch is 50 ohm from the bus to the
+  coil.
 - Each radio has a short vertical 50 ohm bus; every antenna branch starts
   with its selector right on the bus, so an unselected branch is a stub of
   only a few mm (negligible below 1 GHz).
@@ -72,6 +74,11 @@ trim the T-match with a nanoVNA if needed.
   200 mA available, two radios in TX draw ~60 mA.
 
 ## Autorouting
+
+The TXS0108E sits rotated 270 deg with its channels in the Nano's pin order:
+the shortest of 24 fully routed placements (rotation x channel order x
+position), 622 mm autorouted copper and 9 signal vias, 1.17x the
+straight-line minimum overall (`verify/VERIFICATION.md`).
 
 Freerouting only routes the non-RF signals (SPI, CSn/GDO, 3.3 V/5 V, LED).
 Everything RF, both CC1101 clusters, every match network, antenna and

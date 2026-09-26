@@ -208,6 +208,18 @@ def bom_value(name, value):
     return "1x15 header" if "PinHeader" in name else value
 
 
+# JLCPCB places its own (EasyEDA) footprint of each LCSC part. Where that
+# footprint's zero orientation differs from KiCad's, add this many degrees.
+# Derived by fitting every part's EasyEDA pads onto the board pads
+# (verify/cplfit.py re-checks the generated CPL against them).
+JLC_ROT = {"TSSOP-20": -90, "PinHeader_1x15": 270, ":SOT-23": 180}
+
+
+def jlc_rot(fp):
+    name = fp.GetFPIDAsString()
+    return next((d for k, d in JLC_ROT.items() if name.endswith(k) or (k[0] != ":" and k in name)), 0)
+
+
 def centre(fp):
     """Middle of a footprint's pads (a pin header's origin is pin 1)."""
     pts = [p.GetPosition() for p in fp.Pads()]
@@ -320,14 +332,14 @@ def main():
                 p = centre(fp) if "PinHeader" in fp.GetFPIDAsString() else fp.GetPosition()
                 w.writerow([fp.GetReference(), f"{pcbnew.ToMM(p.x) - ox:.3f}mm",
                             f"{oy - pcbnew.ToMM(p.y):.3f}mm", "Top",
-                            f"{fp.GetOrientationDegrees() % 360:.0f}"])
+                            f"{(fp.GetOrientationDegrees() + jlc_rot(fp)) % 360:.0f}"])
         # the sockets sit in the Nano's two pin rows: centre of pads 1-15 / 16-30
         nano = board.FindFootprintByReference("A1")
         for ref, pins in (("S1", range(1, 16)), ("S2", range(16, 31))):
             pts = [p.GetPosition() for p in nano.Pads() if int(p.GetNumber()) in pins]
             cx = sum(pcbnew.ToMM(q.x) for q in pts) / len(pts)
             cy = sum(pcbnew.ToMM(q.y) for q in pts) / len(pts)
-            w.writerow([ref, f"{cx - ox:.3f}mm", f"{oy - cy:.3f}mm", "Top", "0"])
+            w.writerow([ref, f"{cx - ox:.3f}mm", f"{oy - cy:.3f}mm", "Top", "270"])
     print(f"BOM: {sum(len(g['refs']) for g in groups.values())} parts "
           f"({len(placed)} placed by the assembler), netlist: {len(nets)} nets")
 

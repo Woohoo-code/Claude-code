@@ -1,0 +1,74 @@
+== DRC
+** Found 0 DRC violations **
+** Found 0 unconnected pads **
+** Found 0 Footprint errors **
+== pins vs vendor pin names
+U1    C29953   21 pins vs vendor names: OK
+U501  C29953   21 pins vs vendor names: OK
+U2    C5446     3 pins vs vendor names: OK
+Y1    C70573    4 pins vs vendor names: OK
+Y501  C70573    4 pins vs vendor names: OK
+D1    C2286    LED: KiCad pad 1 (cathode) = GND, pad 2 (anode) = LED_A: OK
+U3    C17206   TXS0108E supplies/OE + 8 channel pairs: OK  (A1=GDO0_A, A2=GDO2_A, A3=GDO0_B, A4=CSN_B, A5=CSN_A, A6=SI, A7=SO, A8=SCLK)
+A1    Nano Every 30 pins vs ABX00028 datasheet: OK
+decoupling (supply pin -> nearest cap on that net):
+   U1. 4 (3V3  ) -> C41    1.6 mm
+   U1. 9 (3V3  ) -> C111   2.3 mm
+   U1.11 (3V3  ) -> C111   1.7 mm
+   U1.14 (3V3  ) -> C151   2.8 mm
+   U1.15 (3V3  ) -> C151   2.3 mm
+   U1.18 (3V3  ) -> C151   2.7 mm
+   U501. 4 (3V3  ) -> C541   1.6 mm
+   U501. 9 (3V3  ) -> C611   2.3 mm
+   U501.11 (3V3  ) -> C611   1.7 mm
+   U501.14 (3V3  ) -> C651   2.8 mm
+   U501.15 (3V3  ) -> C651   2.3 mm
+   U501.18 (3V3  ) -> C651   2.7 mm
+   U3. 2 (3V3  ) -> C7     1.8 mm
+   U3.19 (+5V  ) -> C8     1.8 mm
+   U2. 2 (3V3  ) -> C6     2.9 mm
+   U2. 3 (+5V  ) -> C5     3.1 mm
+ALL PIN CHECKS PASS
+== CPL vs JLCPCB footprints
+CPL vs JLCPCB footprint fit: ALL 66 PARTS MATCH
+== line impedance (2-D field solver)
+w=1.20 mm gap 0.20 mm:  Z0 =  49.7 ohm   eps_eff = 2.59
+w=0.40 mm gap 0.20 mm:  Z0 =  68.8 ohm   eps_eff = 2.47
+== antenna feed networks
+balun output -> selected coil (50 ohm), board copper + parts as built
+  radio A -> 433 coil @  433.05 MHz: Zin  49.2  -4.9j ohm  S11  -26.0 dB  power to coil  98.8 %
+  radio A -> 433 coil @  433.92 MHz: Zin  49.2  -4.9j ohm  S11  -26.0 dB  power to coil  98.8 %
+  radio A -> 433 coil @  434.79 MHz: Zin  49.2  -4.9j ohm  S11  -25.9 dB  power to coil  98.8 %
+  radio A -> 315 coil @  314.50 MHz: Zin  49.9  -1.8j ohm  S11  -34.8 dB  power to coil  99.1 %
+  radio A -> 315 coil @  315.00 MHz: Zin  49.9  -1.8j ohm  S11  -34.8 dB  power to coil  99.1 %
+  radio A -> 315 coil @  315.50 MHz: Zin  49.9  -1.8j ohm  S11  -34.8 dB  power to coil  99.1 %
+  radio B -> 868 coil @  863.00 MHz: Zin  49.2  -8.2j ohm  S11  -21.7 dB  power to coil  98.0 %
+  radio B -> 868 coil @  868.30 MHz: Zin  49.2  -8.2j ohm  S11  -21.6 dB  power to coil  98.0 %
+  radio B -> 868 coil @  870.00 MHz: Zin  49.2  -8.2j ohm  S11  -21.6 dB  power to coil  98.0 %
+  radio B -> 915 coil @  902.00 MHz: Zin  46.9 -10.3j ohm  S11  -19.2 dB  power to coil  97.5 %
+  radio B -> 915 coil @  915.00 MHz: Zin  46.8 -10.4j ohm  S11  -19.0 dB  power to coil  97.4 %
+  radio B -> 915 coil @  928.00 MHz: Zin  46.7 -10.5j ohm  S11  -18.9 dB  power to coil  97.4 %
+== CC1101 harmonic filters
+433 MHz front end @  433.9 MHz: pass -0.83 dB | 2nd  -22.4 dB | 3rd  -41.4 dB | 4th  -57.6 dB
+868/915 front end @  868.3 MHz: pass -0.45 dB | 2nd  -17.4 dB | 3rd  -34.7 dB | 4th  -52.3 dB
+868/915 front end @  915.0 MHz: pass -0.48 dB | 2nd  -19.5 dB | 3rd  -37.4 dB | 4th  -56.8 dB
+== Gerber DFM (the files the fab receives)
+nano_every_cc1101-B_Cu.gbl               min aperture 0.250 mm  (limit 0.1) OK
+nano_every_cc1101-B_Mask.gbs             min aperture 1.600 mm
+nano_every_cc1101-B_Silkscreen.gbo       min aperture 0.182 mm  (limit 0.15) OK
+nano_every_cc1101-Edge_Cuts.gm1          min aperture 0.100 mm
+nano_every_cc1101-F_Cu.gtl               min aperture 0.150 mm  (limit 0.1) OK
+nano_every_cc1101-F_Mask.gts             min aperture 1.400 mm
+nano_every_cc1101-F_Paste.gtp            min aperture 1.400 mm
+nano_every_cc1101-F_Silkscreen.gto       min aperture 0.150 mm  (limit 0.15) OK
+nano_every_cc1101-PTH.drl                drills used: 0.25, 0.30, 1.00, 1.20 mm  (min 0.15)
+GERBER DFM: PASS
+== routing
+autorouted: 622.4 mm in 195 segments, 9 signal vias; hand-routed 361.7 mm
+TOTAL signal/power copper 947 mm vs straight-line minimum 808 mm (x1.17)
+== power
+3V3 load, both radios transmitting at +10 dBm: 65 mA (both receiving: 35 mA)
+XC6206P332MR: 200 mA rated -> 32 % used; dropout at 100 mA ~0.25 V, headroom from the Nano's 5 V: 1.7 V
+LDO dissipation 110 mW; SOT-23 theta_JA ~250 C/W -> +27 C rise (Tj 52 C at 25 C ambient, limit 125 C)
+Nano Every 5 V pin: 70 mA of the 950 mA it can supply (datasheet power tree)
+CC1101 VDD 3.3 V +/-2 % (XC6206) within 1.8-3.6 V; TXS0108E VCCA 3.3 V <= VCCB 5 V as required
