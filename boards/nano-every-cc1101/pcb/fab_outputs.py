@@ -78,9 +78,9 @@ CAT = {
                                         "BAT WIRELESS", "BW868SNX20-5Z6", "C496555"),
     ("SMA", "SMA"): ("SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board", "BAT WIRELESS",
                      "BWSMA-KE-P001", "C496550"),
-    ("Arduino_Nano", "Arduino Nano Every"): ("Arduino Nano Every ABX00028 (needs 2x 1x15 male "
-                                             "headers soldered on) or ABX00033 (headers "
-                                             "fitted); plugs into S1/S2", "Arduino",
+    ("Arduino_Nano", "Arduino Nano Every"): ("Arduino Nano Every ABX00028 (solder its two "
+                                             "included 1x15 headers on) or ABX00033 "
+                                             "(headers fitted); plugs into S1/S2", "Arduino",
                                              "ABX00028", ""),
     ("PinHeader_1x15", None): ("Pin header 1x15 2.54 mm male, straight (breakout)", "Megastar",
                                "ZX-PZ2.54-1-15PZZ", "C7501269"),
@@ -292,12 +292,8 @@ def main():
             w.writerow([i, len(refs), " ".join(refs), value, d, mfr, mpn, lcsc, pkg, how])
         w.writerow([len(rows) + 1, 2, "S1 S2", "1x15 socket", SOCKET[0], SOCKET[1], SOCKET[2],
                     SOCKET[3], "PinSocket_1x15", "assembler (THT)"])
-        # the ABX00028 Nano Every ships WITHOUT headers: two male 1x15 per Nano
-        # so it plugs into S1/S2 (not needed with ABX00033, headers fitted)
-        w.writerow([len(rows) + 2, 2, "(on the Nano)", "1x15 header",
-                    "Pin header 1x15 2.54 mm male, for the Nano Every ABX00028 (ships "
-                    "without headers; skip with ABX00033)", "Megastar", "ZX-PZ2.54-1-15PZZ",
-                    "C7501269", "PinHeader_1x15", "you solder onto the Nano"])
+        # the Nano Every's own headers come loose in its box: nothing to buy,
+        # they are soldered onto the Nano so it plugs into S1/S2
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:

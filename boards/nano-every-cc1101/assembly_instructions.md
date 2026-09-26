@@ -17,13 +17,14 @@
    U2, U3, Y1, Y501 and J1/J2** (jack bodies off the right edge): KiCad and
    JLCPCB disagree on some footprint zero angles. The coils stand upright
    at the right-hand edge.
-3. Afterwards: The Nano Every **ABX00028 ships without pin headers**: solder two 1x15
-   male 2.54 mm headers (LCSC C7501269, listed in `bom-no-nano.csv`) onto
-   the Nano, long pins down, then plug it into S1/S2 with USB toward the
-   board edge (D12/D13 end at the edge). ABX00033 is the same Nano with the
-   headers already fitted. Checked against the ABX00028 datasheet: 2 x 15
-   pins, 2.54 mm pitch, rows 15.24 mm apart, 43.18 x 17.78 mm, same pin
-   order.
+3. Afterwards: The Nano Every ABX00028 comes with its two 1x15 headers **loose** in the
+   box; solder them on first. Easiest way to get them straight: push the
+   headers (long pins down) into S1/S2 on this board, lay the Nano on top,
+   solder the 30 pins on the Nano, then pull it out. Plug it into S1/S2 with
+   USB toward the board edge (D12/D13 end at the edge). ABX00033 is the same
+   Nano with the headers already soldered. Checked against the ABX00028
+   datasheet: 2 x 15 pins, 2.54 mm pitch, rows 15.24 mm apart, 43.18 x
+   17.78 mm, same pin order.
 
 ## Reflow (if assembling yourself)
 
