@@ -31,6 +31,21 @@ search-driven, not a guarantee that a given part's silicon pinout matches
 the physical positions generated. Always check a generated design against
 the real datasheet before fabricating.
 
+## Example boards
+
+Complete, hand-finished design packages in this tool's format. Both are
+**placed and fully routed** (0 DRC errors), with Gerbers, pick-and-place,
+and a script that regenerates the board through KiCad 7's `pcbnew` API.
+`export-kicad`, by contrast, only places parts on a grid.
+
+- [`boards/cc1101-mini/`](boards/cc1101-mini/): an 18.5 x 12.6 mm 4-layer
+  TI CC1101 433 MHz module with a U.FL connector.
+- [`boards/nano-every-cc1101/`](boards/nano-every-cc1101/): a 70 x 45 mm
+  **2-layer** Arduino Nano Every carrier with two CC1101s covering every
+  CC1101 band. It has JLCPCB-assembled coil antennas for 315/433/868/915 MHz
+  (plus optional SMA jacks), a level shifter, an LDO and a pin breakout.
+  Freerouting autoroutes the non-RF nets.
+
 ## Requirements
 
 - Python 3.9+ (only to run from source - the packaged executable needs nothing)

@@ -1,0 +1,28 @@
+** Drc report for cc1101_mini.kicad_pcb **
+** Created on 2026-09-25 00:17:33 **
+
+** Found 5 DRC violations **
+[silk_overlap]: Silkscreen overlap
+    Rule: board setup constraints silk; Severity: warning
+    @(105.1150 mm, 108.1100 mm): Line on F.Silkscreen
+    @(104.6600 mm, 108.0578 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(104.3900 mm, 108.1100 mm): Line on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; Severity: warning
+    @(105.1150 mm, 108.1100 mm): Line on F.Silkscreen
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(109.2000 mm, 108.9500 mm): Footprint C111
+    @(106.5000 mm, 106.0000 mm): Footprint U1
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(106.5000 mm, 106.0000 mm): Footprint U1
+    @(104.3000 mm, 107.9500 mm): Footprint C51
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **
