@@ -2,7 +2,7 @@
 # Regenerate the board and every fabrication output.
 #   needs: KiCad 7 (pcbnew Python + kicad-cli), kicad-footprints, Java +
 #          Freerouting 1.9 jar (FREEROUTING_JAR), xvfb-run, librsvg2-bin (renders)
-#   ./make_fab.sh           -> fab/nano_every_cc1101-gerbers.zip (upload this),
+#   ./make_fab.sh           -> fab/nano_every_cc1101-gerbers.zip (upload this to the fab),
 #                              fab/bom-jlcpcb.csv, fab/cpl-jlcpcb.csv, ../bom.csv,
 #                              ../netlist.md, drc_report.txt, ../img/*.png
 set -euo pipefail
@@ -13,12 +13,18 @@ PCB=nano_every_cc1101.kicad_pcb
 /usr/bin/python3 gen_board.py
 rm -rf fab/gerbers && mkdir -p fab/gerbers
 /usr/bin/python3 fab_outputs.py
-kicad-cli pcb export gerbers -o fab/gerbers/ --no-protel-ext --use-drill-file-origin \
+# Fab layers only, with the Protel extensions fabs key on (.GTL/.GBL/.GTS/
+# .GBS/.GTP/.GTO/.GBO/.GM1 + .DRL). No drill maps (they are drawings that
+# upload tools misread as layers) and no empty drill files.
+kicad-cli pcb export gerbers -o fab/gerbers/ --use-drill-file-origin --subtract-soldermask \
   -l F.Cu,B.Cu,F.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts "$PCB" >/dev/null
 kicad-cli pcb export drill -o fab/gerbers/ --format excellon --excellon-separate-th \
-  --drill-origin plot --generate-map --map-format gerberx2 "$PCB" >/dev/null
+  --excellon-units mm --excellon-zeros-format decimal --drill-origin plot "$PCB" >/dev/null
+for f in fab/gerbers/*.drl; do
+  grep -qE '^T[0-9]+C' "$f" || rm -f "$f"        # drop a drill file with no tools
+done
 rm -f fab/nano_every_cc1101-gerbers.zip
-(cd fab/gerbers && zip -q -r ../nano_every_cc1101-gerbers.zip .)
+(cd fab/gerbers && zip -q -j ../nano_every_cc1101-gerbers.zip ./*)
 rm -f fab/nano_every_cc1101-fab-package.zip
 (cd fab && zip -q -j nano_every_cc1101-fab-package.zip nano_every_cc1101-gerbers.zip \
   bom-no-nano.csv bom-jlcpcb.csv cpl-jlcpcb.csv)

@@ -64,7 +64,10 @@ there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
 
 ## Ordering (print ready)
 
-1. PCB: upload `pcb/fab/nano_every_cc1101-gerbers.zip`. 2 layers, 1.6 mm,
+1. PCB: upload `pcb/fab/nano_every_cc1101-gerbers.zip` (**not** the
+   fab-package zip, which bundles the Gerber zip with the BOM/CPL and is
+   for your records). 8 layers with Protel extensions (.GTL .GBL .GTS .GBS
+   .GTP .GTO .GBO .GM1) + one plated drill file. 2 layers, 1.6 mm,
    70 x 45 mm, 1 oz. All standard rules (0.15 mm track/space, 0.25 mm
    minimum drill), no special options.
 2. Assembly: `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv` (top side,

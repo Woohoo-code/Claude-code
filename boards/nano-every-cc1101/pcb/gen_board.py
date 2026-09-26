@@ -45,6 +45,8 @@ COIL_X = 66.3                           # coil antenna column (right edge)
 STRIP_X = 63.0                          # no ground right of this beside the coils
 # ground pour outline: whole board except the two coil strips (the SMA jacks
 # in between keep their ground)
+# front silkscreen labels that ground-stitching vias must not cut through
+SILK_BOXES = [(31.5, 13.8, 48.5, 15.0), (31.5, 43.3, 48.5, 44.5)]
 POUR = [(0, 0), (STRIP_X, 0), (STRIP_X, 15.3), (W, 15.3), (W, 29.7), (STRIP_X, 29.7),
         (STRIP_X, H), (0, H)]
 
@@ -926,6 +928,9 @@ def stitch_ground(board, add_via, pitch=4.0, clearance=0.3):
         return math.hypot(x - (ax + u * vx), y - (ay + u * vy))
 
     def ok(x, y):
+        if any(x0 - r - 0.2 < x < x1 + r + 0.2 and y0 - r - 0.2 < y < y1 + r + 0.2
+               for x0, y0, x1, y1 in SILK_BOXES):
+            return False                 # keep the board labels readable
         for kind, g, n in obstacles:
             if kind == "keepout":
                 if g[0] < x < g[2] and g[1] < y < g[3]:
