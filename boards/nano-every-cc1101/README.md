@@ -21,7 +21,7 @@ unconnected pads**.
 | Radio A (U1) | CC1101, 315/433 MHz front end (433 fitted) |
 | Radio B (U501) | CC1101, 868/915 MHz front end |
 | Antennas | 4 coil antennas AE1-AE4 (433, 315, 868, 915 MHz), each with a T-match for retuning; SMA J1/J2 |
-| Host | Arduino Nano Every in sockets, USB at the board edge, every pin re-broken-out on J3/J4 |
+| Host | Arduino Nano Every (ABX00028 + headers, or ABX00033) in sockets S1/S2, USB at the board edge, every pin re-broken-out on J3/J4 |
 | Glue | TXS0108E 5 V <-> 3.3 V level shifter, XC6206 3.3 V LDO, power LED |
 
 ## Antennas
@@ -78,7 +78,13 @@ there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
    through-hole, so choose an assembly option with through-hole soldering.
    Check the rotations of U1, U501, U2, U3, Y1, Y501 and J1/J2 in the
    preview.
-3. Plug the Nano Every into S1/S2, USB toward the board edge.
+3. The Nano Every **ABX00028 ships without pin headers**: solder two 1x15
+   male 2.54 mm headers (LCSC C7501269, listed in `bom-no-nano.csv`) onto
+   the Nano, long pins down, then plug it into S1/S2 with USB toward the
+   board edge (D12/D13 end at the edge). ABX00033 is the same Nano with the
+   headers already fitted. Checked against the ABX00028 datasheet: 2 x 15
+   pins, 2.54 mm pitch, rows 15.24 mm apart, 43.18 x 17.78 mm, same pin
+   order.
 
 ## Files
 

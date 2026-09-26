@@ -1,5 +1,5 @@
 RefDes,Qty,Description,Manufacturer,MPN,Package,Notes
-A1,1,Arduino Nano Every (plugs into 2x 1x15 female 2.54 mm headers),Arduino,ABX00028,Arduino_Nano,
+A1,1,Arduino Nano Every ABX00028 (needs 2x 1x15 male headers soldered on) or ABX00033 (headers fitted); plugs into S1/S2,Arduino,ABX00028,Arduino_Nano,
 AE1,1,"Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",BAT WIRELESS,BW433SNX21-5W2,Coil_Spring,LCSC C496554
 AE2,1,"Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",BAT WIRELESS,BW315SNX39-6W3,Coil_Spring,LCSC C496553
 AE3,1,"Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",BAT WIRELESS,BW868SNX20-5Z6,Coil_Spring,LCSC C496555

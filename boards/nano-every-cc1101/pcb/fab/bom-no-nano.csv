@@ -33,3 +33,4 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 32,1,AE4,BW915SNX17-5W2,"Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",BAT WIRELESS,BW915SNX17-5W2,C496556,Coil_Spring,assembler (THT)
 33,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,assembler (THT)
 34,2,S1 S2,1x15 socket,"Female header 1x15 2.54 mm, 8.5 mm, gold (socket for the Nano Every)",Megastar,ZX-PM2.54-1-15PY,C7499333,PinSocket_1x15,assembler (THT)
+35,2,(on the Nano),1x15 header,"Pin header 1x15 2.54 mm male, for the Nano Every ABX00028 (ships without headers; skip with ABX00033)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,you solder onto the Nano
