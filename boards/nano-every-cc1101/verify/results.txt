@@ -9,18 +9,18 @@ U2    C5446     3 pins vs vendor names: OK
 Y1    C70573    4 pins vs vendor names: OK
 Y501  C70573    4 pins vs vendor names: OK
 D1    C2286    LED: KiCad pad 1 (cathode) = GND, pad 2 (anode) = LED_A: OK
-U3    C17206   TXS0108E supplies/OE + 8 channel pairs: OK  (A1=GDO0_A, A2=GDO2_A, A3=GDO0_B, A4=CSN_B, A5=CSN_A, A6=SI, A7=SO, A8=SCLK)
+U3    C17206   TXS0108E supplies/OE + 8 channel pairs: OK  (A1=SCLK, A2=SO, A3=SI, A4=CSN_A, A5=CSN_B, A6=GDO0_B, A7=GDO2_A, A8=GDO0_A)
 A1    Nano Every 30 pins vs ABX00028 datasheet: OK
 decoupling (supply pin -> nearest cap on that net):
-   U1. 4 (3V3  ) -> C41    1.6 mm
-   U1. 9 (3V3  ) -> C111   2.3 mm
-   U1.11 (3V3  ) -> C111   1.7 mm
+   U1. 4 (3V3  ) -> C41    1.8 mm
+   U1. 9 (3V3  ) -> C111   2.1 mm
+   U1.11 (3V3  ) -> C111   1.6 mm
    U1.14 (3V3  ) -> C151   2.8 mm
    U1.15 (3V3  ) -> C151   2.3 mm
    U1.18 (3V3  ) -> C151   2.7 mm
-   U501. 4 (3V3  ) -> C541   1.6 mm
-   U501. 9 (3V3  ) -> C611   2.3 mm
-   U501.11 (3V3  ) -> C611   1.7 mm
+   U501. 4 (3V3  ) -> C541   1.8 mm
+   U501. 9 (3V3  ) -> C611   2.1 mm
+   U501.11 (3V3  ) -> C611   1.6 mm
    U501.14 (3V3  ) -> C651   2.8 mm
    U501.15 (3V3  ) -> C651   2.3 mm
    U501.18 (3V3  ) -> C651   2.7 mm
@@ -29,16 +29,24 @@ decoupling (supply pin -> nearest cap on that net):
    U2. 2 (3V3  ) -> C6     2.9 mm
    U2. 3 (+5V  ) -> C5     3.1 mm
 ALL PIN CHECKS PASS
+== firmware pins traced through the board
+FIRMWARE PIN MAP: MATCHES THE BOARD
 == CPL vs JLCPCB footprints
 CPL vs JLCPCB footprint fit: ALL 66 PARTS MATCH
 == line impedance (2-D field solver)
 w=1.20 mm gap 0.20 mm:  Z0 =  49.7 ohm   eps_eff = 2.59
 w=0.40 mm gap 0.20 mm:  Z0 =  68.8 ohm   eps_eff = 2.47
+== line impedance (3-D full-wave, openEMS)
+3-D FDTD (openEMS), zero-thickness copper, 0.3-1.0 GHz:
+  Z0 = 51.8 ohm (range 51.4-52.1)   eps_eff = 2.84
+  S11 into 50 ohm: worst -30.3 dB   S21: -0.00 to 0.01 dB
+2-D field solver, same cross-section: Z0 = 52.2 ohm, eps_eff = 2.70 (zero-thickness copper); 49.7 ohm with the real 35 um copper
+FULL-WAVE vs 2-D: 0.4 ohm apart -> AGREE
 == antenna feed networks
 balun output -> selected coil (50 ohm), board copper + parts as built
-  radio A -> 433 coil @  433.05 MHz: Zin  49.2  -4.9j ohm  S11  -26.0 dB  power to coil  98.8 %
-  radio A -> 433 coil @  433.92 MHz: Zin  49.2  -4.9j ohm  S11  -26.0 dB  power to coil  98.8 %
-  radio A -> 433 coil @  434.79 MHz: Zin  49.2  -4.9j ohm  S11  -25.9 dB  power to coil  98.8 %
+  radio A -> 433 coil @  433.05 MHz: Zin  49.3  -4.6j ohm  S11  -26.7 dB  power to coil  98.8 %
+  radio A -> 433 coil @  433.92 MHz: Zin  49.3  -4.6j ohm  S11  -26.6 dB  power to coil  98.8 %
+  radio A -> 433 coil @  434.79 MHz: Zin  49.3  -4.6j ohm  S11  -26.6 dB  power to coil  98.8 %
   radio A -> 315 coil @  314.50 MHz: Zin  49.9  -1.8j ohm  S11  -34.8 dB  power to coil  99.1 %
   radio A -> 315 coil @  315.00 MHz: Zin  49.9  -1.8j ohm  S11  -34.8 dB  power to coil  99.1 %
   radio A -> 315 coil @  315.50 MHz: Zin  49.9  -1.8j ohm  S11  -34.8 dB  power to coil  99.1 %
@@ -58,17 +66,212 @@ nano_every_cc1101-B_Mask.gbs             min aperture 1.600 mm
 nano_every_cc1101-B_Silkscreen.gbo       min aperture 0.182 mm  (limit 0.15) OK
 nano_every_cc1101-Edge_Cuts.gm1          min aperture 0.100 mm
 nano_every_cc1101-F_Cu.gtl               min aperture 0.150 mm  (limit 0.1) OK
-nano_every_cc1101-F_Mask.gts             min aperture 1.400 mm
-nano_every_cc1101-F_Paste.gtp            min aperture 1.400 mm
+nano_every_cc1101-F_Mask.gts             min aperture 0.850 mm
+nano_every_cc1101-F_Paste.gtp            min aperture 0.850 mm
 nano_every_cc1101-F_Silkscreen.gto       min aperture 0.150 mm  (limit 0.15) OK
-nano_every_cc1101-PTH.drl                drills used: 0.25, 0.30, 1.00, 1.20 mm  (min 0.15)
+nano_every_cc1101-PTH.drl                drills used: 0.25, 0.30, 1.00, 1.10 mm  (min 0.15)
 GERBER DFM: PASS
+== Gerber netlist + DFM (fab files only: shorts/opens, clearances, rings, mask, paste)
+outline from .gm1: 70.000 x 45.000 mm
+drill file: 215 plated holes, sizes [0.25, 0.3, 1.0, 1.1]
+copper islands: top 103, bottom 74
+pads + vias located in the Gerber copper: 423/423
+nets: 73 on the board, 73 found in the Gerbers
+shorts (one copper island carrying >1 net): 0
+opens (one net split over >1 island): 0
+floating copper islands (no pad or via): 0
+top copper: smallest gap between different nets 0.150 mm at (38.0, 10.15) (JLCPCB min 0.1) OK
+bottom copper: smallest gap between different nets 0.152 mm at (35.99, 26.18) (JLCPCB min 0.1) OK
+top copper closer than 0.2 mm to the edge: 0 island(s) []
+bottom copper closer than 0.2 mm to the edge: 0 island(s) []
+annular ring, vias: min 0.125 mm over 151 holes (limit 0.05) OK
+annular ring, pads: min 0.300 mm over 64 holes (limit 0.18, recommended 0.25) OK
+hole-to-hole (via-via): min 0.457 mm (limit 0.2) OK
+hole-to-hole (with a pad hole): min 1.540 mm (limit 0.45) OK
+via hole edge to other-net copper: min 0.275 mm at (38.0, 9.75) (limit 0.2) OK
+pad hole edge to other-net copper: min 0.500 mm at (8.5, 15.66) (limit 0.28) OK
+    openings closer than 0.09 mm to another net's copper: 0 []
+    exposed vias at []
+top mask: 266 openings; pad flashes not opened: 0 [] (+2 kept under mask by design); vias exposed: 0; narrowest mask web 0.220 mm (JLCPCB min bridge 0.1) OK
+    openings closer than 0.09 mm to another net's copper: 0 []
+    exposed vias at []
+bottom mask: 68 openings; pad flashes not opened: 0 [] (+0 kept under mask by design); vias exposed: 0; narrowest mask web 9.000 mm (JLCPCB min bridge 0.1) OK
+paste: 201 apertures; top SMD pads without paste: 1 ['TP1.1']; through-hole pads with paste: 0 []
+GERBER NETLIST + DFM: PASS
+== SMD spacing vs JLCPCB's table
+56 assembled SMD parts, 1540 pairs
+pairs below JLCPCB's table (other than next to the CC1101 QFNs): 0
+parts closer than 1 mm to a CC1101 (TI reference placement): 17
+  C51   - U1     body gap 0.300 mm  pad gap 0.215 mm
+  C551  - U501   body gap 0.300 mm  pad gap 0.215 mm
+  C611  - U501   body gap 0.515 mm  pad gap 1.065 mm
+  C111  - U1     body gap 0.515 mm  pad gap 1.065 mm
+  R671  - U501   body gap 1.175 mm  pad gap 0.545 mm
+  R171  - U1     body gap 1.175 mm  pad gap 0.545 mm
+  L131  - U1     body gap 1.350 mm  pad gap 0.695 mm
+  L621  - U501   body gap 1.350 mm  pad gap 0.695 mm
+  L631  - U501   body gap 1.350 mm  pad gap 0.695 mm
+  C121  - U1     body gap 1.350 mm  pad gap 0.715 mm
+  C131  - U1     body gap 1.100 mm  pad gap 0.716 mm
+  U1    - Y1     body gap 1.350 mm  pad gap 0.775 mm
+  U501  - Y501   body gap 1.350 mm  pad gap 0.775 mm
+  C41   - U1     body gap 1.250 mm  pad gap 0.815 mm
+  C541  - U501   body gap 1.250 mm  pad gap 0.815 mm
+  C651  - U501   body gap 1.204 mm  pad gap 1.075 mm
+  C151  - U1     body gap 1.204 mm  pad gap 1.075 mm
+SPACING: PASS (next to the QFNs: bodies >= 0.30 mm, pads >= 0.22 mm; held to 0.25 / 0.2)
 == routing
-autorouted: 622.4 mm in 195 segments, 9 signal vias; hand-routed 361.7 mm
-TOTAL signal/power copper 947 mm vs straight-line minimum 808 mm (x1.17)
+autorouted: 644.0 mm in 182 segments, 11 signal vias; hand-routed 370.3 mm
+TOTAL signal/power copper 976 mm vs straight-line minimum 815 mm (x1.20)
 == power
 3V3 load, both radios transmitting at +10 dBm: 65 mA (both receiving: 35 mA)
 XC6206P332MR: 200 mA rated -> 32 % used; dropout at 100 mA ~0.25 V, headroom from the Nano's 5 V: 1.7 V
 LDO dissipation 110 mW; SOT-23 theta_JA ~250 C/W -> +27 C rise (Tj 52 C at 25 C ambient, limit 125 C)
 Nano Every 5 V pin: 70 mA of the 950 mA it can supply (datasheet power tree)
 CC1101 VDD 3.3 V +/-2 % (XC6206) within 1.8-3.6 V; TXS0108E VCCA 3.3 V <= VCCB 5 V as required
+== parts vs LCSC records
+C496554   | BOM: BW433SNX21-5W2   Coil_BW433SNX21-5W2_EdgeOverhang   | LCSC: BW433SNX21-5W2         pkg=Plugin       lib=expand pref=False stock=2057
+          describe: -40℃~+80℃ 1.8 21mm 2dBi 433MHz 50W 50Ω 5mm Spring antenna 插件 Antennas ROHS
+          check: OK
+          attrs: {'Frequency(Center/Band)': '433MHz', 'Impedance': '50Ω'}
+C496553   | BOM: BW315SNX39-6W3   Coil_BW315SNX39-6W3_EdgeOverhang   | LCSC: BW315SNX39-6W3         pkg=Plugin       lib=expand pref=False stock=2856
+          describe: -40℃~+80℃ 1.8 315MHz 39mm 3dBi 50W 50Ω 6mm Spring antenna 插件 Antennas ROHS
+          check: OK
+          attrs: {'Frequency(Center/Band)': '315MHz', 'Impedance': '50Ω'}
+C718843   | BOM: VG868SNX18-5W2   Coil_VG868SNX18-5W2_EdgeOverhang   | LCSC: VG868SNX18-5W2         pkg=Plugin       lib=expand pref=False stock=1773
+          describe: 0.75mm 2 2dBi 40MHz 50W 50Ω 868MHz Spring antenna 插件 Antennas ROHS
+          check: OK
+          attrs: {'Frequency(Center/Band)': '868MHz', 'Impedance': '50Ω'}
+C718842   | BOM: VG915SNX17-5W2   Coil_VG915SNX17-5W2_EdgeOverhang   | LCSC: VG915SNX17-5W2         pkg=Plugin       lib=expand pref=False stock=1524
+          describe: -40℃~+80℃ 1.8 17mm 2dBi、3dBi 50W 50Ω 5mm 915MHz Spring antenna 插件 Antennas ROHS
+          check: OK
+          attrs: {'Frequency(Center/Band)': '915MHz', 'Impedance': '50Ω'}
+C15849    | BOM: 1uF              C_0603_1608Metric                  | LCSC: CL10A105KB8NNNC        pkg=0603         lib=base   pref=False stock=6754558
+          describe: 1uF 50V X5R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Tolerance': '±10%', 'Capacitance': '1uF', 'Temperature Coefficient': 'X5R'}
+C15850    | BOM: 10uF             C_0805_2012Metric                  | LCSC: CL21A106KAYNNNE        pkg=0805         lib=base   pref=False stock=5545175
+          describe: 10uF 25V X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '25V', 'Tolerance': '±10%', 'Capacitance': '10uF', 'Temperature Coefficient': 'X5R'}
+C14663    | BOM: 100nF            C_0603_1608Metric                  | LCSC: CC0603KRX7R9BB104      pkg=0603         lib=base   pref=False stock=51441570
+          describe: 100nF 50V X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Tolerance': '±10%', 'Capacitance': '100nF', 'Temperature Coefficient': 'X7R'}
+C1525     | BOM: 100nF            C_0402_1005Metric                  | LCSC: CL05B104KO5NNNC        pkg=0402         lib=base   pref=False stock=24677147
+          describe: 100nF 16V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '16V', 'Tolerance': '±10%', 'Capacitance': '100nF', 'Temperature Coefficient': 'X7R'}
+C1557     | BOM: 27pF             C_0402_1005Metric                  | LCSC: 0402CG270J500NT        pkg=0402         lib=expand pref=True stock=368726
+          describe: 27pF 50V C0G ±5% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Tolerance': '±5%', 'Capacitance': '27pF', 'Temperature Coefficient': 'C0G'}
+C85940    | BOM: 3.9pF            C_0402_1005Metric                  | LCSC: GRM1555C1H3R9CA01D     pkg=0402         lib=expand pref=False stock=22263
+          describe: 3.9pF 50V C0G 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Capacitance': '3.9pF', 'Temperature Coefficient': 'C0G'}
+C76984    | BOM: 8.2pF            C_0402_1005Metric                  | LCSC: GRM1555C1H8R2CA01D     pkg=0402         lib=expand pref=False stock=36765
+          describe: 50V 8.2pF C0G 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Capacitance': '8.2pF', 'Temperature Coefficient': 'C0G'}
+C85941    | BOM: 5.6pF            C_0402_1005Metric                  | LCSC: GRM1555C1H5R6CA01D     pkg=0402         lib=expand pref=False stock=7129
+          describe: 5.6pF 50V C0G 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Capacitance': '5.6pF', 'Temperature Coefficient': 'C0G'}
+C13533    | BOM: 330pF            C_0402_1005Metric                  | LCSC: CL05C331JB5NNNC        pkg=0402         lib=expand pref=True stock=192641
+          describe: 330pF 50V C0G ±5% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Tolerance': '±5%', 'Capacitance': '330pF', 'Temperature Coefficient': 'C0G'}
+C309455   | BOM: 1.0pF            C_0402_1005Metric                  | LCSC: CC0402BRNPO9BN1R0      pkg=0402         lib=expand pref=False stock=1200191
+          describe: 1pF 50V NP0 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Capacitance': '1pF', 'Temperature Coefficient': 'NP0'}
+C285112   | BOM: 1.5pF            C_0402_1005Metric                  | LCSC: 0402CG1R5B500NT        pkg=0402         lib=expand pref=False stock=7772
+          describe: 1.5pF 50V C0G 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Capacitance': '1.5pF', 'Temperature Coefficient': 'C0G'}
+C327287   | BOM: 3.3pF            C_0402_1005Metric                  | LCSC: CC0402BRNPO9BN3R3      pkg=0402         lib=expand pref=False stock=163125
+          describe: 3.3pF 50V NP0 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Capacitance': '3.3pF', 'Temperature Coefficient': 'NP0'}
+C1546     | BOM: 100pF            C_0402_1005Metric                  | LCSC: 0402CG101J500NT        pkg=0402         lib=base   pref=False stock=3474577
+          describe: 100pF 50V C0G ±5% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Tolerance': '±5%', 'Capacitance': '100pF', 'Temperature Coefficient': 'C0G'}
+C1547     | BOM: 12pF             C_0402_1005Metric                  | LCSC: 0402CG120J500NT        pkg=0402         lib=base   pref=False stock=2084465
+          describe: 12pF 50V C0G ±5% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS
+          check: OK
+          attrs: {'Voltage Rating': '50V', 'Tolerance': '±5%', 'Capacitance': '12pF', 'Temperature Coefficient': 'C0G'}
+C2286     | BOM: red              LED_0603_1608Metric                | LCSC: KT-0603R               pkg=0603         lib=base   pref=False stock=4013326
+          describe: -40℃~+85℃ 1.6mm x 0.8mm square LED 1.8V~2.4V 120° 20mA 300mcd 40mW 615nm~630nm 645nm Discrete Diode Red Water Clear 0603 LED Indication - Discrete ROH
+          check: OK
+          attrs: {'Mounting Style': '-', 'Color Temperature': '-', 'Test Current': '20mA', 'Illumination Color': 'Red', 'Lens Color': 'Water Clear', 'Voltage - Forward(Vf)': '1.8V~2.4V'}
+C496550   | BOM: SMA              SMA_BWSMA-KE-P001_EdgeMount        | LCSC: BWSMA-KE-P001          pkg=SMD          lib=expand pref=False stock=72049
+          describe: 1 5.2mm 50Ω Board Side Inner hole Offset Pin SMA SMD Coaxial Connectors (RF) ROHS
+          check: OK
+          attrs: {'Frequency': '-', 'Impedance': '50Ω'}
+C7501269  | BOM: 1x15 header      PinHeader_1x15_P2.54mm_Vertical    | LCSC: ZX-PZ2.54-1-15PZZ      pkg=Plugin,P=2.54mm lib=expand pref=False stock=11277
+          describe: -40℃~+105℃ 1 15P 1x15P 2.54mm 2.5mm 3A 3mm 6mm Black Brass Gold Pin Header Through Hole 插件,P=2.54mm Pin Headers ROHS
+          check: OK
+          attrs: {'Voltage Rating (Max)': '-', 'Color': 'Black', 'Current Rating': '3A', 'Mounting Type': 'Through Hole', 'Number of Pins': '15P', 'Pitch': '2.54mm', 'Circluar Pins/Square Pins': 'Square pin'}
+C12669    | BOM: 27nH             L_0402_1005Metric                  | LCSC: LQG15HS27NJ02D         pkg=0402         lib=expand pref=False stock=145404
+          describe: 1.7GHz 27nH 350mA 460mΩ 8@100MHz ±5% 0402 Inductors (SMD) ROHS
+          check: OK
+          attrs: {'Inductance': '27nH', 'Current - Saturation (Isat)': '-', 'Q @ Frequency': '8@100MHz', 'Frequency - Self Resonant': '1.7GHz', 'Tolerance': '±5%', 'Current Rating': '350mA', 'DC Resistance(DCR)': '460mΩ'}
+C12670    | BOM: 22nH             L_0402_1005Metric                  | LCSC: LQG15HS22NJ02D         pkg=0402         lib=expand pref=False stock=61774
+          describe: 1.9GHz 22nH 350mA 420mΩ 8@100MHz ±5% 0402 Inductors (SMD) ROHS
+          check: OK
+          attrs: {'Inductance': '22nH', 'Current - Saturation (Isat)': '-', 'Q @ Frequency': '8@100MHz', 'Frequency - Self Resonant': '1.9GHz', 'Tolerance': '±5%', 'Current Rating': '350mA', 'DC Resistance(DCR)': '420mΩ'}
+C21189    | BOM: 0R               L_0603_1608Metric                  | LCSC: 0603WAF0000T5E         pkg=0603         lib=base   pref=False stock=24113362
+          describe: -55℃~+155℃ 0Ω 100mW 75V Thick Film Resistor ±1% 0603 Chip Resistor - Surface Mount ROHS
+          check: OK
+          attrs: {'Resistance': '0Ω', 'Voltage-Supply(Max)': '75V', 'Tolerance': '±1%', 'Temperature Coefficient': '-'}
+C86128    | BOM: 12nH             L_0402_1005Metric                  | LCSC: LQW15AN12NG00D         pkg=0402         lib=expand pref=False stock=32865
+          describe: 12nH 140mΩ 500mA Unshielded Inductor ±2% 0402 Power Inductors ROHS
+          check: OK
+          attrs: {'Inductance': '12nH', 'Current - Saturation(Isat)': '-', 'Tolerance': '±2%', 'Current Rating': '500mA', 'DC Resistance(DCR)': '140mΩ'}
+C82917    | BOM: 18nH             L_0402_1005Metric                  | LCSC: LQW15AN18NJ00D         pkg=0402         lib=expand pref=False stock=25643
+          describe: 18nH 270mΩ 370mA Unshielded Inductor ±5% 0402 Power Inductors ROHS
+          check: OK
+          attrs: {'Inductance': '18nH', 'Current - Saturation(Isat)': '-', 'Tolerance': '±5%', 'Current Rating': '370mA', 'DC Resistance(DCR)': '270mΩ'}
+C21190    | BOM: 1k               R_0603_1608Metric                  | LCSC: 0603WAF1001T5E         pkg=0603         lib=base   pref=False stock=23746431
+          describe: -55℃~+155℃ 100mW 1kΩ 75V Thick Film Resistor ±1% ±100ppm/℃ 0603 Chip Resistor - Surface Mount ROHS
+          check: OK
+          attrs: {'Resistance': '1kΩ', 'Voltage-Supply(Max)': '75V', 'Tolerance': '±1%', 'Temperature Coefficient': '±100ppm/℃'}
+C25796    | BOM: 56k 1%           R_0402_1005Metric                  | LCSC: 0402WGF5602TCE         pkg=0402         lib=expand pref=True stock=226422
+          describe: -55℃~+155℃ 50V 56kΩ 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS
+          check: OK
+          attrs: {'Resistance': '56kΩ', 'Voltage-Supply(Max)': '50V', 'Tolerance': '±1%', 'Temperature Coefficient': '±100ppm/℃'}
+C21189    | BOM: 0R               R_0603_1608Metric                  | LCSC: 0603WAF0000T5E         pkg=0603         lib=base   pref=False stock=24113362
+          describe: -55℃~+155℃ 0Ω 100mW 75V Thick Film Resistor ±1% 0603 Chip Resistor - Surface Mount ROHS
+          check: OK
+          attrs: {'Resistance': '0Ω', 'Voltage-Supply(Max)': '75V', 'Tolerance': '±1%', 'Temperature Coefficient': '-'}
+C29953    | BOM: CC1101RGPR       Texas_RGP0020H_VQFN-20-1EP_4x4mm_P | LCSC: CC1101RGPR             pkg=QFN-20-EP(4x4) lib=expand pref=False stock=18065
+          describe: -112dBm -40℃~+85℃ 1.8V~3.6V 12dBm 15.7mA 300MHz~348MHz、387MHz~464MHz、779MHz~928MHz 315MHz、433MHz、868MHz、915MHz 34.2mA 500Kbps ISM Power-on reset funct
+          check: OK
+          attrs: {'Frequency Range': '300MHz~348MHz、387MHz~464MHz、779MHz~928MHz', 'Voltage - Supply': '1.8V~3.6V', 'Receive Current': '15.7mA', 'Typical Application Frequency': '315MHz、433MHz、868MHz、915MHz', 'Current Of Transmitting': '34.2mA'}
+C5446     | BOM: XC6206P332MR     SOT-23                             | LCSC: XC6206P332MR-G         pkg=SOT-23-3L    lib=base   pref=False stock=489566
+          describe: -40℃~+85℃@(Ta) 1 1uA 200mA 3.3V 6V Fixed Over Current Protection Positive SOT-23-3L Voltage Regulators - Linear, Low Drop Out (LDO) Regulators ROHS
+          check: OK
+          attrs: {'Voltage - Supply': '6V', 'Output Current': '200mA', 'Output Voltage': '3.3V', 'Voltage Dropout': '-'}
+C17206    | BOM: TXS0108EPWR      TSSOP-20_4.4x6.5mm_P0.65mm         | LCSC: TXS0108EPWR            pkg=TSSOP-20     lib=expand pref=False stock=62775
+          describe: -40℃~+85℃ 1 1.4V~3.6V 1.65V~5.5V 60Mbps 8 Auto Direction Detection Bidirectional Push-Pull、Open-drain TSSOP-20 Translators, Level Shifters ROHS
+          check: OK
+          attrs: {'Current - Output High(IOH)': '-', 'Voltage - Supply(VCCA)': '1.4V~3.6V', 'Voltage - Supply(VCCB)': '1.65V~5.5V', 'Current - Output Low(IOL)': '-'}
+C70573    | BOM: 26MHz            Crystal_SMD_3225-4Pin_3.2x2.5mm    | LCSC: X322526MQB4SI          pkg=SMD3225-4P   lib=expand pref=False stock=6255
+          describe: -40℃~+85℃ 16pF 26MHz 50Ω Crystal Oscillator ±10ppm ±20ppm SMD3225-4P Crystals ROHS
+          check: OK
+          attrs: {'Load Capacitance': '16pF', 'Normal temperature Frequency Tolerance': '±10ppm', 'Equivalent Series Resistance(ESR)': '50Ω', 'Frequency Stability': '±20ppm', 'Frequency': '26MHz'}
+C7499333  | BOM: 1x15 socket      PinSocket_1x15_P2.54mm_Vertical    | LCSC: ZX-PM2.54-1-15PY       pkg=Plugin,P=2.54mm lib=expand pref=False stock=8935
+          describe: -40℃~+105℃ 1 15P 1x15P 2.54mm 3.2mm 3A 8.5mm Brass Gold Square Hole Through Hole Top 插件,P=2.54mm Female Headers ROHS
+          check: OK
+          attrs: {'Voltage Rating (Max)': '-', 'Current Rating': '3A', 'Mounting Type': 'Through Hole', 'Pitch': '2.54mm'}
+PARTS vs LCSC: ALL 34 LINES MATCH (value, package, MPN)
+== stock
+34 lines, 20 extended part types; lowest stock cover for 5 boards:
+   C718842   VG915SNX17-5W2 stock    1524 for   5 needed (305x)
+   C718843   VG868SNX18-5W2 stock    1773 for   5 needed (355x)
+   C496554   BW433SNX21-5W2 stock    2057 for   5 needed (411x)
+   C496553   BW315SNX39-6W3 stock    2856 for   5 needed (571x)
+   C70573    26MHz          stock    6255 for  10 needed (626x)
+STOCK: ALL IN STOCK

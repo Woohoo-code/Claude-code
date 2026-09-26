@@ -30,6 +30,7 @@ Coordinates: board mm, origin top-left, +y down.
 
 from __future__ import annotations
 
+import collections
 import math
 import os
 import re
@@ -41,7 +42,6 @@ from pcbnew import FromMM, VECTOR2I
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H = 70.0, 45.0                       # board outline
-COIL_X = 66.3                           # coil antenna column (right edge)
 STRIP_X = 63.0                          # no ground right of this beside the coils
 # ground pour outline: whole board except the two coil strips (the SMA jacks
 # in between keep their ground)
@@ -90,16 +90,16 @@ CORE = {
            {"1": "XOSC_Q1*", "2": "GND", "3": "XOSC_Q2*", "4": "GND"}),
     "C81": (*C0402, 3.9, 11.2, 90, "27pF", {"1": "GND", "2": "XOSC_Q1*"}),
     "C101": (*C0402, 9.35, 11.2, 90, "27pF", {"1": "GND", "2": "XOSC_Q2*"}),
-    "C41": (*C0402, 3.2, 7.8, 90, "100nF", {"1": "GND", "2": "3V3"}),
-    "C51": (*C0402, 4.15, 7.95, 90, "100nF", {"1": "GND", "2": "DCOUPL*"}),   # body 0.1 mm clear of U
+    "C41": (*C0402, 3.0, 7.8, 90, "100nF", {"1": "GND", "2": "3V3"}),
+    "C51": (*C0402, 3.95, 8.1, 90, "100nF", {"1": "GND", "2": "DCOUPL*"}),    # body 0.3 mm clear of U
     "R171": (*R0402, 7.6, 2.3, 90, "56k 1%", {"1": "RBIAS*", "2": "GND"}),
     "C181": (*C0402, 5.75, 1.3, 0, "100nF", {"1": "GND", "2": "3V3"}),
     "C151": (*C0402, 8.85, 2.3, 90, "100nF", {"1": "3V3", "2": "GND"}),
-    "C111": (*C0402, 9.2, 8.95, 90, "100nF", {"1": "GND", "2": "3V3"}),
+    "C111": (*C0402, 9.0, 8.95, 90, "100nF", {"1": "GND", "2": "3V3"}),
 }
 CORE_GND_ESCAPE = {
     "C181": (4.8, 0.75), "R171": (7.6, 1.2), "C151": (8.85, 1.2),
-    "C41": (3.2, 9.0), "C51": (3.2, 9.0), "C111": (9.75, 9.6),
+    "C41": (3.0, 9.0), "C51": (3.0, 9.0), "C111": (9.7, 9.5),
     "C101": (8.75, 12.0), "C81": (3.1, 11.68),
 }
 
@@ -165,7 +165,7 @@ TXS_ORDERS = [
     ["GDO0_A", "GDO2_A", "GDO0_B", "CSN_B", "CSN_A", "SI", "SO", "SCLK"],
     ["SCLK", "SO", "SI", "CSN_A", "CSN_B", "GDO0_B", "GDO2_A", "GDO0_A"],
 ]
-TXS_ORDER = int(os.environ.get("TXS_ORDER", "3"))   # Nano pin order: shortest routing (placement search)
+TXS_ORDER = int(os.environ.get("TXS_ORDER", "4"))   # shortest routing with the fewest vias (placement search)
 TXS_ROT = int(os.environ.get("TXS_ROT", "270"))
 TXS_POS = tuple(float(v) for v in os.environ.get("TXS_POS", "40.0,23.0").split(","))
 TXS = {k + 1: TXS_PAIRS[name] for k, name in enumerate(TXS_ORDERS[TXS_ORDER])}
@@ -283,6 +283,64 @@ class Builder:
 
 
 # ======================= CC1101 radios =====================================
+# Exposed pad (TI SWRS061 layout recommendations): 5 vias, tented on the
+# component side so solder does not migrate down them; the paste (and mask)
+# windows sit in the four quadrants between the vias, ~50 % paste coverage.
+EP_VIAS = [(0, 0), (0.85, 0), (-0.85, 0), (0, 0.85), (0, -0.85)]
+EP_WIN, EP_WOFF = 0.85, 0.725           # window size, window centre offset (mm)
+
+
+def tent_exposed_pad(b, u, ux, uy):
+    for pad in list(u.Pads()):
+        if pad.GetNumber() == "":                  # KiCad's paste squares sit on the vias
+            u.Remove(pad)
+        elif pad.GetNumber() == "21":
+            ls = pad.GetLayerSet()
+            ls.RemoveLayer(pcbnew.F_Mask)
+            ls.RemoveLayer(pcbnew.F_Paste)
+            pad.SetLayerSet(ls)
+            gnd = pad.GetNet()
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            ap = pcbnew.PAD(u)
+            ap.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
+            ap.SetShape(pcbnew.PAD_SHAPE_RECT)
+            ap.SetSize(VECTOR2I(FromMM(EP_WIN), FromMM(EP_WIN)))
+            ls = pcbnew.LSET()                     # copper + mask + paste, same pin as
+            ls.AddLayer(pcbnew.F_Cu)               # the EP (21, GND): the only mask and
+            ls.AddLayer(pcbnew.F_Paste)            # paste openings on the pad
+            ls.AddLayer(pcbnew.F_Mask)
+            ap.SetLayerSet(ls)
+            ap.SetNumber("21")
+            u.Add(ap)
+            ap.SetPosition(b.pt(ux + sx * EP_WOFF, uy + sy * EP_WOFF))
+            ap.SetLocalCoord()
+            ap.SetNet(gnd)
+
+
+def via_clear_of_pads(b, pads, x, y, r, gap=0.1):
+    """Move a via (radius r) straight away from its pads until its ring is
+    `gap` outside every pad's (1:1) mask opening."""
+    boxes, cx, cy = [], 0.0, 0.0
+    for ref, num in pads:
+        pad = next(p for p in b.fps[ref].Pads() if p.GetNumber() == num)
+        bb = pad.GetBoundingBox()
+        boxes.append((pcbnew.ToMM(bb.GetX()) - OX, pcbnew.ToMM(bb.GetY()) - OY,
+                      pcbnew.ToMM(bb.GetRight()) - OX, pcbnew.ToMM(bb.GetBottom()) - OY))
+        cx += pcbnew.ToMM(pad.GetPosition().x) - OX
+        cy += pcbnew.ToMM(pad.GetPosition().y) - OY
+    cx, cy = cx / len(pads), cy / len(pads)
+    ux, uy = x - cx, y - cy
+    n = math.hypot(ux, uy)
+    ux, uy = ux / n, uy / n
+
+    def gap_to(x, y):
+        return min(math.hypot(max(x0 - x, 0, x - x1), max(y0 - y, 0, y - y1))
+                   for x0, y0, x1, y1 in boxes) - r
+    while gap_to(x, y) < gap:
+        x, y = x + 0.01 * ux, y + 0.01 * uy
+    return round(x, 2), round(y, 2)
+
 def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
     """Build one CC1101 cluster in mini coordinates, then rotate by `rot`
     about U and move U to `at`."""
@@ -299,6 +357,7 @@ def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
     parts.update(RF_433 if band == "433" else RF_868)
     for ref, (lib, name, x, y, r, value, padnets) in parts.items():
         b.fp(R(ref), lib, name, x, y, r, value, {k: N(v) for k, v in padnets.items()})
+    tent_exposed_pad(b, b.fps[R("U1")], 6.5, 6.0)
 
     def T(net, pts, w, layer=pcbnew.F_Cu):
         b.track(N(net), [(R(p[0]), p[1]) if isinstance(p[0], str) else p for p in pts],
@@ -314,8 +373,8 @@ def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
     T("GDO2*", [("U1", "3"), (3.72, 5.985)], ct); V("GDO2*", 3.72, 5.985)
     T("GDO0*", [("U1", "6"), (5.5, 8.4), (5.3, 8.65)], ct); V("GDO0*", 5.3, 8.65)
     T("CSN*", [("U1", "7"), (6.0, 8.75)], ct); V("CSN*", 6.0, 8.75)
-    T("3V3", [("U1", "4"), (3.2, 6.5), ("C41", "2")], 0.2); V("3V3", 3.2, 6.5)
-    T("DCOUPL*", [("U1", "5"), (4.15, 7.0), ("C51", "2")], cp)
+    T("3V3", [("U1", "4"), (3.0, 6.5), ("C41", "2")], 0.2); V("3V3", 3.0, 6.5)
+    T("DCOUPL*", [("U1", "5"), (3.95, 7.0), ("C51", "2")], cp)
     T("3V3", [("U1", "18"), (6.5, 3.25), (6.4, 2.95)], cp); V("3V3", 6.4, 2.95)
     T("3V3", [(6.4, 2.95), (6.4, 1.3), ("C181", "2")], cp)
     T("3V3", [("U1", "15"), (8.7, 5.0), (8.7, 5.5), ("U1", "14")], cp)
@@ -364,13 +423,18 @@ def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
 
     # ground vias (exposed pad + one per ground pad) as markers that rotate
     # with the cluster; the vias themselves go in after autorouting
-    gpts = [(6.5 + dx, 6.0 + dy)
-            for dx, dy in [(0, 0), (-0.65, -0.65), (0.65, -0.65), (-0.65, 0.65), (0.65, 0.65)]]
+    gpts = [(6.5 + dx, 6.0 + dy) for dx, dy in EP_VIAS]
+    # each ground pad's escape via, pushed clear of the pad's mask opening so
+    # it stays tented (no solder wicking down it); pads sharing a via together
+    shared = collections.defaultdict(list)
     for ref, (x, y) in list(CORE_GND_ESCAPE.items()) + list(rf_gnd.items()):
-        pad = "2" if parts[ref][6].get("2") == "GND" else "1"
-        T("GND", [(ref, pad), (x, y)], cp)
-        if (x, y) not in gpts:
-            gpts.append((x, y))
+        shared[(x, y)].append((ref, "2" if parts[ref][6].get("2") == "GND" else "1"))
+    for (x, y), pads in shared.items():
+        vx, vy = via_clear_of_pads(b, [(R(ref), pad) for ref, pad in pads], x, y, CL_VIA_D / 2)
+        for ref, pad in pads:
+            T("GND", [(ref, pad), (vx, vy)], cp)
+        if (vx, vy) not in gpts:
+            gpts.append((vx, vy))
     T("GND", [("Y1", "2"), (8.75, 12.0)], cp)
     markers = []
     for x, y in gpts:
@@ -398,22 +462,30 @@ def build_radio(b: Builder, suffix: str, offset: int, band: str, at, rot: int):
 
 
 # ======================= coil antennas + match networks ===================
-# band -> radio, (selector, shunt, series) refs, coil ref, row y, selected, part.
-# All four coils are fitted; each radio's selector picks one (radio A's 315 MHz
-# coil also needs the 315 MHz front-end BOM). Coils sit 8.7 mm apart so the
-# unselected one loads the active one as little as the board allows.
+# band -> radio, (selector, shunt, series) refs, coil ref, row y, selected, part,
+# footprint, hole x. All four coils are fitted; each radio's selector picks one
+# (radio A's 315 MHz coil also needs the 315 MHz front-end BOM). They are
+# bent-leg ("W") spring antennas: the coil lies in the board plane and hangs
+# off the right edge, as the makers' drawings and 3D models show, so the hole
+# is 2 mm from the edge. Radio B's are Vollgo parts, measured by the maker at
+# VSWR 1.32 (868) / 1.56 (915) against 5.3 / 2.6 for the BAT WIRELESS ones.
+EDGE_HOLE_X = W - 2.0
 COILS = {
-    "433": ("A", ("R301", "C301", "L301"), "AE1", 3.3, True, "BW433SNX21-5W2"),
-    "315": ("A", ("R311", "C311", "L311"), "AE2", 12.0, False, "BW315SNX39-6W3"),
-    "915": ("B", ("R331", "C331", "L331"), "AE4", 33.0, False, "BW915SNX17-5W2"),
-    "868": ("B", ("R321", "C321", "L321"), "AE3", 41.7, True, "BW868SNX20-5Z6"),
+    "433": ("A", ("R301", "C301", "L301"), "AE1", 3.3, True, "BW433SNX21-5W2",
+            "Coil_BW433SNX21-5W2_EdgeOverhang", EDGE_HOLE_X),
+    "315": ("A", ("R311", "C311", "L311"), "AE2", 11.5, False, "BW315SNX39-6W3",
+            "Coil_BW315SNX39-6W3_EdgeOverhang", EDGE_HOLE_X),
+    "915": ("B", ("R331", "C331", "L331"), "AE4", 33.0, False, "VG915SNX17-5W2",
+            "Coil_VG915SNX17-5W2_EdgeOverhang", EDGE_HOLE_X),
+    "868": ("B", ("R321", "C321", "L321"), "AE3", 41.7, True, "VG868SNX18-5W2",
+            "Coil_VG868SNX18-5W2_EdgeOverhang", EDGE_HOLE_X),
 }
 BUS_X = {"A": 51.0, "B": 54.0}          # each radio's vertical 50 ohm bus
 SMA = {"A": ("R403", "J1", 18.8), "B": ("R406", "J2", 26.2)}
 
 
 def coil_branch(b: Builder, band):
-    radio, (r1, rc, r2), ae, y, selected, part = COILS[band]
+    radio, (r1, rc, r2), ae, y, selected, part, coil_fp, coil_x = COILS[band]
     bx = BUS_X[radio]
     bus, mid, feed = f"ANT_{radio}", f"M_{band}", f"FEED_{band}"
     s1x, cx, s2x = bx + 2.2, bx + 4.6, bx + 7.0
@@ -421,7 +493,7 @@ def coil_branch(b: Builder, band):
     n1 = b.two_pin(r1, *R0603, s1x, y, 0, "0R" if selected else "DNP", (bx, y), bus, mid)
     n2 = b.two_pin(r2, *L0603, s2x, y, 0, "0R", (s2x - 1, y), mid, feed)
     nc = b.two_pin(rc, *C0603, cx, y + 1.3 * up, 90, "DNP", (cx, y), mid, "GND")
-    b.fp(ae, "nano_every_cc1101", "Coil_Spring_D5.5_THT", COIL_X, y, 0, part, {"1": feed})
+    b.fp(ae, "nano_every_cc1101", coil_fp, coil_x, y, 0, part, {"1": feed})
     b.track(bus, [(bx, y), (r1, n1[0])], RF_50)
     b.track(mid, [(r1, n1[1]), (r2, n2[0])], RF_50)       # 50 ohm CPWG all the way
     b.track(mid, [(rc, nc[0]), (cx, y)], RF_SEL)
@@ -608,6 +680,7 @@ def main() -> int:
     for z in keepouts:
         board.Remove(z)
     drop_dangling(board)
+    prune_dangling(board)
 
     # ---- ground ------------------------------------------------------------
     stitch_ground(board, lambda x, y: b.via("GND", x, y))
@@ -739,6 +812,42 @@ def drop_dangling(board):
             if not linked and not on_pad:
                 board.Remove(t)
                 tracks.remove(t)
+
+
+def prune_dangling(board):
+    """Remove signal tracks with a free end (touching no same-net track, via
+    or pad on their layer), repeatedly: a stub whose via the router did not
+    use goes away completely instead of leaving a dangling piece."""
+    while True:
+        tracks = [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"]
+        vias = [v for v in board.GetTracks() if v.GetClass() == "PCB_VIA"]
+        pads = [p for fp in board.GetFootprints() for p in fp.Pads()]
+        dead = []
+        for t in tracks:
+            if t.GetNetname() in ("GND", ""):
+                continue
+            for end in (t.GetStart(), t.GetEnd()):
+                if not (any(o is not t and o.GetNetCode() == t.GetNetCode()
+                            and o.GetLayer() == t.GetLayer()
+                            and _touches(o, end, t.GetWidth() / 2) for o in tracks)
+                        or any(v.GetNetCode() == t.GetNetCode()
+                               and touches_pt(end, v.GetPosition(), v.GetWidth() / 2) for v in vias)
+                        or any(p.GetNetCode() == t.GetNetCode() and p.IsOnLayer(t.GetLayer())
+                               and p.HitTest(end) for p in pads)):
+                    dead.append(t)
+                    break
+        if not dead:
+            return
+        for t in dead:
+            board.Remove(t)
+
+
+def _touches(t, p, r):
+    a, c = t.GetStart(), t.GetEnd()
+    vx, vy = c.x - a.x, c.y - a.y
+    L2 = vx * vx + vy * vy
+    u = 0 if L2 == 0 else max(0, min(1, ((p.x - a.x) * vx + (p.y - a.y) * vy) / L2))
+    return math.hypot(p.x - (a.x + u * vx), p.y - (a.y + u * vy)) <= r
 
 
 def touches_pt(q, p, r):
@@ -914,7 +1023,7 @@ def silkscreen(b: Builder):
     text("NANO EVERY", cx, NANO_Y0 + 17.8, size=1.5, rot=90)
     text("RADIO A 315/433 MHz", 41.0, 14.4)
     text("RADIO B 868/915 MHz", 41.0, 43.9)
-    for band, (radio, refs, ae, y, selected, part) in COILS.items():
+    for band, (radio, refs, ae, y, selected, part, coil_fp, coil_x) in COILS.items():
         text(band, 61.3, y - 1.5)
     text("SMA A", 58.0, SMA["A"][2] + 0.4)
     text("SMA B", 58.0, SMA["B"][2] - 0.4)
@@ -922,7 +1031,7 @@ def silkscreen(b: Builder):
 
     rows = [
         "NANO EVERY + 2x CC1101  300-928 MHz",
-        "70 x 45 mm  2-layer  v2.1",
+        "70 x 45 mm  2-layer  v2.2",
         "",
         "ANTENNA: fit ONE selector/radio",
         "A: 433 R301  315 R311  SMA R403",

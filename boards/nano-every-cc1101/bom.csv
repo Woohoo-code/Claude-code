@@ -1,9 +1,9 @@
 RefDes,Qty,Description,Manufacturer,MPN,Package,Notes
 A1,1,Arduino Nano Every ABX00028 (solder its two included 1x15 headers on) or ABX00033 (headers fitted); plugs into S1/S2,Arduino,ABX00028,Arduino_Nano,
-AE1,1,"Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",BAT WIRELESS,BW433SNX21-5W2,Coil_Spring,LCSC C496554
-AE2,1,"Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",BAT WIRELESS,BW315SNX39-6W3,Coil_Spring,LCSC C496553
-AE3,1,"Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",BAT WIRELESS,BW868SNX20-5Z6,Coil_Spring,LCSC C496555
-AE4,1,"Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",BAT WIRELESS,BW915SNX17-5W2,Coil_Spring,LCSC C496556
+AE1,1,"Coil antenna 433 MHz, bent-leg spring 5 x 21 mm (THT, lies off the board edge)",BAT WIRELESS,BW433SNX21-5W2,Coil_THT_EdgeOverhang,LCSC C496554
+AE2,1,"Coil antenna 315 MHz, bent-leg spring 5.45 x 39 mm (THT, lies off the board edge)",BAT WIRELESS,BW315SNX39-6W3,Coil_THT_EdgeOverhang,LCSC C496553
+AE3,1,"Coil antenna 868 MHz, bent-leg spring 6 x 18 mm (THT, lies off the board edge)",Vollgo,VG868SNX18-5W2,Coil_THT_EdgeOverhang,LCSC C718843
+AE4,1,"Coil antenna 915 MHz, bent-leg spring 5 x 17 mm (THT, lies off the board edge)",Vollgo,VG915SNX17-5W2,Coil_THT_EdgeOverhang,LCSC C718842
 C5,1,Capacitor 1 uF 10% X5R 0603,Samsung,CL10A105KB8NNNC,C_0603,LCSC C15849
 C6,1,Capacitor 10 uF 10% X5R 25 V 0805,Samsung,CL21A106KAYNNNE,C_0805,LCSC C15850
 "C7, C8",2,Capacitor 100 nF 10% X7R 50 V 0603,Yageo,CC0603KRX7R9BB104,C_0603,LCSC C14663
@@ -26,7 +26,7 @@ J4,1,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15
 "L121, L123, L131",3,Inductor 27 nH 5% multilayer 0402,Murata,LQG15HS27NJ02D,L_0402,LCSC C12669
 L122,1,Inductor 22 nH 5% multilayer 0402,Murata,LQG15HS22NJ02D,L_0402,LCSC C12670
 "L301, L311, L321, L331",4,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,L_0603,LCSC C21189
-"L621, L623, L624, L631",4,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,L_0402,LCSC C82920
+"L621, L623, L624, L631",4,Inductor 12 nH 2% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NG00D,L_0402,LCSC C86128
 "L622, L632",2,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,L_0402,LCSC C82917
 R1,1,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,R_0603,LCSC C21190
 "R171, R671",2,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),UNI-ROYAL,0402WGF5602TCE,R_0402,LCSC C25796

@@ -6,3 +6,11 @@
 (rule "CC1101 decoupling tucked against the QFN"
   (condition "A.Reference == 'U1' || A.Reference == 'U501' || B.Reference == 'U1' || B.Reference == 'U501'")
   (constraint courtyard_clearance (min -0.3mm)))
+
+# C111 / C611 (AVDD decoupling) sit beside the crystal so their ground via has
+# room between the crystal and the balun: pads 0.29 mm apart, bodies 0.55 mm
+# (JLCPCB's SMD spacing table: 0.25 mm for a chip part next to a 1206-size
+# part). Only the courtyard margins overlap.
+(rule "AVDD decoupling beside the crystal"
+  (condition "(A.Reference == 'C111' && B.Reference == 'Y1') || (A.Reference == 'Y1' && B.Reference == 'C111') || (A.Reference == 'C611' && B.Reference == 'Y501') || (A.Reference == 'Y501' && B.Reference == 'C611')")
+  (constraint courtyard_clearance (min -0.2mm)))

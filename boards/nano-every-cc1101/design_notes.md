@@ -27,14 +27,18 @@ channels and that is the ninth signal.
 | Thickness | 1.6 mm FR4 |
 | Min track / space | 0.15 / 0.15 mm (0.15 mm only inside the two CC1101 clusters) |
 | Vias | 0.6 / 0.3 mm; 0.5 / 0.25 mm inside the CC1101 clusters |
-| Ground | solid pour on both layers except the coil strips, 153 ground vias |
+| Ground | solid pour on both layers except the coil strips, 120 ground vias |
 | Coil strips | copper-free, 7 x 15 mm at the top-right and bottom-right corners |
 
 ## RF layout
 
 - Each CC1101 cluster is the routed layout from `boards/cc1101-mini`: QFN
-  with 5 tented vias in the exposed pad, a 100 nF cap and via on every
-  supply pin, and the crystal on its own short traces. The mini used a
+  with 5 vias in the exposed pad, tented on the component side as TI's
+  layout recommendations ask (so solder cannot run down them), the paste
+  and mask opened only in four 0.85 mm windows between the vias (~50 %
+  paste coverage); a 100 nF cap and via on every supply pin, every ground
+  via held 0.1 mm or more outside its pad's mask opening; and the crystal on its own
+  short traces. The mini used a
   4-layer VCC plane; here a short B.Cu ring links the chip's AVDD/DGUARD
   vias instead, and 3.3 V arrives on top-layer traces.
 - Radio B keeps the same core and replaces the balun with TI's 868/915 MHz
@@ -55,11 +59,21 @@ channels and that is the ninth signal.
 
 ## Antennas
 
-Four helical spring ("coil") antennas, one per band, BAT WIRELESS
-BWxxxSNX (315/433/868/915 MHz, LCSC C496553-C496556). They stand up from
-the right-hand board edge in two copper-free strips, 8.7 mm apart, with a
-ground-via fence along the strip edge; the board's ground pour is their
-counterpoise. They are pre-tuned by the maker, so the default T-match is
+Four helical spring ("coil") antennas, one per band: BAT WIRELESS
+BW433SNX21-5W2 / BW315SNX39-6W3 (C496554 / C496553, 0.5 mm phosphor-bronze
+wire) on radio A and Vollgo VG868SNX18-5W2 / VG915SNX17-5W2 (C718843 /
+C718842, 0.75-0.8 mm copper) on radio B. The Vollgo parts replaced BAT
+WIRELESS ones whose own datasheets show VSWR 5.3 (868 MHz) and 2.6
+(915 MHz); the makers measure 1.32 / 1.56 for the Vollgo coils, 1.32 for the
+433 MHz and 2.49 for the 315 MHz coil. All are the bent-leg ("W") type: the
+leg is at right angles to the coil, and the makers' drawings and JLCPCB's 3D
+models show the coil lying in the board plane with its axis at the copper
+surface, i.e. beyond a board edge. Their holes (1.0 mm, 1.1 mm for the
+thicker Vollgo wire) sit 2 mm from the right edge, so each coil (2.3-6.5 mm of
+straight lead first) clears the edge and points away from the board, with
+1.3 mm or more to the SMA jack bodies. The strips (x > 63 mm, top and
+bottom right) have no copper under the feeds, with a ground-via fence along
+their edge; the board's ground pour is the coils' counterpoise. They are pre-tuned by the maker, so the default T-match is
 0 ohm / empty / 0 ohm. They are not simulated on this board: the earlier
 printed-antenna study in `antenna/` (openEMS) does not apply to them.
 All four are fitted, so the unselected coil next to the active one acts as
@@ -75,10 +89,11 @@ trim the T-match with a nanoVNA if needed.
 
 ## Autorouting
 
-The TXS0108E sits rotated 270 deg with its channels in the Nano's pin order:
-the shortest of 24 fully routed placements (rotation x channel order x
-position), 622 mm autorouted copper and 9 signal vias, 1.17x the
-straight-line minimum overall (`verify/VERIFICATION.md`).
+The TXS0108E sits rotated 270 deg (channel order 4): the shortest DRC-clean
+layout with the fewest vias of 20 fully routed placements (rotation x
+channel order), re-run after the v2.2 changes: 644 mm autorouted copper and
+11 signal vias, 1.20x the straight-line minimum overall
+(`verify/VERIFICATION.md`).
 
 Freerouting only routes the non-RF signals (SPI, CSn/GDO, 3.3 V/5 V, LED).
 Everything RF, both CC1101 clusters, every match network, antenna and
@@ -90,9 +105,12 @@ never routed: every ground pad has its own via into both pours.
 `pcb/drc_report.txt`: **0 violations, 0 unconnected pads**. Two project
 settings make that possible without hiding real problems:
 - `pcb/nano_every_cc1101.kicad_dru` lets the CC1101 decoupling / bias
-  parts' courtyards touch the QFN's courtyard margin (their pads and bodies
-  clear the package, as in TI's reference layouts). C41/C51 were moved
-  0.15 mm out so the DCOUPL cap's body clears the package by 0.1 mm.
+  parts' courtyards touch the QFN's courtyard margin (as in TI's reference
+  layouts; every body is 0.3 mm or more from the package, every pad 0.2 mm or more from its pads, and the
+  DCOUPL cap C51 has a proper 0.22 mm mask web to pin 5), and C111/C611's
+  courtyards touch the crystal's (pads 0.29 mm apart, bodies 0.55 mm; JLCPCB's
+  spacing table asks 0.25 mm). Every other part pair meets JLCPCB's SMD
+  spacing table (`verify/spacing.py`).
 - the library-sync check is off: `gen_board.py` clips footprint silkscreen
   strokes that would land on pads or past the board edge, so the placed
   footprints intentionally differ from the library copies.
@@ -100,8 +118,10 @@ settings make that possible without hiding real problems:
 ## Before ordering
 
 - Check part rotations in the assembler's placement preview.
-- LCSC numbers are pinned only where checked (crystal, LDO, the 0603
-  jellybean parts). JLCPCB matches the rest by MPN; confirm stock.
+- Every assembly BOM line carries an LCSC number checked against its live
+  LCSC record (value, package, part number) and stock
+  (`verify/partcheck.py`, `verify/stock.py`); re-run them just before
+  ordering, since stock moves.
 - A coil's final tuning depends on its surroundings (enclosure, hand,
   cable). The T-match pads let you retune with a nanoVNA.
 - Radiated use must follow your region's rules (e.g. FCC 15.231/15.247,

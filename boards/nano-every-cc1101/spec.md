@@ -9,8 +9,10 @@ with an antenna for every band.
 - Arduino Nano Every in 2x 1x15 2.54 mm sockets; USB on the board edge
 - Every Nano pin broken out again on two 1x15 2.54 mm male headers
 - Coil (helical spring) antennas: 315, 433, 868 and 915 MHz, all
-  JLCPCB-assembled, one selected per radio
-- External antenna option: one SMA edge jack per radio (hand-fit)
+  JLCPCB-assembled, one selected per radio; the (bent-leg) coils lie in the
+  board plane past the right edge
+- External antenna option: one SMA edge jack per radio (JLCPCB-assembled,
+  selected by a 0 ohm part)
 
 ## Power
 - From the Nano's 5 V (USB or VIN); on-board 3.3 V LDO for the radios

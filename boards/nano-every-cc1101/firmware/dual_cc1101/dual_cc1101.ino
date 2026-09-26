@@ -31,8 +31,12 @@ void check(const __FlashStringHelper *what, int16_t state) {
 }
 
 void startRadio(CC1101 &r, const __FlashStringHelper *name, float mhz, void (*isr)()) {
-  // 4.8 kbps GFSK, 5 kHz deviation, 58 kHz RX bandwidth, +10 dBm
-  check(name, r.begin(mhz, 4.8, 5.0, 58.0, 10, 16));
+  // 4.8 kbps GFSK, 5 kHz deviation, 135 kHz RX bandwidth, +10 dBm.
+  // The 26 MHz crystals are +/-10 ppm (+/-20 ppm over temperature), so two
+  // boards can be ~20-50 kHz apart at 868 MHz; 135 kHz (RadioLib's default)
+  // keeps that inside the filter. Two calibrated boards can use 58 kHz for
+  // ~3 dB more sensitivity.
+  check(name, r.begin(mhz, 4.8, 5.0, 135.0, 10, 16));
   r.setPacketReceivedAction(isr);
   check(name, r.startReceive());
 }

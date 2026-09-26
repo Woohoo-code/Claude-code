@@ -23,6 +23,11 @@ for ref in sorted(lcsc, key=lambda r: (r.rstrip("0123456789"), int(''.join(ch fo
     # top-side pads only (SMA has bottom ground legs), y-up coordinates
     E = [(p["num"], np.array([p["x"], -p["y"]])) for p in e["pads"] if p["layer"] in ("1", "11")]
     K = [(p[0], np.array([p[1], -p[2]])) for p in k["pads"] if p[3]]
+    if "QFN" in k["fpid"]:     # EP paste windows are extra pads numbered 21: keep the EP itself
+        o = np.array([k["x"], -k["y"]]); keep = {}
+        for n, v in K:
+            if n not in keep or np.linalg.norm(v - o) < np.linalg.norm(keep[n] - o): keep[n] = v
+        K = list(keep.items())
     names = e["names"]
     # pad-number correspondence (polarity): LED maps by A/K names
     if "LED" in k["fpid"]:
@@ -47,11 +52,15 @@ for ref in sorted(lcsc, key=lambda r: (r.rstrip("0123456789"), int(''.join(ch fo
         t = (kb.min(0) + kb.max(0)) / 2 - (eb.min(0) + eb.max(0)) / 2
         err = max(np.linalg.norm(kv - (ev + t)) for kv, ev in pairs)
         score = err
-        if "SMA" in k["fpid"]:                          # body must point off the board edge (+x local)
-            body = np.mean([np.array([x, -y]) for x, y in e["body"]], axis=0) if e["body"] else np.zeros(2)
+        # parts with a direction: the SMA body and the bent-leg coils must point
+        # off the board edge (+x local); JLCPCB's outline tells which way theirs points
+        outline = e["body"] if "SMA" in k["fpid"] else e["silk"] if "EdgeOverhang" in k["fpid"] else None
+        if outline:
+            body = np.mean([np.array([x, -y]) for x, y in outline], axis=0)
             pc = np.mean([v for _, v in E], axis=0)
             dirv = rot(body - pc, th); want = rot(np.array([1.0, 0.0]), k["rot"])
-            score += 0 if np.dot(dirv, want) > 0 else 100
+            cos = np.dot(dirv, want) / (np.linalg.norm(dirv) * np.linalg.norm(want) or 1)
+            score += 100 * (1 - cos)                    # best-aligned rotation wins
         if best is None or score < best[0] - 1e-6:
             best = (score, th, t, err)
     score, th, t, err = best
@@ -78,7 +87,7 @@ if CMP:                                              # check the fab CPL against
         g = got[ref]
         dx = float(g["Mid X"][:-2]) - float(r[1][:-2]); dy = float(g["Mid Y"][:-2]) - float(r[2][:-2])
         dr = (float(g["Rotation"]) - float(r[4])) % 360
-        okrot = dr == 0 or (dr == 180 and sym180(ref, FP[ref]["fpid"])) or ref.startswith("AE")
+        okrot = dr == 0 or (dr == 180 and sym180(ref, FP[ref]["fpid"])) or (ref.startswith("AE") and "EdgeOverhang" not in FP[ref]["fpid"])
         if math.hypot(dx, dy) > 0.05 or not okrot:
             errs.append(f"{ref}: CPL ({g['Mid X']}, {g['Mid Y']}, {g['Rotation']}) vs fit ({r[1]}, {r[2]}, {r[4]})")
     extra = sorted(set(got) - set(fit))

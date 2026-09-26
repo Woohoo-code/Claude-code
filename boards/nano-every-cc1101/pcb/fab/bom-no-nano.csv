@@ -17,7 +17,7 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 16,3,L121 L123 L131,27nH,Inductor 27 nH 5% multilayer 0402,Murata,LQG15HS27NJ02D,C12669,L_0402,SMT
 17,1,L122,22nH,Inductor 22 nH 5% multilayer 0402,Murata,LQG15HS22NJ02D,C12670,L_0402,SMT
 18,4,L301 L311 L321 L331,0R,Jumper 0 ohm 0603,UNI-ROYAL,0603WAF0000T5E,C21189,L_0603,SMT
-19,4,L621 L623 L624 L631,12nH,Inductor 12 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NJ00D,C82920,L_0402,SMT
+19,4,L621 L623 L624 L631,12nH,Inductor 12 nH 2% wire-wound 0402 (868/915 balun),Murata,LQW15AN12NG00D,C86128,L_0402,SMT
 20,2,L622 L632,18nH,Inductor 18 nH 5% wire-wound 0402 (868/915 balun),Murata,LQW15AN18NJ00D,C82917,L_0402,SMT
 21,1,R1,1k,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,C21190,R_0603,SMT
 22,2,R171 R671,56k 1%,Resistor 56 kohm 1% 0402 (CC1101 RBIAS),UNI-ROYAL,0402WGF5602TCE,C25796,R_0402,SMT
@@ -27,9 +27,9 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 26,1,U3,TXS0108EPWR,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,C17206,TSSOP-20,SMT
 27,2,Y1 Y501,26MHz,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,C70573,Crystal,SMT
 28,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,"assembler (SMD, board edge)"
-29,1,AE1,BW433SNX21-5W2,"Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",BAT WIRELESS,BW433SNX21-5W2,C496554,Coil_Spring,assembler (THT)
-30,1,AE2,BW315SNX39-6W3,"Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",BAT WIRELESS,BW315SNX39-6W3,C496553,Coil_Spring,assembler (THT)
-31,1,AE3,BW868SNX20-5Z6,"Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",BAT WIRELESS,BW868SNX20-5Z6,C496555,Coil_Spring,assembler (THT)
-32,1,AE4,BW915SNX17-5W2,"Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",BAT WIRELESS,BW915SNX17-5W2,C496556,Coil_Spring,assembler (THT)
+29,1,AE1,BW433SNX21-5W2,"Coil antenna 433 MHz, bent-leg spring 5 x 21 mm (THT, lies off the board edge)",BAT WIRELESS,BW433SNX21-5W2,C496554,Coil_THT_EdgeOverhang,assembler (THT)
+30,1,AE2,BW315SNX39-6W3,"Coil antenna 315 MHz, bent-leg spring 5.45 x 39 mm (THT, lies off the board edge)",BAT WIRELESS,BW315SNX39-6W3,C496553,Coil_THT_EdgeOverhang,assembler (THT)
+31,1,AE3,VG868SNX18-5W2,"Coil antenna 868 MHz, bent-leg spring 6 x 18 mm (THT, lies off the board edge)",Vollgo,VG868SNX18-5W2,C718843,Coil_THT_EdgeOverhang,assembler (THT)
+32,1,AE4,VG915SNX17-5W2,"Coil antenna 915 MHz, bent-leg spring 5 x 17 mm (THT, lies off the board edge)",Vollgo,VG915SNX17-5W2,C718842,Coil_THT_EdgeOverhang,assembler (THT)
 33,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,assembler (THT)
 34,2,S1 S2,1x15 socket,"Female header 1x15 2.54 mm, 8.5 mm, gold (socket for the Nano Every)",Megastar,ZX-PM2.54-1-15PY,C7499333,PinSocket_1x15,assembler (THT)

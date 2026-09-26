@@ -17,8 +17,13 @@
    already carries JLCPCB's own footprint angles (KiCad and JLCPCB differ
    for the TSSOP, the SOT-23, the headers and the sockets; every part was
    fitted onto JLCPCB's footprint, `verify/VERIFICATION.md`), so the
-   preview should show every part on its pads, the SMA bodies off the
-   right edge and the coils upright at the right-hand edge.
+   preview should show every part on its pads, and the SMA bodies and all
+   four coils pointing off the right edge. The coils are bent-leg spring
+   antennas, built to lie in the board plane beyond an edge: their leg goes
+   through a hole 2 mm from the edge and the coil sticks out past it.
+   Suggested PCBA remark: *"AE1-AE4 are bent-leg spring antennas: leg through the hole, coil lying flat beyond the right board edge, as in the 3D preview. J1/J2 (SMA edge jacks): please also solder the two bottom-side ground legs."*
+   The SMA jacks are reflowed from the top; if their two bottom ground legs
+   come back unsoldered, solder those four joints before using a jack.
 3. Afterwards: The Nano Every ABX00028 comes with its two 1x15 headers **loose** in the
    box; solder them on first. Easiest way to get them straight: push the
    headers (long pins down) into S1/S2 on this board, lay the Nano on top,
@@ -32,8 +37,10 @@
 
 Stencil 0.12 mm. Lead-free SAC305 profile: 150-200 C soak 60-120 s,
 60-90 s above 217 C, 245 C peak (260 C max, the CC1101 is MSL3: bake at
-125 C for 24 h if the bag was open more than a week). Use the footprints'
-split paste on the QFN exposed pads.
+125 C for 24 h if the bag was open more than a week). Each QFN exposed pad
+has four paste windows (0.85 mm, ~50 % coverage) between its five vias,
+which are tented on the component side as TI specifies, so no solder runs
+down them.
 
 ## Antenna selection (fit exactly one selector per radio)
 

@@ -50,8 +50,8 @@ CAT = {
     ("C_0402", "12pF"): ("Capacitor 12 pF 5% C0G 0402", "Murata", "GRM1555C1H120JA01D", ""),
     ("L_0402", "27nH"): ("Inductor 27 nH 5% multilayer 0402", "Murata", "LQG15HS27NJ02D", ""),
     ("L_0402", "22nH"): ("Inductor 22 nH 5% multilayer 0402", "Murata", "LQG15HS22NJ02D", ""),
-    ("L_0402", "12nH"): ("Inductor 12 nH 5% wire-wound 0402 (868/915 balun)", "Murata",
-                         "LQW15AN12NJ00D", ""),
+    ("L_0402", "12nH"): ("Inductor 12 nH 2% wire-wound 0402 (868/915 balun)", "Murata",
+                         "LQW15AN12NG00D", ""),
     ("L_0402", "18nH"): ("Inductor 18 nH 5% wire-wound 0402 (868/915 balun)", "Murata",
                          "LQW15AN18NJ00D", ""),
     ("SOT-23", "XC6206P332MR"): ("LDO 3.3 V 200 mA", "Torex", "XC6206P332MR-G", "C5446"),
@@ -68,14 +68,14 @@ CAT = {
     ("R_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("L_0603", "0R"): ("Jumper 0 ohm 0603", "UNI-ROYAL", "0603WAF0000T5E", "C21189"),
     ("LED_0603", "red"): ("LED red 0603", "Hubei KENTO Elec", "KT-0603R", "C2286"),
-    ("Coil_Spring", "BW433SNX21-5W2"): ("Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",
+    ("Coil_", "BW433SNX21-5W2"): ("Coil antenna 433 MHz, bent-leg spring 5 x 21 mm (THT, lies off the board edge)",
                                         "BAT WIRELESS", "BW433SNX21-5W2", "C496554"),
-    ("Coil_Spring", "BW315SNX39-6W3"): ("Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",
+    ("Coil_", "BW315SNX39-6W3"): ("Coil antenna 315 MHz, bent-leg spring 5.45 x 39 mm (THT, lies off the board edge)",
                                         "BAT WIRELESS", "BW315SNX39-6W3", "C496553"),
-    ("Coil_Spring", "BW915SNX17-5W2"): ("Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",
-                                        "BAT WIRELESS", "BW915SNX17-5W2", "C496556"),
-    ("Coil_Spring", "BW868SNX20-5Z6"): ("Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",
-                                        "BAT WIRELESS", "BW868SNX20-5Z6", "C496555"),
+    ("Coil_", "VG915SNX17-5W2"): ("Coil antenna 915 MHz, bent-leg spring 5 x 17 mm (THT, lies off the board edge)",
+                                  "Vollgo", "VG915SNX17-5W2", "C718842"),
+    ("Coil_", "VG868SNX18-5W2"): ("Coil antenna 868 MHz, bent-leg spring 6 x 18 mm (THT, lies off the board edge)",
+                                  "Vollgo", "VG868SNX18-5W2", "C718843"),
     ("SMA", "SMA"): ("SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board", "BAT WIRELESS",
                      "BWSMA-KE-P001", "C496550"),
     ("Arduino_Nano", "Arduino Nano Every"): ("Arduino Nano Every ABX00028 (solder its two "
@@ -85,7 +85,7 @@ CAT = {
     ("PinHeader_1x15", None): ("Pin header 1x15 2.54 mm male, straight (breakout)", "Megastar",
                                "ZX-PZ2.54-1-15PZZ", "C7501269"),
 }
-FP_KEYS = ["Coil_Spring", "QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "SOT-23", "TSSOP-20", "C_0603",
+FP_KEYS = ["Coil_", "QFN", "Crystal", "R_0402", "C_0402", "L_0402", "SOT-23-5", "SOT-23", "TSSOP-20", "C_0603",
            "C_0805", "R_0603", "L_0603", "LED_0603", "SMA", "Arduino_Nano", "PinHeader_1x15"]
 NOT_PARTS = ("MountingHole", "TestPoint")
 
@@ -117,7 +117,7 @@ JLC = {
     "LQG15HS27NJ02D": ("Murata", "LQG15HS27NJ02D", "C12669"),
     "LQG15HS22NJ02D": ("Murata", "LQG15HS22NJ02D", "C12670"),
     "LQW18AN39NG00D": ("Murata", "LQW18AN39NG00D", "C86134"),
-    "LQW15AN12NJ00D": ("Murata", "LQW15AN12NJ00D", "C82920"),
+    "LQW15AN12NG00D": ("Murata", "LQW15AN12NG00D", "C86128"),     # 2 %: the 5 % part ran low
     "LQW15AN18NJ00D": ("Murata", "LQW15AN18NJ00D", "C82917"),
     "TXS0108EPWR": ("Texas Instruments", "TXS0108EPWR", "C17206"),
 }
@@ -156,6 +156,12 @@ CHEAP_0603 = {
 
 def fp_key(fpname):
     return next((k for k in FP_KEYS if k in fpname), None)
+
+
+def pkg_name(fpname):
+    """package column of the BOMs"""
+    k = fp_key(fpname)
+    return "Coil_THT_EdgeOverhang" if k == "Coil_" else k or fpname
 
 
 def lookup(fpname, value):
@@ -212,7 +218,12 @@ def bom_value(name, value):
 # footprint's zero orientation differs from KiCad's, add this many degrees.
 # Derived by fitting every part's EasyEDA pads onto the board pads
 # (verify/cplfit.py re-checks the generated CPL against them).
-JLC_ROT = {"TSSOP-20": -90, "PinHeader_1x15": 270, ":SOT-23": 180}
+JLC_ROT = {"TSSOP-20": -90, "PinHeader_1x15": 270, ":SOT-23": 180,
+           # bent-leg coils: JLCPCB's footprint draws the 433 MHz coil toward -x,
+           # the 315/915 MHz ones toward +y and the 868 MHz one toward +x; ours
+           # all point +x, off the board edge
+           "Coil_BW433SNX21-5W2_EdgeOverhang": 180, "Coil_BW315SNX39-6W3_EdgeOverhang": 90,
+           "Coil_VG915SNX17-5W2_EdgeOverhang": 90, "Coil_VG868SNX18-5W2_EdgeOverhang": 0}
 
 
 def jlc_rot(fp):
@@ -272,7 +283,7 @@ def main():
         w = csv.writer(f)
         w.writerow(["RefDes", "Qty", "Description", "Manufacturer", "MPN", "Package", "Notes"])
         for (name, value), g in groups.items():
-            pkg = fp_key(name) or name
+            pkg = pkg_name(name)
             if g["dnp"]:
                 w.writerow([", ".join(g["refs"]), len(g["refs"]), f"not fitted ({value})",
                             "", "", pkg, "leave empty unless re-selecting the antenna"])
@@ -292,8 +303,8 @@ def main():
             continue
         how = ("hand solder (optional)" if hand_fit(name) else
                "assembler (SMD, board edge)" if "SMA" in name else
-               "assembler (THT)" if "Coil_Spring" in name or "PinHeader" in name else "SMT")
-        buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, bom_value(name, value),
+               "assembler (THT)" if "Coil_" in name or "PinHeader" in name else "SMT")
+        buy.setdefault((d, mfr, mpn, lcsc, pkg_name(name), bom_value(name, value),
                         how), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
         w = csv.writer(f)
