@@ -7,16 +7,17 @@
    the 0.5 mm-pitch QFNs). Nothing non-standard: 0.15 mm min track/space,
    0.25 mm min drill.
 2. **Assembly:** upload `pcb/fab/bom-jlcpcb.csv` and
-   `pcb/fab/cpl-jlcpcb.csv`, top side. They contain only the parts to fit
-   (not-fitted selectors and match pads are left out), including the four
-   coil antennas AE1-AE4, which are through-hole: pick an assembly option
-   with through-hole soldering. In the placement preview, **check the
-   rotation of U1, U501, U2, U3, Y1 and Y501**: KiCad and JLCPCB disagree
-   on some footprint zero angles. The coils must stand upright in their
-   holes at the right-hand edge.
-3. By hand afterwards: 2x 1x15 female headers (Nano socket). Optional:
-   SMA jacks J1/J2 (BWSMA-KE-P001, LCSC C496550; body off the right edge)
-   and the 1x15 breakout headers J3/J4 (LCSC C7501269).
+   `pcb/fab/cpl-jlcpcb.csv`, top side. **Everything except the Nano Every
+   is assembled:** all SMD parts, the four coil antennas AE1-AE4, the SMA
+   jacks J1/J2, the breakout headers J3/J4 and the Nano sockets S1/S2
+   (two 1x15 female headers, LCSC C7499333, in the Nano's own holes).
+   Not-fitted selectors and match pads are left out. The coils, headers and
+   sockets are through-hole: pick an assembly option with through-hole
+   soldering. In the placement preview, **check the rotation of U1, U501,
+   U2, U3, Y1, Y501 and J1/J2** (jack bodies off the right edge): KiCad and
+   JLCPCB disagree on some footprint zero angles. The coils stand upright
+   at the right-hand edge.
+3. Afterwards: plug the Nano Every into S1/S2, USB toward the board edge.
 
 ## Reflow (if assembling yourself)
 
@@ -34,10 +35,10 @@ AE3. All four coils are fitted; moving one 0603 0 ohm part switches band.
 |---|---|---|---|
 | A (U1) | 433 MHz coil AE1 | R301 | R311, R403 |
 | A (U1) | 315 MHz coil AE2 | R311 **and swap to the 315 MHz BOM** (below) | R301, R403 |
-| A (U1) | SMA J1 (solder it on) | R403 | R301, R311 |
+| A (U1) | SMA J1 | R403 | R301, R311 |
 | B (U501) | 868 MHz coil AE3 | R321 | R331, R406 |
 | B (U501) | 915 MHz coil AE4 | R331 | R321, R406 |
-| B (U501) | SMA J2 (solder it on) | R406 | R321, R331 |
+| B (U501) | SMA J2 | R406 | R321, R331 |
 
 **Retuning a coil:** each coil branch is selector R3x1, shunt pad C3x1
 (empty) and series part L3x1 (0 ohm) right at the coil. With a nanoVNA on

@@ -20,7 +20,7 @@ unconnected pads**.
 | Board | 70 x 45 x 1.6 mm, 2 layers, FR4 |
 | Radio A (U1) | CC1101, 315/433 MHz front end (433 fitted) |
 | Radio B (U501) | CC1101, 868/915 MHz front end |
-| Antennas | 4 coil antennas AE1-AE4 (433, 315, 868, 915 MHz), each with a T-match for retuning; optional SMA J1/J2 |
+| Antennas | 4 coil antennas AE1-AE4 (433, 315, 868, 915 MHz), each with a T-match for retuning; SMA J1/J2 |
 | Host | Arduino Nano Every in sockets, USB at the board edge, every pin re-broken-out on J3/J4 |
 | Glue | TXS0108E 5 V <-> 3.3 V level shifter, XC6206 3.3 V LDO, power LED |
 
@@ -32,7 +32,7 @@ unconnected pads**.
 | AE2 | 315 MHz | A | BW315SNX39-6W3 (6 x 39 mm) | C496553 | fit R311, remove R301, + 315 MHz BOM |
 | AE3 | 868 MHz | B | BW868SNX20-5Z6 (5 x 20 mm) | C496555 | **yes** (R321 0R) |
 | AE4 | 915 MHz | B | BW915SNX17-5W2 (5 x 17 mm) | C496556 | fit R331, remove R321 |
-| J1 / J2 | any | A / B | SMA edge jack, optional (hand-fit) | C496550 | fit R403 / R406 |
+| J1 / J2 | any | A / B | SMA edge jack (assembled) | C496550 | fit R403 / R406 |
 
 Each radio has a short 50 ohm bus; every antenna branch starts with its own
 selector right at the bus (so unused branches are only a few mm of line),
@@ -70,14 +70,15 @@ there is about 23 KB of flash and 4.8 KB of RAM left for your own code.
    .GTP .GTO .GBO .GM1) + one plated drill file. 2 layers, 1.6 mm,
    70 x 45 mm, 1 oz. All standard rules (0.15 mm track/space, 0.25 mm
    minimum drill), no special options.
-2. Assembly: `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv` (top side,
-   fitted parts only, every line with an in-stock LCSC number, basic /
-   preferred parts wherever the quality is the same). The four coils are
-   through-hole parts, so choose an assembly option that includes
-   through-hole soldering. Check the rotations of U1, U501, U2, U3, Y1 and
-   Y501 in the preview.
-3. By hand: Nano sockets (2x 1x15 female). Optional: SMA jacks J1/J2
-   (LCSC C496550) and the J3/J4 breakout headers (LCSC C7501269).
+2. Assembly: `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv` (top side).
+   **Everything except the Nano Every is assembled**: all SMD parts, the
+   four coil antennas, the SMA jacks J1/J2, the J3/J4 breakout headers and
+   the two 1x15 Nano sockets S1/S2 (Megastar ZX-PM2.54-1-15PY, LCSC
+   C7499333, soldered into the Nano's holes). Coils, headers and sockets are
+   through-hole, so choose an assembly option with through-hole soldering.
+   Check the rotations of U1, U501, U2, U3, Y1, Y501 and J1/J2 in the
+   preview.
+3. Plug the Nano Every into S1/S2, USB toward the board edge.
 
 ## Files
 

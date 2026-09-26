@@ -36,4 +36,4 @@ R1,1,Resistor 1 kohm 1% 0603,UNI-ROYAL,0603WAF1001T5E,R_0603,LCSC C21190
 U2,1,LDO 3.3 V 200 mA,Torex,XC6206P332MR-G,SOT-23,LCSC C5446
 U3,1,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,TSSOP-20,LCSC C17206
 "Y1, Y501",2,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,Crystal,LCSC C70573
-"S1, S2",2,Female header 1x15 2.54 mm (Nano socket),Generic,,HDR-1x15-F,optional; or solder the Nano directly
+"S1, S2",2,"Female header 1x15 2.54 mm, 8.5 mm, gold (socket for the Nano Every)",Megastar,ZX-PM2.54-1-15PY,PinSocket_1x15,"LCSC C7499333; soldered into A1's holes, the Nano plugs in"

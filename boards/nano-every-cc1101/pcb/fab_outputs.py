@@ -189,9 +189,16 @@ def _lookup(fpname, value):
 
 
 def hand_fit(name):
-    """Optional parts left out of JLCPCB assembly to keep it cheap (no
-    through-hole step, two fewer extended part types)."""
-    return "PinHeader" in name or "SMA" in name
+    """Parts left out of JLCPCB assembly. None: everything except the
+    Arduino Nano Every itself is assembled (SMA jacks, J3/J4 and the Nano
+    sockets S1/S2 included)."""
+    return False
+
+
+# Nano Every sockets S1/S2: two 1x15 female headers soldered into the Nano's
+# own holes (A1 pads 1-15 and 16-30); the Nano plugs into them.
+SOCKET = ("Female header 1x15 2.54 mm, 8.5 mm, gold (socket for the Nano Every)",
+          "Megastar", "ZX-PM2.54-1-15PY", "C7499333")
 
 
 def bom_value(name, value):
@@ -200,11 +207,10 @@ def bom_value(name, value):
 
 
 def centre(fp):
-    box = None
-    for pad in fp.Pads():
-        b = pad.GetBoundingBox()
-        box = b if box is None else box.Merge(b) or box
-    return box.GetCenter()
+    """Middle of a footprint's pads (a pin header's origin is pin 1)."""
+    pts = [p.GetPosition() for p in fp.Pads()]
+    return pcbnew.VECTOR2I(int(sum(q.x for q in pts) / len(pts)),
+                           int(sum(q.y for q in pts) / len(pts)))
 
 
 def main():
@@ -260,8 +266,8 @@ def main():
                 d, mfr, mpn, lcsc = g["cat"]
                 w.writerow([", ".join(g["refs"]), len(g["refs"]), d, mfr, mpn, pkg,
                             f"LCSC {lcsc}" if lcsc else ""])
-        w.writerow(["S1, S2", 2, "Female header 1x15 2.54 mm (Nano socket)", "Generic", "",
-                    "HDR-1x15-F", "optional; or solder the Nano directly"])
+        w.writerow(["S1, S2", 2, SOCKET[0], SOCKET[1], SOCKET[2], "PinSocket_1x15",
+                    f"LCSC {SOCKET[3]}; soldered into A1's holes, the Nano plugs in"])
 
     os.makedirs(os.path.join(HERE, "fab"), exist_ok=True)
 
@@ -271,7 +277,8 @@ def main():
         if "Arduino_Nano" in name:
             continue
         how = ("hand solder (optional)" if hand_fit(name) else
-               "assembler (THT)" if "Coil_Spring" in name else "SMT")
+               "assembler (SMD, board edge)" if "SMA" in name else
+               "assembler (THT)" if "Coil_Spring" in name or "PinHeader" in name else "SMT")
         buy.setdefault((d, mfr, mpn, lcsc, fp_key(name) or name, bom_value(name, value),
                         how), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-no-nano.csv"), "w", newline="") as f:
@@ -281,20 +288,21 @@ def main():
         rows = sorted(buy.items(), key=lambda kv: (kv[0][6], key(kv[1][0] + ".0")))
         for i, ((d, mfr, mpn, lcsc, pkg, value, how), refs) in enumerate(rows, 1):
             w.writerow([i, len(refs), " ".join(refs), value, d, mfr, mpn, lcsc, pkg, how])
-        w.writerow([len(rows) + 1, 2, "S1 S2", "1x15 F", "Female header 1x15 2.54 mm "
-                    "(socket for the Nano Every)", "Generic", "", "", "HDR-1x15-F",
-                    "hand solder"])
+        w.writerow([len(rows) + 1, 2, "S1 S2", "1x15 socket", SOCKET[0], SOCKET[1], SOCKET[2],
+                    SOCKET[3], "PinSocket_1x15", "assembler (THT)"])
 
     jl = collections.OrderedDict()
     for fp, name, value, (d, mfr, mpn, lcsc) in fitted:
         if "Arduino_Nano" in name or hand_fit(name):
-            continue        # the Nano plugs in; SMA jacks / J3,J4 are optional, by hand
+            continue        # the Nano plugs into S1/S2
         jl.setdefault((bom_value(name, value), name, mpn, lcsc), []).append(fp.GetReference())
     with open(os.path.join(HERE, "fab", "bom-jlcpcb.csv"), "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Comment", "Designator", "Footprint", "LCSC Part #", "MPN"])
         for (value, name, mpn, lcsc), refs in jl.items():
             w.writerow([value, ",".join(refs), name, lcsc, mpn])
+        w.writerow(["1x15 socket", "S1,S2", "PinSocket_1x15_P2.54mm_Vertical", SOCKET[3],
+                    SOCKET[2]])
     placed = {r for refs in jl.values() for r in refs}
     ox = pcbnew.ToMM(board.GetDesignSettings().GetAuxOrigin().x)
     oy = pcbnew.ToMM(board.GetDesignSettings().GetAuxOrigin().y)
@@ -309,6 +317,13 @@ def main():
                 w.writerow([fp.GetReference(), f"{pcbnew.ToMM(p.x) - ox:.3f}mm",
                             f"{oy - pcbnew.ToMM(p.y):.3f}mm", "Top",
                             f"{fp.GetOrientationDegrees() % 360:.0f}"])
+        # the sockets sit in the Nano's two pin rows: centre of pads 1-15 / 16-30
+        nano = board.FindFootprintByReference("A1")
+        for ref, pins in (("S1", range(1, 16)), ("S2", range(16, 31))):
+            pts = [p.GetPosition() for p in nano.Pads() if int(p.GetNumber()) in pins]
+            cx = sum(pcbnew.ToMM(q.x) for q in pts) / len(pts)
+            cy = sum(pcbnew.ToMM(q.y) for q in pts) / len(pts)
+            w.writerow([ref, f"{cx - ox:.3f}mm", f"{oy - cy:.3f}mm", "Top", "0"])
     print(f"BOM: {sum(len(g['refs']) for g in groups.values())} parts "
           f"({len(placed)} placed by the assembler), netlist: {len(nets)} nets")
 

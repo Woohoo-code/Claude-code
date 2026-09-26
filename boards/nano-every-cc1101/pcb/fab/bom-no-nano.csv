@@ -26,10 +26,10 @@ Item,Qty,RefDes,Value,Description,Manufacturer,MPN,LCSC,Package,Fitting
 25,1,U2,XC6206P332MR,LDO 3.3 V 200 mA,Torex,XC6206P332MR-G,C5446,SOT-23,SMT
 26,1,U3,TXS0108EPWR,8-bit auto-direction level translator 3.3 V <-> 5 V,Texas Instruments,TXS0108EPWR,C17206,TSSOP-20,SMT
 27,2,Y1 Y501,26MHz,Crystal 26 MHz +/-10 ppm CL 16 pF 3225,YXC,X322526MQB4SI,C70573,Crystal,SMT
-28,1,AE1,BW433SNX21-5W2,"Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",BAT WIRELESS,BW433SNX21-5W2,C496554,Coil_Spring,assembler (THT)
-29,1,AE2,BW315SNX39-6W3,"Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",BAT WIRELESS,BW315SNX39-6W3,C496553,Coil_Spring,assembler (THT)
-30,1,AE3,BW868SNX20-5Z6,"Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",BAT WIRELESS,BW868SNX20-5Z6,C496555,Coil_Spring,assembler (THT)
-31,1,AE4,BW915SNX17-5W2,"Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",BAT WIRELESS,BW915SNX17-5W2,C496556,Coil_Spring,assembler (THT)
-32,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,hand solder (optional)
-33,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,hand solder (optional)
-34,2,S1 S2,1x15 F,Female header 1x15 2.54 mm (socket for the Nano Every),Generic,,,HDR-1x15-F,hand solder
+28,2,J1 J2,SMA,"SMA jack, edge mount (end launch), 50 ohm, 1.6 mm board",BAT WIRELESS,BWSMA-KE-P001,C496550,SMA,"assembler (SMD, board edge)"
+29,1,AE1,BW433SNX21-5W2,"Coil antenna 433 MHz, helical spring 5 x 21 mm (THT)",BAT WIRELESS,BW433SNX21-5W2,C496554,Coil_Spring,assembler (THT)
+30,1,AE2,BW315SNX39-6W3,"Coil antenna 315 MHz, helical spring 6 x 39 mm (THT)",BAT WIRELESS,BW315SNX39-6W3,C496553,Coil_Spring,assembler (THT)
+31,1,AE3,BW868SNX20-5Z6,"Coil antenna 868 MHz, helical spring 5 x 20 mm (THT)",BAT WIRELESS,BW868SNX20-5Z6,C496555,Coil_Spring,assembler (THT)
+32,1,AE4,BW915SNX17-5W2,"Coil antenna 915 MHz, helical spring 5 x 17 mm (THT)",BAT WIRELESS,BW915SNX17-5W2,C496556,Coil_Spring,assembler (THT)
+33,2,J3 J4,1x15 header,"Pin header 1x15 2.54 mm male, straight (breakout)",Megastar,ZX-PZ2.54-1-15PZZ,C7501269,PinHeader_1x15,assembler (THT)
+34,2,S1 S2,1x15 socket,"Female header 1x15 2.54 mm, 8.5 mm, gold (socket for the Nano Every)",Megastar,ZX-PM2.54-1-15PY,C7499333,PinSocket_1x15,assembler (THT)
