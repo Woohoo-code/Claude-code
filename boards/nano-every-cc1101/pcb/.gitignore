@@ -1,0 +1,7 @@
+*.kicad_prl
+*-backups/
+fp-info-cache
+logs/
+route.dsn
+route.ses
+freerouting.json
