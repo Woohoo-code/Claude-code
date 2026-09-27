@@ -11,7 +11,7 @@ with an antenna for every band.
 - Coil (helical spring) antennas: 315, 433, 868 and 915 MHz, all
   JLCPCB-assembled, one selected per radio; the (bent-leg) coils lie in the
   board plane past the right edge
-- External antenna option: one SMA edge jack per radio (JLCPCB-assembled,
+- External antenna option: one SMA edge jack per radio (hand-soldered,
   selected by a 0 ohm part)
 
 ## Power

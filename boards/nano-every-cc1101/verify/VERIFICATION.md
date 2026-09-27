@@ -37,8 +37,8 @@ generator turned up these, all fixed in v2.2:
 | Pins vs vendor pin names | `schcheck.py`: CC1101 x2, XC6206, TXS0108E, crystals, LED against JLCPCB's symbols; Nano against the ABX00028 datasheet | **all pass**; TXS0108E VCCA 3.3 V, VCCB 5 V, OE enabled, all 8 channels pair the right signal with the right Nano pin |
 | **Firmware pin map** | `fwtrace.py`: each pin in `dual_cc1101.ino` traced Nano pin -> TXS0108E channel -> CC1101 pin on the routed board | **matches** (CSn/GDO0/GDO2 of both radios, SCK/MOSI/MISO to both) |
 | Firmware builds | arduino-cli, arduino:megaavr 1.8.8, RadioLib 7.7.1 | 25 689 B flash (52 %), 1 269 B RAM (20 %) |
-| Placement file | `cplfit.py`: JLCPCB's own footprint of every part fitted onto the board pads (and, for parts with a direction, onto their outline), compared with the CPL | **all 66 parts match** (position <= 0.05 mm, rotation exact, coils pointing off the edge) |
-| Assembly preview | `assembly_preview.py`: JLCPCB footprints and outlines drawn at the CPL positions over the Gerbers | every part on its pads, pin 1 right, SMA bodies and bent-leg coils past the right edge (`assembly_preview.png`) |
+| Placement file | `cplfit.py`: JLCPCB's own footprint of every part fitted onto the board pads (and, for parts with a direction, onto their outline), compared with the CPL | **all 64 parts match** (position <= 0.05 mm, rotation exact, coils pointing off the edge) |
+| Assembly preview | `assembly_preview.py`: JLCPCB footprints and outlines drawn at the CPL positions over the Gerbers | every part on its pads, pin 1 right, bent-leg coils past the right edge (`assembly_preview.png`) |
 | **Parts vs LCSC** | `partcheck.py`: every BOM line against its live LCSC record | **all 34 lines match** (value, package, part number); RF capacitors C0G/NP0, crystal 26 MHz 16 pF +/-10 ppm ESR 50 ohm |
 | Holes vs makers' drawings | coil, header and socket datasheets | coil wire 0.5 mm -> 1.0 mm hole, 0.75-0.8 mm -> 1.1 mm; header 0.64 mm square pin and socket 0.64 x 0.4 mm tail, makers recommend 1.02 mm -> 1.0 mm |
 | Stock | live JLCPCB stock for 5 boards | all 34 lines in stock; the tightest is the 915 MHz coil, 1 524 for 5 |
@@ -111,8 +111,9 @@ and so the firmware, are the same (`fwtrace.py`).
   from the SMA J1 body, which may pull it slightly.
 - The coils stick out past the right edge (up to ~41 mm), which is their
   intended mounting; they need room in an enclosure.
-- The SMA jacks are reflowed from the top; their two bottom ground legs need
-  hand soldering (PCBA remark, or four joints yourself) before a jack is used.
+- The SMA jacks J1/J2 are left out of the JLCPCB files (JLCPCB assembles
+  C496550 in Standard PCBA only, which needs a 70 x 70 mm board); solder them
+  by hand if you use the SMA option.
 - Next to the CC1101s the parts are closer than JLCPCB's general 1 mm QFN
   recommendation (an inspection / rework allowance), as TI's layout needs;
   bodies are 0.30 mm or more apart.

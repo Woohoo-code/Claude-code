@@ -8,8 +8,8 @@
    0.25 mm min drill.
 2. **Assembly:** upload `pcb/fab/bom-jlcpcb.csv` and
    `pcb/fab/cpl-jlcpcb.csv`, top side. **Everything except the Nano Every
-   is assembled:** all SMD parts, the four coil antennas AE1-AE4, the SMA
-   jacks J1/J2, the breakout headers J3/J4 and the Nano sockets S1/S2
+   and the optional SMA jacks is assembled:** all SMD parts, the four coil
+   antennas AE1-AE4, the breakout headers J3/J4 and the Nano sockets S1/S2
    (two 1x15 female headers, LCSC C7499333, in the Nano's own holes).
    Not-fitted selectors and match pads are left out. Choose **Economic
    PCBA** (Standard needs 70 x 70 mm or larger); it solders the through-hole
@@ -17,13 +17,15 @@
    already carries JLCPCB's own footprint angles (KiCad and JLCPCB differ
    for the TSSOP, the SOT-23, the headers and the sockets; every part was
    fitted onto JLCPCB's footprint, `verify/VERIFICATION.md`), so the
-   preview should show every part on its pads, and the SMA bodies and all
-   four coils pointing off the right edge. The coils are bent-leg spring
+   preview should show every part on its pads, and all four coils pointing
+   off the right edge. The coils are bent-leg spring
    antennas, built to lie in the board plane beyond an edge: their leg goes
    through a hole 2 mm from the edge and the coil sticks out past it.
-   Suggested PCBA remark: *"AE1-AE4 are bent-leg spring antennas: leg through the hole, coil lying flat beyond the right board edge, as in the 3D preview. J1/J2 (SMA edge jacks): please also solder the two bottom-side ground legs."*
-   The SMA jacks are reflowed from the top; if their two bottom ground legs
-   come back unsoldered, solder those four joints before using a jack.
+   Suggested PCBA remark: *"AE1-AE4 are bent-leg spring antennas: leg through the hole, coil lying flat beyond the right board edge, as in the 3D preview."*
+   The SMA jacks J1/J2 (C496550) are **not** in the JLCPCB files: JLCPCB lists them as
+   Standard PCBA only, which needs a 70 x 70 mm board. They are only needed if
+   you move a radio's selector to R403/R406; solder them yourself then (three
+   top pads and two bottom ground legs each).
 3. Afterwards: The Nano Every ABX00028 comes with its two 1x15 headers **loose** in the
    box; solder them on first. Easiest way to get them straight: push the
    headers (long pins down) into S1/S2 on this board, lay the Nano on top,

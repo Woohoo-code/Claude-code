@@ -197,10 +197,10 @@ def _lookup(fpname, value):
 
 
 def hand_fit(name):
-    """Parts left out of JLCPCB assembly. None: everything except the
-    Arduino Nano Every itself is assembled (SMA jacks, J3/J4 and the Nano
-    sockets S1/S2 included)."""
-    return False
+    """Parts left out of JLCPCB assembly: the SMA edge jacks (JLCPCB lists
+    C496550 as Standard PCBA only, and Standard needs a 70 x 70 mm board).
+    Everything else except the Arduino Nano Every is assembled."""
+    return "SMA" in name
 
 
 # Nano Every sockets S1/S2: two 1x15 female headers soldered into the Nano's

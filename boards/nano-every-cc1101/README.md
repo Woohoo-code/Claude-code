@@ -34,7 +34,7 @@ unconnected pads**.
 | AE2 | 315 MHz | A | BAT WIRELESS BW315SNX39-6W3 (5.45 x 39 mm) | C496553 | 2.49 | fit R311, remove R301, + 315 MHz BOM |
 | AE3 | 868 MHz | B | Vollgo VG868SNX18-5W2 (6 x 18 mm) | C718843 | 1.32 | **yes** (R321 0R) |
 | AE4 | 915 MHz | B | Vollgo VG915SNX17-5W2 (5 x 17 mm) | C718842 | 1.56 | fit R331, remove R321 |
-| J1 / J2 | any | A / B | SMA edge jack (assembled) | C496550 | - | fit R403 / R406 |
+| J1 / J2 | any | A / B | SMA edge jack (hand-solder, optional) | C496550 | - | fit R403 / R406 |
 
 Radio B's coils are Vollgo parts because the BAT WIRELESS 868 MHz coil
 measures VSWR 5.3 in its own datasheet (half the power reflected) and the
@@ -87,7 +87,7 @@ drill, annular-ring, solder-mask and paste limits measured on those files;
 every pair of parts against JLCPCB's SMD spacing table; every IC pin
 against the vendor pin names and the Nano against the ABX00028 datasheet;
 every firmware pin traced through the level shifter to its CC1101 pin; the
-CPL fitted part by part onto JLCPCB's own footprints (66/66 match,
+CPL fitted part by part onto JLCPCB's own footprints (64/64 match,
 including which way each coil points); every BOM line against its live
 LCSC record (value, package, part number) and stock; the coil, header and
 socket holes against the makers' drawings; a 2-D field solver for the
@@ -106,18 +106,20 @@ the CC1101 harmonic filters; the power budget.
    70 x 45 mm, 1 oz. All standard rules (0.15 mm track/space, 0.25 mm
    minimum drill), no special options.
 2. Assembly: `pcb/fab/bom-jlcpcb.csv` + `pcb/fab/cpl-jlcpcb.csv` (top side).
-   **Everything except the Nano Every is assembled**: all SMD parts, the
-   four coil antennas, the SMA jacks J1/J2, the J3/J4 breakout headers and
+   **Everything except the Nano Every and the optional SMA jacks is
+   assembled**: all SMD parts, the four coil antennas, the J3/J4 breakout headers and
    the two 1x15 Nano sockets S1/S2 (Megastar ZX-PM2.54-1-15PY, LCSC
    C7499333, soldered into the Nano's holes). Choose **Economic PCBA**
    (Standard PCBA needs boards of 70 x 70 mm or more); it takes the
    through-hole coils, headers and sockets and needs no rails or fiducials.
    The CPL carries JLCPCB's own footprint angles (checked part by part,
    see `verify/VERIFICATION.md`), so the placement preview should show every
-   part on its pads without changes, and the SMA jacks and all four coils
-   pointing off the right edge. Suggested PCBA remark: *"AE1-AE4 are bent-leg spring antennas: leg through the hole, coil lying flat beyond the right board edge, as in the 3D preview. J1/J2 (SMA edge jacks): please also solder the two bottom-side ground legs."* If JLCPCB does not solder the
-   SMA bottom legs (the part is reflowed from the top), solder those four
-   joints yourself before using a jack.
+   part on its pads without changes, and all four coils pointing off the
+   right edge. Suggested PCBA remark: *"AE1-AE4 are bent-leg spring antennas: leg through the hole, coil lying flat beyond the right board edge, as in the 3D preview."*
+   The SMA jacks J1/J2 (C496550) are **not** in the JLCPCB files: JLCPCB lists them as
+   Standard PCBA only, which needs a 70 x 70 mm board. They are only needed if
+   you move a radio's selector to R403/R406; solder them yourself then (three
+   top pads and two bottom ground legs each).
 3. The Nano Every ABX00028 comes with its two 1x15 headers **loose** in the
    box; solder them on first. Easiest way to get them straight: push the
    headers (long pins down) into S1/S2 on this board, lay the Nano on top,
