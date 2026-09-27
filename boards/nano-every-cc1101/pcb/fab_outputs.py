@@ -326,7 +326,16 @@ def main():
     with open(os.path.join(HERE, "fab", "bom-jlcpcb.csv"), "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Comment", "Designator", "Footprint", "LCSC Part #", "MPN"])
+        # JLCPCB accepts each LCSC part on one line only: merge lines that share
+        # a part (the 0 ohm links sit on both R_0603 and L_0603 footprints)
+        merged = collections.OrderedDict()
         for (value, name, mpn, lcsc), refs in jl.items():
+            key = lcsc or (value, name, mpn)
+            if key in merged:
+                merged[key][1].extend(refs)
+            else:
+                merged[key] = [(value, name, mpn, lcsc), list(refs)]
+        for (value, name, mpn, lcsc), refs in merged.values():
             w.writerow([value, ",".join(refs), name, lcsc, mpn])
         w.writerow(["1x15 socket", "S1,S2", "PinSocket_1x15_P2.54mm_Vertical", SOCKET[3],
                     SOCKET[2]])
